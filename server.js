@@ -25,6 +25,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
+// --- ROUTE RACINE (ACCUEIL) ---
+app.get('/', (req, res) => {
+  res.send('Bienvenue sur l’application officielle du CS Jobec ! 🎓');
+});
+
 // --- FONCTION D’ENVOI WHATSAPP (API Meta) ---
 async function sendWhatsAppNotification(to, messageText) {
   const token = process.env.WHATSAPP_TOKEN;
@@ -398,12 +403,6 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
-// --- LANCEMENT DU SERVEUR ---
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
-});
-
 // Récupérer tous les livres de la bibliothèque
 app.get('/api/bibliotheque', async (req, res) => {
     try {
@@ -427,4 +426,10 @@ app.post('/api/bibliotheque', async (req, res) => {
         console.error("Erreur lors de l'ajout du livre:", error);
         res.status(500).json({ error: "Erreur serveur" });
     }
+});
+
+// --- LANCEMENT DU SERVEUR ---
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Serveur démarré sur le port ${PORT}`);
 });
