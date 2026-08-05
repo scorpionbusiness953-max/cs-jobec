@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Parent - CS JOBEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-blue: #002147; --gold: #D4AF37; --dark: #1a1a1a; --success: #28a745; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #f4f4f9; 
+            margin: 0; 
+            padding: 20px; 
+            box-sizing: border-box; 
+        }
+        .container { max-width: 900px; margin: auto; }
+        header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        header h2 { margin: 0; font-size: 1.5rem; }
+        .btn-deconnexion {
+            background: var(--gold);
+            color: var(--primary-blue);
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .grid-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary-blue);
+        }
+        .card.gold { border-left-color: var(--gold); }
+        .card h3 { margin-top: 0; color: #555; font-size: 0.95rem; }
+        .card .value { font-size: 1.5rem; font-weight: bold; color: var(--dark); margin-top: 10px; }
+        
+        .evolution-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .evolution-section h3 { color: var(--primary-blue); margin-top: 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+        table th { background: #f8f9fa; color: var(--primary-blue); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h2>Suivi Scolaire - CS JOBEC</h2>
+            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Espace dédié aux parents</p>
+        </div>
+        <a href="espace-parent.html" class="btn-deconnexion">Déconnexion</a>
+    </header>
+
+    <div class="grid-stats">
+        <div class="card">
+            <h3>Nom de l'Élève</h3>
+            <div class="value" id="nomEleveAffiche">-</div>
+        </div>
+        <div class="card">
+            <h3>Classe & Matricule</h3>
+            <div class="value" style="font-size: 1.1rem; margin-top: 12px;">
+                Classe : <span id="classeEleveAffiche">-</span><br>
+                Matricule : <span id="matriculeEleveAffiche">-</span>
+            </div>
+        </div>
+        <div class="card gold">
+            <h3>Frais Scolaires Payés</h3>
+            <div class="value" id="fraisEleveAffiche" style="color: var(--success);">- USD</div>
+        </div>
+    </div>
+
+    <div class="evolution-section">
+        <h3>Évolution et Historique de l'élève</h3>
+        <p style="color: #666; font-size: 0.9rem;">Consultez ici les derniers paiements et notes enregistrés pour votre enfant.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Date / Période</th>
+                    <th>Type d'opération</th>
+                    <th>Montant / Détails</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody id="historiqueTableBody">
+                <!-- Injection dynamique -->
+            </tbody>
+        </table>
+        <div class="card-notes"><br><br>
+    <h3>Suivi Académique - Bulletins et Notes</h3>
+    
+    <!-- Sélecteur de trimestre -->
+    <div class="selector-trimestre">
+        <label for="trimestre">Choisir le trimestre :</label>
+        <select id="trimestre" onchange="chargerNotes(this.value)">
+            <option value="Trimestre 1">Trimestre 1</option>
+            <option value="Trimestre 2">Trimestre 2</option>
+            <option value="Trimestre 3">Trimestre 3</option>
+        </select>
+    </div>
+
+    <!-- Tableau des notes -->
+    <table class="table-notes">
+        <thead>
+            <tr>
+                <th>Matière</th>
+                <th>Type</th>
+                <th>Note / Barème</th>
+                <th>Coefficient</th>
+                <th>Moyenne / 20</th>
+            </tr>
+        </thead>
+        <tbody id="liste-notes">
+            <!-- Les données de la base de données s'afficheront ici dynamiquement -->
+        </tbody>
+    </table>
+
+    <!-- Bouton de téléchargement du bulletin -->
+    <div class="action-bulletin" style="margin-top: 20px;">
+        <button class="btn-download" onclick="telechargerBulletin()">Télécharger le Bulletin Officiel (PDF)</button>
+    </div>
+</div>
+    </div>
+</div>
+
+<script>
+    // 1. Récupération sécurisée des données depuis le localStorage
+    const nom = localStorage.getItem('nomEleve') || "Inconnu";
+    const matricule = localStorage.getItem('matriculeEleve') || "-";
+    const classe = localStorage.getItem('classeEleve') || "Non spécifiée";
+    
+    const payeInscription = Number(localStorage.getItem('fraisPayesEleve')) || 0;
+    const datePaiement = localStorage.getItem('datePaiement') || "-";
+    const t1Versé = Number(localStorage.getItem('montantT1')) || 0;
+    const t2Versé = Number(localStorage.getItem('montantT2')) || 0;
+    const t3Versé = Number(localStorage.getItem('montantT3')) || 0;
+
+    // 2. Définition du total annuel selon le cycle de l'élève
+    let totalAnnuel = 150; 
+    let coutT1 = 70, coutT2 = 60, coutT3 = 20;
+
+    const classeUpper = classe.toUpperCase();
+    if (classeUpper.includes('MATE') || classeUpper.includes('MATERNELLE')) {
+        totalAnnuel = 160;
+        coutT1 = 80; coutT2 = 60; coutT3 = 20;
+    } else if (classeUpper.includes('SECO') || classeUpper.includes('HUMA') || classeUpper.includes('7E') || classeUpper.includes('8E') || classeUpper.includes('3EME')) {
+        totalAnnuel = 180;
+        coutT1 = 100; coutT2 = 60; coutT3 = 20;
+    }
+
+    // 3. Calcul des totaux et des restes
+    let totalVerseGlobal = t1Versé + t2Versé + t3Versé;
+    let resteGlobal = Math.max(0, totalAnnuel - totalVerseGlobal);
+
+    // 4. Affichage dans les cartes du haut
+    document.getElementById('nomEleveAffiche').innerText = nom;
+    document.getElementById('matriculeEleveAffiche').innerText = matricule;
+    document.getElementById('classeEleveAffiche').innerText = classe;
+    document.getElementById('fraisEleveAffiche').innerText = totalVerseGlobal + " USD";
+
+    // 5. Construction dynamique du tableau complet
+    const tbody = document.getElementById('historiqueTableBody');
+    tbody.innerHTML = `
+        <tr>
+            <td>${datePaiement}</td>
+            <td>Frais d'inscription</td>
+            <td>${payeInscription} USD versés</td>
+            <td><span style="color: green; font-weight: bold;">Validé</span></td>
+        </tr>
+        <tr>
+            <td>1ère Tranche (Juin - Oct.)</td>
+            <td>Frais de scolarité (T1)</td>
+            <td>Versé : <b>${t1Versé} USD</b> (Attendu : ${coutT1} $)</td>
+            <td><span style="color: ${t1Versé >= coutT1 ? 'green' : 'orange'}; font-weight: bold;">${t1Versé >= coutT1 ? 'Soldé' : 'Partiel / En attente'}</span></td>
+        </tr>
+        <tr>
+            <td>2ème Tranche (Nov. - Janv.)</td>
+            <td>Frais de scolarité (T2)</td>
+            <td>Versé : <b>${t2Versé} USD</b> (Attendu : ${coutT2} $)</td>
+            <td><span style="color: ${t2Versé >= coutT2 ? 'green' : 'orange'}; font-weight: bold;">${t2Versé >= coutT2 ? 'Soldé' : 'Partiel / En attente'}</span></td>
+        </tr>
+        <tr>
+            <td>3ème Tranche (Fév. - Avr.)</td>
+            <td>Frais de scolarité (T3)</td>
+            <td>Versé : <b>${t3Versé} USD</b> (Attendu : ${coutT3} $)</td>
+            <td><span style="color: ${t3Versé >= coutT3 ? 'green' : 'orange'}; font-weight: bold;">${t3Versé >= coutT3 ? 'Soldé' : 'Partiel / En attente'}</span></td>
+        </tr>
+        <tr style="background: #fdfefe; font-weight: bold;">
+            <td colspan="2" style="text-align: right;">BILAN ANNUEL (${classe}) :</td>
+            <td style="color: var(--primary-blue);">Total payé : ${totalVerseGlobal} $ / ${totalAnnuel} $</td>
+            <td><span style="color: red;">Reste : ${resteGlobal}.00 $</span></td>
+        </tr>
+    `;
+
+    // 6. Fonction pour charger dynamiquement les notes depuis l'API backend
+    async function chargerNotes(trimestre) {
+        const matriculeEleve = matricule !== "-" ? matricule : '001'; 
+
+        try {
+            const response = await fetch(`/api/notes/${matriculeEleve}/${trimestre}`);
+            const notes = await response.json();
+            
+            let tbodyNotes = document.getElementById('liste-notes');
+            tbodyNotes.innerHTML = ""; 
+
+            if (!Array.isArray(notes) || notes.length === 0) {
+                tbodyNotes.innerHTML = `<tr><td colspan="5" style="text-align:center;">Aucune note enregistrée pour ce trimestre.</td></tr>`;
+                return;
+            }
+
+            notes.forEach(item => {
+                const noteMax = Number(item.sur) || 20;
+                const valeurNote = Number(item.note);
+                const noteSur20 = ((valeurNote / noteMax) * 20).toFixed(2);
+
+                let ligne = `
+                    <tr>
+                        <td>${item.matiere}</td>
+                        <td>${item.type_evaluation || 'Évaluation'}</td>
+                        <td><b>${valeurNote}</b> / ${noteMax}</td>
+                        <td>${item.coefficient}</td>
+                        <td><b>${noteSur20}</b> / 20</td>
+                    </tr>
+                `;
+                tbodyNotes.innerHTML += ligne;
+            });
+        } catch (error) {
+            console.error("Erreur de chargement des notes:", error);
+        }
+    }
+
+    // Appel automatique au chargement de la page pour le premier trimestre par défaut
+    chargerNotes(document.getElementById('trimestre').value);
+
+    // Fonction pour le téléchargement du bulletin 
+    async function telechargerBulletin() {
+        const trimestreActuel = document.getElementById('trimestre').value;
+        const matriculeEleve = matricule !== "-" ? matricule : '001';
+
+        try {
+            const response = await fetch(`/api/notes/${matriculeEleve}/${trimestreActuel}`);
+            const notes = await response.json();
+
+            if (!Array.isArray(notes) || notes.length === 0) {
+                alert("Aucune note disponible pour générer le bulletin de ce trimestre.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.setTextColor(0, 33, 71); 
+            doc.text("COMPLEXE SCOLAIRE JOBEC", 105, 20, { align: "center" });
+
+            doc.setFontSize(11);
+            doc.setTextColor(100, 100, 100);
+            doc.text("Espace Académique - Bulletin Scolaire Officiel", 105, 27);
+            doc.text(`Période : ${trimestreActuel}`, 105, 33);
+
+            doc.setLineWidth(0.5);
+            doc.line(20, 38, 190, 38);
+
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Nom de l'élève : ${nom}`, 20, 48);
+            doc.text(`Classe : ${classe}`, 20, 55);
+            doc.text(`Matricule : ${matriculeEleve}`, 120, 48);
+            doc.text(`Date d'édition : ${new Date().toLocaleDateString('fr-FR')}`, 120, 55);
+
+            let startY = 65;
+            doc.setFillColor(0, 33, 71);
+            doc.rect(20, startY, 170, 8, "F");
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFont("helvetica", "bold");
+            doc.text("Matière", 24, startY + 6);
+            doc.text("Type", 80, startY + 6);
+            doc.text("Note", 125, startY + 6);
+            doc.text("Coeff", 150, startY + 6);
+            doc.text("/ 20", 175, startY + 6);
+
+            let currentY = startY + 8;
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(0, 0, 0);
+
+            let sommeNotesPonderees = 0;
+            let sommeCoefficients = 0;
+
+            notes.forEach((item, index) => {
+                const noteMax = Number(item.sur) || 20;
+                const valeurNote = Number(item.note);
+                const coefficient = Number(item.coefficient) || 1;
+                const noteSur20 = (valeurNote / noteMax) * 20;
+
+                sommeNotesPonderees += noteSur20 * coefficient;
+                sommeCoefficients += coefficient;
+
+                if (index % 2 === 0) {
+                    doc.setFillColor(245, 245, 249);
+                    doc.rect(20, currentY, 170, 7, "F");
+                }
+
+                doc.text(String(item.matiere || ''), 24, currentY + 5);
+                doc.text(String(item.type_evaluation || 'Éval'), 80, currentY + 5);
+                doc.text(`${valeurNote} / ${noteMax}`, 125, currentY + 5);
+                doc.text(String(coefficient), 150, currentY + 5);
+                doc.text(`${noteSur20.toFixed(2)}`, 175, currentY + 5);
+
+                currentY += 7;
+            });
+
+            const moyenneGenerale = sommeCoefficients > 0 ? (sommeNotesPonderees / sommeCoefficients).toFixed(2) : 0;
+
+            currentY += 10;
+            doc.setLineWidth(0.2);
+            doc.line(20, currentY, 190, currentY);
+            
+            currentY += 8;
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(11);
+            doc.text(`Total Coefficients : ${sommeCoefficients}`, 20, currentY);
+            doc.text(`Moyenne Générale : ${moyenneGenerale} / 20`, 120, currentY);
+
+            currentY += 20;
+            doc.setFont("helvetica", "normal");
+            doc.text("Signature de la Direction", 130, currentY);
+
+            doc.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${trimestreActuel}.pdf`);
+
+        } catch (error) {
+            console.error("Erreur lors de la génération du PDF :", error);
+            alert("Impossible de générer le bulletin pour le moment.");
+        }
+    }
+</script>
+
+</body>
+</html>

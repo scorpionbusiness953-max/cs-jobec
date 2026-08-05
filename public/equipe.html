@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Notre Personnel - CS JOBEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #002147;
+            --gold: #D4AF37;
+            --bg-dark: #0b0b0b;
+            --text-light: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        header {
+            background: linear-gradient(135deg, #001529 0%, var(--primary-blue) 100%);
+            color: white;
+            padding: 3.5rem 2rem;
+            text-align: center;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        header p {
+            margin: 10px 0 0;
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Grille de profils */
+        .personnel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        /* Carte de profil (style sombre avec encadrement fin blanc) */
+        .profile-card {
+            background: #0b0b0b;
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
+        }
+
+        /* Conteneur photo */
+        .photo-container {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #ffffff;
+            margin: 0 auto 1.8rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.15rem;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Fonction en majuscules (style recherché) */
+        .profile-card .fonction {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .profile-card .cycle {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--gold);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: auto;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Notre Personnel Qualifié</h1>
+        <p>L'excellence au service de vos enfants - CS JOBEC</p>
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← Retour à l'accueil</a>
+        
+        <div class="personnel-grid">
+
+            <!-- PROFIL 1 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/visionnaire.jpeg" alt="M. le Promoteur Jonathan"> 
+                </div>
+                <h3>M. le Promoteur Jonathan</h3>
+                <span class="fonction">Vision & Direction Générale</span>
+                <div class="cycle">Administration</div>
+            </div>
+
+            <!-- PROFIL 2 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/ir.jpeg" alt="SHAKO AMBEDI MECHACK"> 
+                </div>
+                <h3>SHAKO AMBEDI Mechack</h3>
+                <span class="fonction">Responsable Système & Digital</span>
+                <div class="cycle">Technique, Informatique & Administration</div>
+                
+            </div>
+
+            <!-- PROFIL 3 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/batiste.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                </div>
+                <h3>Mr OMBA OMANDJELA Batiste</h3>
+                <span class="fonction">Secrétaire Général</span>
+                <div class="cycle">Administration</div>
+            </div>
+
+             <!-- PROFIL 3 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/jack.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                </div>
+                <h3>Mr BARUTI Jacques</h3>
+                <span class="fonction">Intendant</span>
+                <div class="cycle">Administration</div>
+            </div>
+
+             <!-- PROFIL 3 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/esther.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                </div>
+                <h3>Mme MAKILA Esther</h3>
+                <span class="fonction">Secrétaire Général Adjointe</span>
+                <div class="cycle">Administration</div>
+            </div>
+
+             <!-- PROFIL 3 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/batiste.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                </div>
+                <h3>Mr Sonbien</h3>
+                <span class="fonction">Chef d'Etablissement</span>
+                <div class="cycle">Administration</div>
+            </div>
+
+            <!-- PROFIL 3 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/batiste.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                </div>
+                <h3>Mr Sonbien</h3>
+                <span class="fonction">Directeur des études</span>
+                <div class="cycle">Administration</div>
+            </div>
+
+             <!-- PROFIL 3 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/batiste.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                </div>
+                <h3>Mme Beni</h3>
+                <span class="fonction">Chargée d'environnement</span>
+                <div class="cycle">Administration</div>
+            </div>
+
+             <!-- PROFIL 3 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/batiste.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                </div>
+                <h3>Maitre Gauthier</h3>
+                <span class="fonction">Chargé de la Sécurité</span>
+                <div class="cycle">Administration</div>
+            </div>
+
+            <!-- PROFIL 4 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/madidi.jpeg" alt="Mme MADIDI KIBADI Estimée"> 
+                </div>
+                <h3>Mme MADIDI KIBADI Estimée</h3>
+                <span class="fonction">Enseignante</span>
+                <div class="cycle">Primaire</div>
+            </div>
+
+            <!-- PROFIL 5 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/mambimbo.jpeg" alt="Mme KAMBEMBO NZAU Joyce"> 
+                </div>
+                <h3>Mme KAMBEMBO NZAU Joyce</h3>
+                <span class="fonction">Enseignante - 5ème</span>
+                <div class="cycle">Primaire</div>
+            </div>
+
+            <!-- PROFIL 6 -->
+            <div class="profile-card">
+                <div class="photo-container">
+                    <img src="images/musenga.jpeg" alt="Mme MUSENGA KAMESA Christenvie"> 
+                </div>
+                <h3>Mme MUSENGA KAMESA Christenvie</h3>
+                <span class="fonction">Enseignante</span>
+                <div class="cycle">Primaire</div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

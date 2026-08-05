@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque en Ligne - CS JOBEC</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --library-color: #f59e0b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h2 {
+            margin: 0 0 5px 0;
+            font-size: 2rem;
+            color: var(--text-color);
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 25px;
+        }
+
+        /* Barre de recherche */
+        .search-bar {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-sizing: border-box;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        /* Grille des documents / livres */
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .book-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-top: 4px solid var(--library-color);
+        }
+
+        .book-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .book-badge {
+            align-self: flex-start;
+            background-color: #fef3c7;
+            color: #d97706;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            color: var(--text-color);
+        }
+
+        .book-author {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            text-align: center;
+        }
+
+        .download-btn:hover {
+            background-color: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-nav">
+            <a href="index.html" class="back-link">← Acceui du site</a>
+            <a href="admin-bibliotheque.html" class="back-link">Ajouter un ouvrage</a>
+        </div>
+
+        <h2>Bibliothèque Numérique - CS JOBEC</h2>
+        <p class="subtitle">Consultez et téléchargez les supports de cours, syllabus et ouvrages recommandés.</p>
+
+        <!-- Barre de recherche interactive -->
+        <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Rechercher un livre, un cours, une option..." onkeyup="filterBooks()">
+
+        <!-- Liste des documents (Vous pouvez ajouter/modifier les éléments ici) -->
+        <div class="library-grid" id="booksContainer">
+            
+            <div class="book-card" data-title="mathématiques 6ème humanité" data-category="sciences">
+                <div>
+                    <span class="book-badge">Mathématiques</span>
+                    <h3 class="book-title">Mathématiques 6ème Année - Algèbre & Analyse</h3>
+                    <p class="book-author">Auteur : Corps professoral CS JOBEC</p>
+                </div>
+                <a href="#telecharger" onclick="alert('Téléchargement du document en cours...')" class="download-btn">📥 Télécharger le PDF</a>
+            </div>
+
+            <div class="book-card" data-title="physique mécanique générale" data-category="sciences">
+                <div>
+                    <span class="book-badge">Sciences</span>
+                    <h3 class="book-title">Manuel de Physique - Mécanique et Électricité</h3>
+                    <p class="book-author">Auteur : Éditions Officielles RDC</p>
+                </div>
+                <a href="#telecharger" onclick="alert('Téléchargement du document en cours...')" class="download-btn">📥 Télécharger le PDF</a>
+            </div>
+
+            <div class="book-card" data-title="grammaire française littéraire" data-category="littérature">
+                <div>
+                    <span class="book-badge">Français</span>
+                    <h3 class="book-title">Maîtriser la Langue Française & Rédaction</h3>
+                    <p class="book-author">Auteur : Département de Littérature</p>
+                </div>
+                <a href="#telecharger" onclick="alert('Téléchargement du document en cours...')" class="download-btn">📥 Télécharger le PDF</a>
+            </div>
+
+            <div class="book-card" data-title="informatique initiation bases" data-category="technologie">
+                <div>
+                    <span class="book-badge">Informatique</span>
+                    <h3 class="book-title">Initiation aux Algorithmes et au Web</h3>
+                    <p class="book-author">Auteur : Section Technique CS JOBEC</p>
+                </div>
+                <a href="#telecharger" onclick="alert('Téléchargement du document en cours...')" class="download-btn">📥 Télécharger le PDF</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    // Charger les livres depuis le serveur au chargement de la page
+    async function chargerBibliotheque() {
+        try {
+            const response = await fetch('/api/bibliotheque');
+            const livres = await response.json();
+            
+            const container = document.getElementById('booksContainer');
+            container.innerHTML = ""; // Vider le conteneur
+
+            if (livres.length === 0) {
+                container.innerHTML = "<p style='color: #64748b;'>Aucun document disponible pour le moment.</p>";
+                return;
+            }
+
+            livres.forEach(livre => {
+                const card = document.createElement('div');
+                card.className = 'book-card';
+                card.setAttribute('data-title', (livre.titre + ' ' + livre.categorie).toLowerCase());
+                
+                card.innerHTML = `
+                    <div>
+                        <span class="book-badge">${livre.categorie}</span>
+                        <h3 class="book-title">${livre.titre}</h3>
+                        <p class="book-author">Auteur : ${livre.auteur}</p>
+                    </div>
+                    <a href="${livre.fichier_url}" target="_blank" class="download-btn">📥 Télécharger le PDF</a>
+                `;
+                container.appendChild(card);
+            });
+        } catch (error) {
+            console.error("Erreur de chargement de la bibliothèque:", error);
+        }
+    }
+
+    // Fonction de recherche en temps réel
+    function filterBooks() {
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        let cards = document.getElementsByClassName('book-card');
+
+        for (let i = 0; i < cards.length; i++) {
+            let title = cards[i].getAttribute('data-title');
+            if (title.includes(input)) {
+                cards[i].style.display = "flex";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+    }
+
+    // Lancer le chargement au démarrage
+    window.onload = chargerBibliotheque;
+</script>
+</body>
+</html>
