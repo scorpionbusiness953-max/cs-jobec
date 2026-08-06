@@ -72,7 +72,7 @@ const upload = multer({ storage: storage });
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
-  connectionTimeoutMillis: 10000, // 10 secondes de timeout pour éviter les blocages
+  connectionTimeoutMillis: 10000,
   idleTimeoutMillis: 30000
 });
 

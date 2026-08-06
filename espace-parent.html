@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Parent - CS JOBEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-blue: #002147; --gold: #D4AF37; --dark: #1a1a1a; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(rgba(0,33,71,0.9), rgba(0,33,71,0.9)), url('images/ecole_bg.jpg');
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-card img { width: 80px; margin-bottom: 20px; border-radius: 10px; }
+        .login-card h2 { color: var(--primary-blue); margin-bottom: 10px; margin-top: 0; }
+        .login-card p { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
+        
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--dark); }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+        .form-group input:focus { border-color: var(--gold); outline: none; }
+        
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-login:hover { background: var(--gold); }
+        .back-home { display: block; margin-top: 20px; color: #888; text-decoration: none; font-size: 0.8rem; }
+
+        .card { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 12px; 
+            border-left: 5px solid var(--gold);
+            text-align: left; 
+            margin-top: 25px; 
+            display: none; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .card h3 { margin-top: 0; color: var(--primary-blue); font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+        .card p { margin: 8px 0; font-size: 0.9rem; color: #333; }
+        
+        .error { 
+            color: #721c24; 
+            background-color: #f8d7da; 
+            border: 1px solid #f5c6cb; 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-top: 25px; 
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: none; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <img src="images/logo.jpeg" alt="Logo JOBEC">
+    <h2>Espace Parent</h2>
+    <p>Saisissez le matricule de l'élève pour suivre sa scolarité et l'état de ses frais.</p>
+    
+    <form id="loginForm" onsubmit="rechercherEleve(event)">
+        <div class="form-group">
+            <label for="matriculeInput">Matricule de l'élève</label>
+            <input type="text" id="matriculeInput" placeholder="Ex: 001 ou 002" required>
+        </div>
+        
+        <button type="submit" class="btn-login" id="btnTexte">Accéder au suivi</button>
+    </form>
+
+    <div id="errorBox" class="error"></div>
+    
+    <a href="index.html" class="back-home">← Retour au site officiel</a>
+</div>
+
+<script>
+    async function rechercherEleve(event) {
+        event.preventDefault(); 
+        
+        let matricule = document.getElementById('matriculeInput').value.trim();
+        const errorBox = document.getElementById('errorBox');
+        const btnTexte = document.getElementById('btnTexte');
+
+        errorBox.style.display = 'none';
+        btnTexte.innerText = "Vérification en cours...";
+        btnTexte.style.opacity = "0.7";
+
+       try {
+    // Utilisez l'URL officielle de votre service Render au lieu de localhost
+    const response = await fetch(`https://cs-jobec.onrender.com/api/eleve/${matricule}`);
+    
+    if (!response.ok) {
+        if (response.status === 404) {
+            throw new Error("Matricule inconnu dans notre établissement. Vérifiez les zéros (ex: 001).");
+        } else {
+            throw new Error("Erreur de connexion avec le serveur.");
+        }
+    }
+
+            const data = await response.json();
+
+            // Sauvegarde des données pour le dashboard
+            localStorage.setItem('nomEleve', data.nom);
+            localStorage.setItem('matriculeEleve', data.matricule);
+            localStorage.setItem('classeEleve', data.classe || "Non spécifiée");
+            localStorage.setItem('fraisPayesEleve', data.frais_inscription || "0.00");
+
+            // Nouveaux champs pour l'historique annuel
+            localStorage.setItem('datePaiement', data.date_paiement ? new Date(data.date_paiement).toLocaleDateString('fr-FR') : "Date non spécifiée");
+            localStorage.setItem('montantT1', data.montant_t1 || "0");
+            localStorage.setItem('montantT2', data.montant_t2 || "0");
+            localStorage.setItem('montantT3', data.montant_t3 || "0");
+
+            window.location.href = 'dashboard-parent.html';
+
+        } catch (error) {
+            errorBox.innerText = error.message;
+            errorBox.style.display = 'block';
+            btnTexte.innerText = "Accéder au suivi";
+            btnTexte.style.opacity = "1";
+        }
+    }
+</script>
+
+</body>
+</html>

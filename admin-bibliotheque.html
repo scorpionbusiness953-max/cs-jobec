@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Enseignant - CS JOBEC</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 40px; }
+        .form-container, .auth-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h2 { color: #1e293b; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+        button { background-color: #2563eb; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; }
+        button:hover { background-color: #1d4ed8; }
+        #message, #auth-message { margin-top: 15px; text-align: center; font-weight: 500; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Étape 1 : Demande de mot de passe enseignant -->
+    <div id="authBox" class="auth-container">
+        <h2>🔒 Accès Réservé aux Enseignants</h2>
+        <div class="form-group">
+            <label for="password">Entrez le code d'accès enseignant :</label>
+            <input type="password" id="password" placeholder="Mot de passe...">
+        </div>
+        <button onclick="verifierMotDePasse()">Se connecter</button>
+        <div id="auth-message"></div>
+    </div>
+
+    <!-- Étape 2 : Le formulaire d'ajout (Caché par défaut) -->
+    <div id="formBox" class="form-container hidden">
+        <a href="index.html" class="back-link">Accueil du site</a>
+        <h2>📚 Espace Enseignant : Publier un Document</h2>
+        <form id="addBookForm">
+            <div class="form-group">
+                <label for="titre">Titre du document / Cours</label>
+                <input type="text" id="titre" required placeholder="Ex: Mathématiques 6ème">
+            </div>
+            
+            <div class="form-group">
+                <label for="auteur">Auteur / Enseignant</label>
+                <input type="text" id="auteur" required placeholder="Ex: Prof. Jean-Marc">
+            </div>
+
+            <div class="form-group">
+                <label for="categorie">Catégorie / Matière</label>
+                <select id="categorie" required>
+                    <option value="">Sélectionner une matière</option>
+                    <option value="Mathématiques">Mathématiques</option>
+                    <option value="Sciences">Sciences</option>
+                    <option value="Français">Français</option>
+                    <option value="Informatique">Informatique</option>
+                    <option value="Histoire-Géo">Histoire-Géo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fichier_url">Lien du fichier (URL du PDF)</label>
+                <input type="text" id="fichier_url" required placeholder="Ex: /uploads/cours_maths.pdf ou lien Google Drive">
+            </div>
+
+            <button type="submit">Publier dans la bibliothèque</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // Définissez le mot de passe secret des enseignants ici
+        const MOT_DE_PASSE_SECRET = "jobec2026"; 
+
+        function verifierMotDePasse() {
+            const saisie = document.getElementById('password').value;
+            const authMsg = document.getElementById('auth-message');
+
+            if (saisie === MOT_DE_PASSE_SECRET) {
+                // Masquer la boîte de connexion et afficher le formulaire
+                document.getElementById('authBox').classList.add('hidden');
+                document.getElementById('formBox').classList.remove('hidden');
+            } else {
+                authMsg.style.color = "red";
+                authMsg.textContent = "Mot de passe incorrect.";
+            }
+        }
+
+        // Soumission du formulaire d'ajout de livre
+        document.getElementById('addBookForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const titre = document.getElementById('titre').value;
+            const auteur = document.getElementById('auteur').value;
+            const categorie = document.getElementById('categorie').value;
+            const fichier_url = document.getElementById('fichier_url').value;
+
+            try {
+                const response = await fetch('/api/bibliotheque', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ titre, auteur, categorie, fichier_url })
+                });
+
+                const result = await response.json();
+                const msgDiv = document.getElementById('message');
+
+                if (response.ok) {
+                    msgDiv.style.color = "green";
+                    msgDiv.textContent = "Document ajouté avec succès à la bibliothèque !";
+                    document.getElementById('addBookForm').reset();
+                } else {
+                    msgDiv.style.color = "red";
+                    msgDiv.textContent = "Erreur : " + (result.error || "Impossible d'ajouter le document.");
+                }
+            } catch (error) {
+                console.error("Erreur réseau:", error);
+                document.getElementById('message').style.color = "red";
+                document.getElementById('message').textContent = "Erreur de connexion au serveur.";
+            }
+        });
+    </script>
+</body>
+</html>
