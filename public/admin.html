@@ -123,6 +123,7 @@
                         <th>Enfants</th>
                         <th>Titre Scolaire</th>
                         <th>Option</th>
+                        <th>Année Sc.</th>
                         <th>Date de Naissance</th>
                         <th>Titre Acad.</th>
                         <th>Filière</th>
@@ -199,18 +200,19 @@
                     <td>${p.nom || ''}</td>
                     <td>${p.prenom || ''}</td>
                     <td>${p.fonction || ''}</td>
-                    <td>${p.telephone || ''}</td>
-                    <td>${dateNaissanceFormatee}</td>  <!-- Ajout de la date ici -->
+                    <td>${p.telephone || ''}</td> 
                     <td>${p.etat_civil || ''}</td>
                     <td>${p.nbr_enfant ?? ''}</td>
                     <td>${p.titre_scolaire || ''}</td>
                     <td>${p.option_scolaire || ''}</td>
                     <td>${p.annee_titre_scolaire || ''}</td>
+                    <td>${dateNaissanceFormatee}</td>  <!-- Ajout de la date ici -->
                     <td>${p.titre_academique || ''}</td>
                     <td>${p.filiere_academique || ''}</td>
                     <td>${p.annee_titre_academique || ''}</td>
                     <td>${p.salaire_base ? p.salaire_base + ' $' : ''}</td>
                     <td>${pdfHtml}</td>
+ 
                     <td>
                         <button class="btn-action btn-edit" onclick="prepareEdit(${p.id})">Modifier</button>
                         <button class="btn-action btn-del" onclick="deleteEmployee(${p.id})">Supprimer</button>
