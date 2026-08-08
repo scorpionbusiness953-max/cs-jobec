@@ -123,7 +123,7 @@
                         <th>Enfants</th>
                         <th>Titre Scolaire</th>
                         <th>Option</th>
-                        <th>Année Sc.</th>
+                        <th>Date de Naissance</th>
                         <th>Titre Acad.</th>
                         <th>Filière</th>
                         <th>Année Acad.</th>
@@ -181,13 +181,17 @@
             tbody.innerHTML = "";
 
             if(allEmployees.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="16" style="text-align:center; color:#888;">Aucun personnel enregistré.</td></tr>`;
+                // Attention à passer le colspan à 17 si vous ajoutez une colonne
+                tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; color:#888;">Aucun personnel enregistré.</td></tr>`;
                 return;
             }
 
             allEmployees.forEach(p => {
                 let photoHtml = p.photo ? `<img src="${p.photo}" class="table-img">` : 'Aucune';
                 let pdfHtml = p.dossier_pdf ? `<a href="${p.dossier_pdf}" target="_blank" style="color: #ffd700;">📄 Voir</a>` : 'Aucun';
+                
+                // Formater la date pour ne garder que l'année-mois-jour (ex: 1995-05-12)
+                let dateNaissanceFormatee = p.date_naissance ? p.date_naissance.split('T')[0] : '';
 
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
@@ -196,11 +200,11 @@
                     <td>${p.prenom || ''}</td>
                     <td>${p.fonction || ''}</td>
                     <td>${p.telephone || ''}</td>
+                    <td>${dateNaissanceFormatee}</td>  <!-- Ajout de la date ici -->
                     <td>${p.etat_civil || ''}</td>
                     <td>${p.nbr_enfant ?? ''}</td>
                     <td>${p.titre_scolaire || ''}</td>
                     <td>${p.option_scolaire || ''}</td>
-                    <td>${p.date_naissance || ''}</td>
                     <td>${p.annee_titre_scolaire || ''}</td>
                     <td>${p.titre_academique || ''}</td>
                     <td>${p.filiere_academique || ''}</td>
@@ -232,7 +236,7 @@
         formData.append("adresse", document.getElementById("adresse").value);
         formData.append("date_naissance", document.getElementById("date_naissance").value);
         formData.append("salaire_base", document.getElementById("salaire_base").value);
-        formData.append("date_naissance", document.getElementById("date_naissance").value);
+        
         
         formData.append("etat_civil", document.getElementById("etat_civil").value);
         formData.append("nbr_enfant", document.getElementById("nbr_enfant").value);
