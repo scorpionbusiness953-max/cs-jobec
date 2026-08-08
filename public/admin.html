@@ -200,6 +200,7 @@
                     <td>${p.nbr_enfant ?? ''}</td>
                     <td>${p.titre_scolaire || ''}</td>
                     <td>${p.option_scolaire || ''}</td>
+                    <td>${p.date_naissance || ''}</td>
                     <td>${p.annee_titre_scolaire || ''}</td>
                     <td>${p.titre_academique || ''}</td>
                     <td>${p.filiere_academique || ''}</td>
@@ -231,6 +232,7 @@
         formData.append("adresse", document.getElementById("adresse").value);
         formData.append("date_naissance", document.getElementById("date_naissance").value);
         formData.append("salaire_base", document.getElementById("salaire_base").value);
+        formData.append("date_naissance", document.getElementById("date_naissance").value);
         
         formData.append("etat_civil", document.getElementById("etat_civil").value);
         formData.append("nbr_enfant", document.getElementById("nbr_enfant").value);
