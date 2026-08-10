@@ -5,16 +5,162 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espace Enseignant - CS JOBEC</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 40px; }
-        .form-container, .auth-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h2 { color: #1e293b; margin-bottom: 20px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
-        button { background-color: #2563eb; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; }
-        button:hover { background-color: #1d4ed8; }
-        #message, #auth-message { margin-top: 15px; text-align: center; font-weight: 500; }
-        .hidden { display: none; }
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --success: #16a34a;
+            --error: #dc2626;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, var(--bg-color) 100%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .auth-container, .form-container {
+            width: 100%;
+            max-width: 620px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        h2 {
+            color: var(--text-main);
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            background-color: #f8fafc;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            cursor: pointer;
+            background: #fff;
+        }
+
+        .file-section {
+            background: #f8fafc;
+            border: 2px dashed var(--border-color);
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: border-color 0.2s;
+        }
+
+        .file-section:hover {
+            border-color: var(--primary);
+        }
+
+        .file-section label {
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px -1px rgba(37, 99, 235, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .back-link, .back-home {
+            display: inline-block;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover, .back-home:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        #message, #auth-message {
+            margin-top: 18px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -24,19 +170,24 @@
         <h2>🔒 Accès Réservé aux Enseignants</h2>
         <div class="form-group">
             <label for="password">Entrez le code d'accès enseignant :</label>
-            <input type="password" id="password" placeholder="Mot de passe...">
+            <input type="password" id="password" placeholder="Mot de passe sécurisé...">
         </div>
         <button onclick="verifierMotDePasse()">Se connecter</button>
-         <a href="bibliotheque.html" class="back-home">← Je ne suis enseignant (e)</a>
-         
+        <div style="margin-top: 15px; text-align: center;">
+            <a href="bibliotheque.html" class="back-home">← Je ne suis pas enseignant(e)</a>
+        </div>
         <div id="auth-message"></div>
     </div>
 
     <!-- Étape 2 : Le formulaire d'ajout (Caché par défaut) -->
     <div id="formBox" class="form-container hidden">
-        <a href="index.html" class="back-link">Accueil du site</a></br>
-        <a href="saisie-notes.html"class="back-link"> Gestion des Notes / Cotisations</a>
+        <div class="nav-links">
+            <a href="index.html" class="back-link">🏠 Accueil du site</a>
+            <a href="saisie-notes.html" class="back-link">📋 Gestion des Notes / Cotisations</a>
+        </div>
+        
         <h2>📚 Espace Enseignant : Publier un Document</h2>
+        
         <form id="addBookForm">
             <div class="form-group">
                 <label for="titre">Titre du document / Cours</label>
@@ -53,9 +204,16 @@
                 <input type="text" id="categorie" required placeholder="Ex: Mathématiques...">      
             </div>
 
-            <div class="form-group">
-                <label for="fichier">Téléverser le fichier (PDF)</label>
-                <input type="file" id="fichier" name="fichier" accept=".pdf">
+            <div class="file-section">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="fichier_pdf">📄 Option 1 : Téléverser un fichier PDF (depuis votre appareil)</label>
+                    <input type="file" id="fichier_pdf" accept=".pdf">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="fichier_url">🔗 OU Option 2 : Coller un lien (Google Drive, Dropbox, etc.)</label>
+                    <input type="text" id="fichier_url" placeholder="Ex: https://drive.google.com/file/d/...">
+                </div>
             </div>
 
             <button type="submit">Publier dans la bibliothèque</button>
@@ -72,46 +230,70 @@
             const authMsg = document.getElementById('auth-message');
 
             if (saisie === MOT_DE_PASSE_SECRET) {
-                // Masquer la boîte de connexion et afficher le formulaire
+                // Masquer la boîte de connexion et afficher le formulaire avec une transition propre
                 document.getElementById('authBox').classList.add('hidden');
                 document.getElementById('formBox').classList.remove('hidden');
             } else {
-                authMsg.style.color = "red";
+                authMsg.style.color = "var(--error)";
                 authMsg.textContent = "Mot de passe incorrect.";
             }
         }
+
+        // Permettre de valider la connexion avec la touche "Entrée"
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifierMotDePasse();
+            }
+        });
 
         // Soumission du formulaire d'ajout de livre
         document.getElementById('addBookForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const titre = document.getElementById('titre').value;
-            const auteur = document.getElementById('auteur').value;
-            const categorie = document.getElementById('categorie').value;
-            const fichier_url = document.getElementById('fichier_url').value;
+            // Utilisation de FormData pour supporter à la fois les champs texte et l'envoi de fichier
+            const formData = new FormData();
+            formData.append('titre', document.getElementById('titre').value);
+            formData.append('auteur', document.getElementById('auteur').value);
+            formData.append('categorie', document.getElementById('categorie').value);
+
+            // 1. Récupérer le fichier PDF s'il a été sélectionné depuis l'appareil
+            const fichierPdf = document.getElementById('fichier_pdf').files[0];
+            if (fichierPdf) {
+                formData.append('fichier_pdf', fichierPdf);
+            }
+
+            // 2. Récupérer le lien texte s'il a été collé
+            const fichierUrl = document.getElementById('fichier_url').value;
+            if (fichierUrl) {
+                formData.append('fichier_url', fichierUrl);
+            }
+
+            const msgDiv = document.getElementById('message');
+            msgDiv.style.color = "var(--text-muted)";
+            msgDiv.textContent = "Publication en cours...";
 
             try {
                 const response = await fetch('/api/bibliotheque', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ titre, auteur, categorie, fichier_url })
+                    // IMPORTANT : Ne pas mettre de header 'Content-Type' avec FormData, 
+                    // le navigateur le gère tout seul avec le bon "boundary".
+                    body: formData
                 });
 
                 const result = await response.json();
-                const msgDiv = document.getElementById('message');
 
                 if (response.ok) {
-                    msgDiv.style.color = "green";
+                    msgDiv.style.color = "var(--success)";
                     msgDiv.textContent = "Document ajouté avec succès à la bibliothèque !";
                     document.getElementById('addBookForm').reset();
                 } else {
-                    msgDiv.style.color = "red";
+                    msgDiv.style.color = "var(--error)";
                     msgDiv.textContent = "Erreur : " + (result.error || "Impossible d'ajouter le document.");
                 }
             } catch (error) {
                 console.error("Erreur réseau:", error);
-                document.getElementById('message').style.color = "red";
-                document.getElementById('message').textContent = "Erreur de connexion au serveur.";
+                msgDiv.style.color = "var(--error)";
+                msgDiv.textContent = "Erreur de connexion au serveur.";
             }
         });
     </script>
