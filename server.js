@@ -7,6 +7,7 @@ import axios from 'axios';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import path from 'path';
 
 dotenv.config();
 
@@ -68,8 +69,17 @@ async function sendWhatsAppNotification(to, messageText) {
 // 1. Pour le personnel (stockage en mémoire pour insertion en base de données)
 const uploadMemory = multer({ storage: multer.memoryStorage() });
 
-// 2. Pour la bibliothèque (stockage des fichiers locaux dans public/uploads/)
-const uploadDisk = multer({ dest: 'public/uploads/' });
+// 2. Pour la bibliothèque (stockage disque avec conservation de l'extension d'origine .pdf)
+const storageDisk = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const uploadDisk = multer({ storage: storageDisk });
 
 // Connexion à la base de données Neon (avec options de robustesse)
 const pool = new Pool({
@@ -429,7 +439,6 @@ app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res)
             lienFinal = `/uploads/${req.file.filename}`;
         }
 
-        // On enregistre directement dans 'fichier_url' pour que les boutons de téléchargement retrouvent leur chemin
         const query = 'INSERT INTO bibliotheque (titre, auteur, categorie, fichier_url) VALUES ($1, $2, $3, $4) RETURNING *';
         const values = [titre, auteur, categorie, lienFinal];
         
