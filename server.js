@@ -64,9 +64,12 @@ async function sendWhatsAppNotification(to, messageText) {
   }
 }
 
-// Configuration de Multer (stockage mémoire)
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// Configuration de Multer : 
+// 1. Pour le personnel (stockage en mémoire pour insertion en base de données)
+const uploadMemory = multer({ storage: multer.memoryStorage() });
+
+// 2. Pour la bibliothèque (stockage des fichiers locaux dans public/uploads/)
+const uploadDisk = multer({ dest: 'public/uploads/' });
 
 // Connexion à la base de données Neon (avec options de robustesse)
 const pool = new Pool({
@@ -153,7 +156,7 @@ app.get('/api/personnels', async (req, res) => {
   }
 });
 
-app.post('/api/personnels', upload.fields([
+app.post('/api/personnels', uploadMemory.fields([
   { name: 'photo', maxCount: 1 },
   { name: 'dossier_pdf', maxCount: 1 }
 ]), async (req, res) => {
@@ -189,7 +192,7 @@ app.post('/api/personnels', upload.fields([
   }
 });
 
-app.put('/api/personnels/:id', upload.fields([
+app.put('/api/personnels/:id', uploadMemory.fields([
   { name: 'photo', maxCount: 1 },
   { name: 'dossier_pdf', maxCount: 1 }
 ]), async (req, res) => {
@@ -403,7 +406,9 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
-// Récupérer tous les livres de la bibliothèque
+// --- GESTION DE LA BIBLIOTHÈQUE ---
+
+// 1. Récupérer tous les livres de la bibliothèque
 app.get('/api/bibliotheque', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM bibliotheque ORDER BY date_ajout DESC');
@@ -414,41 +419,22 @@ app.get('/api/bibliotheque', async (req, res) => {
     }
 });
 
-// Ajouter un livre (pour votre tableau de bord administrateur)
-app.post('/api/bibliotheque', async (req, res) => {
-    const { titre, auteur, categorie, fichier_url } = req.body;
-    try {
-        const query = 'INSERT INTO bibliotheque (titre, auteur, categorie, fichier_url) VALUES ($1, $2, $3, $4) RETURNING *';
-        const values = [titre, auteur, categorie, fichier_url];
-        const result = await pool.query(query, values);
-        res.status(201).json({ message: "Livre ajouté avec succès", livre: result.rows[0] });
-    } catch (error) {
-        console.error("Erreur lors de l'ajout du livre:", error);
-        res.status(500).json({ error: "Erreur serveur" });
-    }
-});
-
-const multer = require('multer');
-const upload = multer({ dest: 'public/uploads/' }); // Dossier où stocker les fichiers locaux
-
-// Route pour publier un document dans la bibliothèque
-app.post('/api/bibliotheque', upload.single('fichier_pdf'), async (req, res) => {
+// 2. Publier un document (Gère le fichier PDF local OU le lien URL)
+app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res) => {
     try {
         const { titre, auteur, categorie, fichier_url } = req.body;
 
-        // Déterminer le lien final : soit le fichier uploadé localement, soit le lien collé
         let lienFinal = fichier_url || '';
         if (req.file) {
             lienFinal = `/uploads/${req.file.filename}`;
         }
 
-        // Exemple avec votre base de données (adaptez selon votre configuration Pool Neon)
-        await pool.query(
-            'INSERT INTO bibliotheque (titre, auteur, categorie, fichier) VALUES ($1, $2, $3, $4)',
-            [titre, auteur, categorie, lienFinal]
-        );
+        const query = 'INSERT INTO bibliotheque (titre, auteur, categorie, fichier) VALUES ($1, $2, $3, $4) RETURNING *';
+        const values = [titre, auteur, categorie, lienFinal];
+        
+        const result = await pool.query(query, values);
 
-        res.status(200).json({ success: true, message: "Document ajouté avec succès !" });
+        res.status(200).json({ success: true, message: "Document ajouté avec succès !", livre: result.rows[0] });
     } catch (error) {
         console.error("Erreur serveur bibliotheque :", error);
         res.status(500).json({ error: error.message });
