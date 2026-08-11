@@ -429,7 +429,8 @@ app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res)
             lienFinal = `/uploads/${req.file.filename}`;
         }
 
-        const query = 'INSERT INTO bibliotheque (titre, auteur, categorie, fichier) VALUES ($1, $2, $3, $4) RETURNING *';
+        // On enregistre directement dans 'fichier_url' pour que les boutons de téléchargement retrouvent leur chemin
+        const query = 'INSERT INTO bibliotheque (titre, auteur, categorie, fichier_url) VALUES ($1, $2, $3, $4) RETURNING *';
         const values = [titre, auteur, categorie, lienFinal];
         
         const result = await pool.query(query, values);
