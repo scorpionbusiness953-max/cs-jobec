@@ -206,8 +206,13 @@
 
             <div class="file-section">
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label for="fichier_pdf">📄 Téléverser un fichier PDF (depuis votre appareil)</label>
-                    <input type="file" id="fichier_pdf" accept=".pdf" required>
+                    <label for="fichier_pdf">📄 Option 1 : Téléverser un fichier PDF (depuis votre appareil)</label>
+                    <input type="file" id="fichier_pdf" accept=".pdf">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="fichier_url">🔗 OU Option 2 : Coller un lien (Google Drive, Dropbox, etc.)</label>
+                    <input type="text" id="fichier_url" placeholder="Ex: https://drive.google.com/file/d/...">
                 </div>
             </div>
 
@@ -225,7 +230,7 @@
             const authMsg = document.getElementById('auth-message');
 
             if (saisie === MOT_DE_PASSE_SECRET) {
-                // Masquer la boîte de connexion et afficher le formulaire
+                // Masquer la boîte de connexion et afficher le formulaire avec une transition propre
                 document.getElementById('authBox').classList.add('hidden');
                 document.getElementById('formBox').classList.remove('hidden');
             } else {
@@ -245,15 +250,22 @@
         document.getElementById('addBookForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
+            // Utilisation de FormData pour supporter à la fois les champs texte et l'envoi de fichier
             const formData = new FormData();
             formData.append('titre', document.getElementById('titre').value);
             formData.append('auteur', document.getElementById('auteur').value);
             formData.append('categorie', document.getElementById('categorie').value);
 
-            // Récupérer le fichier PDF
+            // 1. Récupérer le fichier PDF s'il a été sélectionné depuis l'appareil
             const fichierPdf = document.getElementById('fichier_pdf').files[0];
             if (fichierPdf) {
                 formData.append('fichier_pdf', fichierPdf);
+            }
+
+            // 2. Récupérer le lien texte s'il a été collé
+            const fichierUrl = document.getElementById('fichier_url').value;
+            if (fichierUrl) {
+                formData.append('fichier_url', fichierUrl);
             }
 
             const msgDiv = document.getElementById('message');
@@ -263,6 +275,8 @@
             try {
                 const response = await fetch('/api/bibliotheque', {
                     method: 'POST',
+                    // IMPORTANT : Ne pas mettre de header 'Content-Type' avec FormData, 
+                    // le navigateur le gère tout seul avec le bon "boundary".
                     body: formData
                 });
 
