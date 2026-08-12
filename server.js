@@ -7,6 +7,7 @@ import axios from 'axios';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import path from 'path';
 
 dotenv.config();
 
@@ -64,11 +65,23 @@ async function sendWhatsAppNotification(to, messageText) {
   }
 }
 
-// Configuration de Multer (stockage mémoire)
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// Configuration de Multer : 
+// 1. Pour le personnel (stockage en mémoire pour insertion en base de données)
+const uploadMemory = multer({ storage: multer.memoryStorage() });
 
-// Connexion à la base de données Neon (avec options de robustesse)
+// 2. Pour la bibliothèque (stockage disque avec conservation de l'extension d'origine .pdf)
+const storageDisk = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const uploadDisk = multer({ storage: storageDisk });
+
+// Connexion à la base de données Neon (avec options de robustesse et SSL strict)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
@@ -153,7 +166,7 @@ app.get('/api/personnels', async (req, res) => {
   }
 });
 
-app.post('/api/personnels', upload.fields([
+app.post('/api/personnels', uploadMemory.fields([
   { name: 'photo', maxCount: 1 },
   { name: 'dossier_pdf', maxCount: 1 }
 ]), async (req, res) => {
@@ -189,7 +202,7 @@ app.post('/api/personnels', upload.fields([
   }
 });
 
-app.put('/api/personnels/:id', upload.fields([
+app.put('/api/personnels/:id', uploadMemory.fields([
   { name: 'photo', maxCount: 1 },
   { name: 'dossier_pdf', maxCount: 1 }
 ]), async (req, res) => {
@@ -403,7 +416,9 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
-// Récupérer tous les livres de la bibliothèque
+// --- GESTION DE LA BIBLIOTHÈQUE ---
+
+// 1. Récupérer tous les livres de la bibliothèque
 app.get('/api/bibliotheque', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM bibliotheque ORDER BY date_ajout DESC');
@@ -414,20 +429,27 @@ app.get('/api/bibliotheque', async (req, res) => {
     }
 });
 
-// Ajouter un livre (pour votre tableau de bord administrateur)
-app.post('/api/bibliotheque', async (req, res) => {
-    const { titre, auteur, categorie, fichier_url } = req.body;
+// 2. Publier un document (Gère le fichier PDF local)
+app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res) => {
     try {
+        const { titre, auteur, categorie } = req.body;
+
+        let lienFinal = '';
+        if (req.file) {
+            lienFinal = `/uploads/${req.file.filename}`;
+        }
+
         const query = 'INSERT INTO bibliotheque (titre, auteur, categorie, fichier_url) VALUES ($1, $2, $3, $4) RETURNING *';
-        const values = [titre, auteur, categorie, fichier_url];
+        const values = [titre, auteur, categorie, lienFinal];
+        
         const result = await pool.query(query, values);
-        res.status(201).json({ message: "Livre ajouté avec succès", livre: result.rows[0] });
+
+        res.status(200).json({ success: true, message: "Document ajouté avec succès !", livre: result.rows[0] });
     } catch (error) {
-        console.error("Erreur lors de l'ajout du livre:", error);
-        res.status(500).json({ error: "Erreur serveur" });
+        console.error("Erreur serveur bibliotheque :", error);
+        res.status(500).json({ error: error.message });
     }
 });
-
 
 // --- LANCEMENT DU SERVEUR ---
 const PORT = process.env.PORT || 3000;
