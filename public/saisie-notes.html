@@ -163,7 +163,7 @@
             };
 
             try {
-                const response = await fetch('http://localhost:3000/api/ajouter-note', {
+                const response = await fetch('/api/ajouter-note', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
