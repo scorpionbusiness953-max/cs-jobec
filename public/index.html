@@ -14,7 +14,7 @@
             --light-gray: #f8f9fa;
             --white: #ffffff;
             --text-color: #333333;
-            --transition: all 0.3s ease;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -28,11 +28,13 @@
             background-color: var(--white); 
             color: var(--text-color); 
             line-height: 1.7; 
+            overflow-x: hidden;
         }
 
         /* BARRE DE NAVIGATION */
         nav {
-            background: var(--white);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 15px 5%;
             display: flex;
             justify-content: space-between;
@@ -40,8 +42,13 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
         }
 
         .nav-logo {
@@ -53,9 +60,28 @@
         .nav-logo:hover { transform: scale(1.05); }
 
         .nav-links { list-style: none; display: flex; align-items: center; }
-        .nav-links li { margin-left: 2rem; }
-        .nav-links a { color: var(--text-color); text-decoration: none; font-weight: 500; transition: var(--transition); font-size: 0.95rem; }
-        .nav-links a:hover { color: var(--gold); }
+        .nav-links li { margin-left: 1.8rem; }
+        .nav-links a { 
+            color: var(--text-color); 
+            text-decoration: none; 
+            font-weight: 500; 
+            transition: var(--transition); 
+            font-size: 0.92rem; 
+            position: relative;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--gold);
+            transition: var(--transition);
+        }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
 
         /* Bouton Menu Hamburger pour Mobile */
         .menu-toggle {
@@ -74,10 +100,10 @@
             transition: var(--transition);
         }
 
-        /* SECTION HERO (ACCUEIL) - FOND CLAIR */
+        /* SECTION HERO (ACCUEIL) */
         .hero {
-            background-color: var(--white);
-            padding: 80px 8%;
+            background: linear-gradient(135deg, #fdfbf7 0%, var(--white) 100%);
+            padding: 90px 8%;
             min-height: 85vh;
             display: flex;
             align-items: center;
@@ -96,14 +122,29 @@
         .hero-image {
             flex: 1.1;
             min-width: 320px;
+            position: relative;
+        }
+
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: 15px;
+            bottom: 15px;
+            border: 2px solid var(--gold);
+            border-radius: 24px;
+            z-index: 0;
+            opacity: 0.5;
         }
 
         .hero-image img {
             width: 100%;
             height: auto;
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,33,71,0.12);
-            border: 2px solid rgba(0, 33, 71, 0.08);
+            box-shadow: 0 20px 40px rgba(0,33,71,0.15);
+            position: relative;
+            z-index: 1;
             display: block;
         }
 
@@ -115,7 +156,7 @@
         .hero-subtitle {
             display: inline-block;
             font-weight: 600;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             margin-bottom: 15px;
             color: var(--gold);
             font-size: 0.8rem;
@@ -123,7 +164,7 @@
         }
 
         .hero-content h1 {
-            font-size: 3.5rem;
+            font-size: 3.4rem;
             line-height: 1.15;
             margin-bottom: 20px;
             font-weight: 700;
@@ -131,83 +172,80 @@
         }
 
         .hero-description {
-            font-size: 1.02rem;
+            font-size: 1.05rem;
             margin-bottom: 35px;
-            line-height: 1.6;
+            line-height: 1.7;
             color: #555555;
         }
         
         .btn-inscription {
             background: var(--gold);
             color: var(--primary-blue);
-            padding: 0.85rem 2.2rem;
+            padding: 0.9rem 2.4rem;
             text-decoration: none;
             font-weight: 700;
             border-radius: 50px;
             display: inline-block;
             transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
             font-size: 0.95rem;
         }
-        .btn-inscription:hover { background: var(--primary-blue); color: var(--white); transform: translateY(-3px); }
+        .btn-inscription:hover { background: var(--primary-blue); color: var(--white); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,33,71,0.2); }
 
         /* SECTION SERVICES / CYCLES */
-        .cycles { padding: 6rem 10%; text-align: center; background-color: var(--light-gray); color: var(--text-color); }
-        .section-title { font-size: 2.3rem; margin-bottom: 1rem; color: var(--primary-blue); font-weight: 700; }
+        .cycles { padding: 7rem 8%; text-align: center; background-color: var(--light-gray); }
+        .section-title { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary-blue); font-weight: 700; letter-spacing: -0.5px; }
         
         .grid-cycles {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3.5rem;
         }
 
         .card {
             background: var(--white);
-            padding: 2.5rem 2rem;
-            border-radius: 16px;
+            padding: 3rem 2.2rem;
+            border-radius: 20px;
             border-bottom: 4px solid var(--gold);
             transition: var(--transition);
             text-align: left;
-            border-top: 1px solid rgba(0,0,0,0.03);
-            border-left: 1px solid rgba(0,0,0,0.03);
-            border-right: 1px solid rgba(0,0,0,0.03);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border-top: 1px solid rgba(0,0,0,0.02);
+            border-left: 1px solid rgba(0,0,0,0.02);
+            border-right: 1px solid rgba(0,0,0,0.02);
         }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,33,71,0.08); }
-        .card h3 { color: var(--primary-blue); margin-bottom: 1rem; font-size: 1.35rem; font-weight: 600; }
-        .card p { color: #555; font-size: 0.95rem; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,33,71,0.08); }
+        .card h3 { color: var(--primary-blue); margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600; }
+        .card p { color: #666; font-size: 0.95rem; }
 
-        /* MOT DU PROMOTEUR PROFESSIONNEL */
+        /* MOT DU PROMOTEUR */
         .promoteur-section {
-            padding: 6rem 10%;
+            padding: 7rem 8%;
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
             color: white;
             position: relative;
-            overflow: hidden;
         }
         .container-pro {
             display: flex;
             align-items: center;
             gap: 60px;
             flex-wrap: wrap;
-            position: relative;
-            z-index: 2;
+            max-width: 1300px;
+            margin: 0 auto;
         }
-        .pro-text { flex: 1.5; min-width: 300px; }
-        .pro-img { flex: 1; text-align: center; min-width: 260px; }
+        .pro-text { flex: 1.5; min-width: 320px; }
+        .pro-img { flex: 1; text-align: center; min-width: 280px; }
         
         .quote {
             font-style: italic;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             border-left: 4px solid var(--gold);
-            padding-left: 24px;
+            padding: 20px 24px;
             margin: 25px 0;
             line-height: 1.8;
-            background: rgba(255, 255, 255, 0.03);
-            padding-top: 15px;
-            padding-bottom: 15px;
-            border-radius: 0 8px 8px 0;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 0 12px 12px 0;
             color: #fcfcfc;
         }
         .pro-text p {
@@ -219,39 +257,38 @@
         .pro-name { margin-top: 25px; font-size: 1.05rem; }
         .pro-photo {
             width: 100%;
-            max-width: 300px;
+            max-width: 320px;
             height: auto;
             border-radius: 20px;
             border: 4px solid var(--gold);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             transition: var(--transition);
         }
         .pro-photo:hover { transform: scale(1.02); }
 
         /* ATOUTS */
         .atouts {
-            padding: 6rem 10%;
+            padding: 7rem 8%;
             background-color: var(--white);
-            color: var(--text-color);
             text-align: center;
         }
         .grid-atouts {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            gap: 2.5rem;
+            margin-top: 3.5rem;
+            text-align: left;
         }
         .atout-card {
-            padding: 2.5rem 2rem;
+            padding: 3rem 2.2rem;
             background: var(--light-gray);
             border-radius: 20px;
             transition: var(--transition);
             border: 1px solid #eee;
-            text-align: left;
         }
         .atout-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.06);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
             border-color: var(--gold);
             background: var(--white);
         }
@@ -261,28 +298,29 @@
 
         /* NOS PROJETS */
         .projets {
-            padding: 6rem 10%;
+            padding: 7rem 8%;
             background-color: var(--light-gray);
-            color: var(--text-color);
         }
         .grid-projets {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3.5rem;
+            max-width: 1300px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .projet-card {
             background: #fff;
             border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 30px;
-            position: relative;
+            border-radius: 20px;
+            padding: 35px;
             transition: var(--transition);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
         .projet-card:hover {
             border-color: var(--gold);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.06);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
             transform: translateY(-5px);
         }
         .badge {
@@ -295,7 +333,7 @@
             margin-bottom: 15px;
             letter-spacing: 0.5px;
         }
-        .realise { background: #d4edda; color: #155724; }
+        .réalisé { background: #d4edda; color: #155724; }
         .en-cours { background: #fff3cd; color: #856404; }
         .futur { background: #cce5ff; color: #004085; }
         .projet-info h3 { margin: 0 0 10px 0; color: var(--primary-blue); font-size: 1.25rem; font-weight: 600; }
@@ -303,21 +341,24 @@
 
         /* TEMOIGNAGES & TIKTOK */
         .temoignages {
-            padding: 6rem 10%;
+            padding: 7rem 8%;
             background-color: var(--primary-blue);
             color: white;
             text-align: center;
         }
         .grid-temoignages {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-top: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3.5rem;
+            max-width: 1300px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .temoin-card {
             background: rgba(255, 255, 255, 0.05);
-            padding: 35px 30px;
-            border-radius: 16px;
+            padding: 40px 30px;
+            border-radius: 20px;
             border: 1px solid rgba(212, 175, 55, 0.2);
             text-align: left;
             transition: var(--transition);
@@ -344,51 +385,52 @@
             background-color: #FF0000;
             color: white;
             text-decoration: none;
-            padding: 12px 28px;
+            padding: 12px 30px;
             border-radius: 30px;
             font-weight: bold;
             transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
             font-size: 0.95rem;
         }
         .btn-youtube:hover { background-color: #cc0000; transform: scale(1.05); }
         .play-icon { margin-right: 10px; font-size: 1.1rem; }
 
-        /* SECTION EQUIPE STYLE CLAIR & PROPRE */
+        /* SECTION EQUIPE */
         .equipe {
-            padding: 6rem 10%;
+            padding: 7rem 8%;
             background-color: var(--white);
-            color: var(--text-color);
             text-align: center;
         }
         .grid-equipe {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2.5rem;
-            margin-top: 3rem;
+            margin-top: 3.5rem;
+            max-width: 1300px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .equipe-card {
             background: var(--light-gray);
-            padding: 3rem 2rem;
+            padding: 3.5rem 2rem;
             border-radius: 20px;
             border: 1px solid #e2e8f0;
             transition: var(--transition);
-            text-align: center;
         }
         .equipe-card:hover { 
             transform: translateY(-8px); 
             border-color: var(--gold); 
-            box-shadow: 0 10px 25px rgba(0,33,71,0.08);
+            box-shadow: 0 15px 30px rgba(0,33,71,0.08);
             background: var(--white);
         }
         .equipe-img {
-            width: 130px;
-            height: 130px;
+            width: 140px;
+            height: 140px;
             margin: 0 auto 1.8rem;
             border-radius: 50%;
             overflow: hidden;
             border: 3px solid var(--gold);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         .equipe-img img { width: 100%; height: 100%; object-fit: cover; }
         .equipe-card h3 { 
@@ -398,7 +440,7 @@
             font-weight: 600; 
         }
         .poste { 
-            color: #555; 
+            color: #666; 
             font-weight: 600; 
             font-size: 0.75rem; 
             text-transform: uppercase; 
@@ -408,7 +450,7 @@
 
         .btn-general-personnel {
             display: inline-block;
-            padding: 12px 35px;
+            padding: 14px 35px;
             border: 2px solid var(--primary-blue);
             color: var(--primary-blue);
             text-decoration: none;
@@ -423,32 +465,35 @@
 
         /* ÉVÉNEMENTS */
         .evenements {
-            padding: 6rem 10%;
+            padding: 7rem 8%;
             background-color: var(--light-gray);
-            color: var(--text-color);
             text-align: center;
         }
         .grid-evenements {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3.5rem;
             text-align: left;
+            max-width: 1300px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .event-card {
             background: var(--white);
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
             border: 1px solid #eaeaea;
             transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
         }
         .event-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
             border-color: var(--gold);
         }
         .event-img {
-            height: 180px;
+            height: 200px;
             width: 100%;
             background-color: var(--primary-blue);
             position: relative;
@@ -459,7 +504,7 @@
             object-fit: cover;
         }
         .event-body {
-            padding: 25px;
+            padding: 30px;
         }
         .event-date-tag {
             color: var(--gold);
@@ -470,7 +515,7 @@
         }
         .event-body h3 {
             color: var(--primary-blue);
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             margin-bottom: 10px;
             font-weight: 600;
         }
@@ -480,151 +525,27 @@
             margin-bottom: 15px;
         }
 
-        /* SECTION GALERIE SOUS FORME DE SLIDER */
-        .galerie {
-            padding: 6rem 10%;
-            background-color: var(--white);
-            color: var(--text-color);
-            text-align: center;
-        }
-        .slider-container {
-            position: relative;
-            max-width: 900px;
-            margin: 3rem auto 0;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            background: #000;
-        }
-        .slider-track {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-            height: 450px;
-        }
-        .slide {
-            min-width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .slide-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,33,71,0.9), transparent);
-            color: white;
-            padding: 30px 20px 20px;
-            text-align: left;
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-        /* Boutons du Slider */
-        .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(0, 33, 71, 0.6);
-            color: white;
-            border: 2px solid var(--gold);
-            padding: 12px 16px;
-            cursor: pointer;
-            border-radius: 50%;
-            transition: var(--transition);
-            z-index: 10;
-            font-size: 1rem;
-        }
-        .slider-btn:hover {
-            background-color: var(--gold);
-            color: var(--primary-blue);
-        }
-        .prev-btn { left: 20px; }
-        .next-btn { right: 20px; }
-
-        /* Indicateurs (points) du Slider */
-        .slider-dots {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #cbd5e1;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .dot.active {
-            background-color: var(--gold);
-            width: 30px;
-            border-radius: 6px;
-        }
-
-        /* COMMUNIQUES */
-        .communiques {
-            padding: 6rem 10%;
-            background-color: var(--light-gray);
-            color: var(--text-color);
-        }
-        .container-comm { max-width: 900px; margin: 0 auto; text-align: center; }
-        .list-communiques { margin-top: 3rem; text-align: left; }
-        .comm-item {
-            display: flex;
-            background: var(--white);
-            padding: 22px 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border-left: 5px solid var(--gold);
-            align-items: center;
-            transition: var(--transition);
-            border-top: 1px solid #eaeaea;
-            border-right: 1px solid #eaeaea;
-            border-bottom: 1px solid #eaeaea;
-        }
-        .comm-item:hover { transform: translateX(8px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
-        .comm-date {
-            background: var(--primary-blue);
-            color: white;
-            padding: 12px;
-            border-radius: 10px;
-            min-width: 80px;
-            text-align: center;
-            margin-right: 25px;
-        }
-        .comm-date .jour { font-size: 1.5rem; font-weight: 700; display: block; line-height: 1; }
-        .comm-date .mois { font-size: 0.75rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
-        .comm-text h3 { margin: 0 0 6px 0; color: var(--primary-blue); font-size: 1.15rem; font-weight: 600; }
-        .comm-text p { margin: 0; color: #666; font-size: 0.92rem; }
-
         /* FOOTER */
         footer {
             background: var(--primary-dark);
             color: var(--white);
             text-align: center;
-            padding: 3rem 2rem;
+            padding: 3.5rem 2rem;
             border-top: 3px solid var(--gold);
         }
         footer p { font-size: 0.9rem; opacity: 0.9; }
 
-        /* RESPONSIVE DESIGN (MOBILE) */
+        /* RESPONSIVE DESIGN */
         @media (max-width: 768px) {
             .hero-content h1 { font-size: 2.4rem; }
             .section-title { font-size: 2rem; }
-            .slider-track { height: 300px; }
             
             .menu-toggle { display: flex; }
             .nav-links {
                 display: none;
                 flex-direction: column;
                 position: absolute;
-                top: 71px;
+                top: 100%;
                 left: 0;
                 width: 100%;
                 background-color: var(--white);
@@ -635,9 +556,6 @@
             }
             .nav-links.active { display: flex; }
             .nav-links li { margin: 12px 0; }
-            .comm-item { flex-direction: column; align-items: flex-start; }
-            .comm-date { margin-right: 0; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; padding: 8px 15px; min-width: auto; }
-            .comm-date .jour { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -655,17 +573,16 @@
         </button>
 
         <ul class="nav-links" id="nav-list">
-            <li><a href="index.html" style="color: var(--gold); font-weight: 600;">Accueil</a></li>
+            <li><a href="index.html" class="active">Accueil</a></li>
             <li><a href="bibliotheque.html">Bibliothèque</a></li>
             <li><a href="espace-parent.html">Espace Parent</a></li>
             <li><a href="admin.html">Espace RH</a></li>
-            <li></li><a href="admin-bibliotheque.html" class="back-link">Espace Enseignant</a></li>
+            <li><a href="admin-bibliotheque.html">Espace Enseignant</a></li>
             <li><a href="contact.html">Contact</a></li>
-            
         </ul>
     </nav>
 
-    <!-- SECTION HERO CLAIR -->
+    <!-- SECTION HERO -->
     <section class="hero">
         <div class="hero-container">
             <div class="hero-image">
@@ -680,10 +597,11 @@
         </div>
     </section>
 
+    <!-- CYCLES -->
     <section class="cycles">
         <h2 class="section-title">Nos Cycles d'Enseignement</h2>
         <p style="color: #666; max-width: 600px; margin: 0 auto;">Un parcours complet de la petite enfance jusqu'aux portes de l'université.</p>
-        <div class="grid-cycles">
+        <div class="grid-cycles" style="max-width: 1300px; margin-left: auto; margin-right: auto;">
             <div class="card">
                 <h3>Maternel</h3>
                 <p>Éveil, créativité et socialisation dans un cadre ludique et bienveillant.</p>
@@ -699,10 +617,11 @@
         </div>
     </section>
 
+    <!-- MOT DU PROMOTEUR -->
     <section class="promoteur-section">
         <div class="container-pro">
             <div class="pro-text">
-                <h2 class="section-title" style="color: white;">Mot du Promoteur</h2>
+                <h2 class="section-title" style="color: white; text-align: left;">Mot du Promoteur</h2>
                 <div class="quote">
                     "Nous avons toujours eu à cœur de contribuer au développement et au rayonnement de notre pays. Nous sommes convaincus que cet objectif passe avant tout par la formation d’une élite compétente, responsable et porteuse de valeurs, grâce à une éducation de qualité."
                 </div>
@@ -713,7 +632,7 @@
                     À travers une pédagogie moderne, un encadrement rigoureux et la transmission de solides valeurs humaines, nous aspirons à contribuer à une transformation durable de notre société.
                 </p>
                 <div>
-                    <a href="historique.html" class="btn-general-personnel" style="border-color:var(--gold); color:var(--gold);">Découvrir l'historique complet</a>
+                    <a href="historique.html" class="btn-general-personnel" style="border-color:var(--gold); color:var(--gold); margin-top: 25px;">Découvrir l'historique complet</a>
                 </div>
                 <p class="pro-name"><strong>Direction Générale</strong><br><span style="color:var(--gold)">Complexe Scolaire Jobec</span></p>
             </div>
@@ -723,10 +642,11 @@
         </div>
     </section>
 
+    <!-- ATOUTS -->
     <section class="atouts">
         <h2 class="section-title">Pourquoi nous choisir ?</h2>
         <p style="color: #666;">Nos engagements pour la réussite de vos enfants.</p>
-        <div class="grid-atouts">
+        <div class="grid-atouts" style="max-width: 1300px; margin-left: auto; margin-right: auto;">
             <div class="atout-card">
                 <div class="icon">💻</div>
                 <h3>Informatique Avancée</h3>
@@ -741,46 +661,46 @@
                 <div class="icon">🛡️</div>
                 <h3>Discipline & Rigueur</h3>
                 <p>Un environnement sécurisé et des valeurs morales fortes pour une éducation intégrale.</p>
-            </div></br>
-            <div>
-                    <a href="https://edu-nc.gouv.cd/programmes-nationaux" class="btn-general-personnel" style="border-color:var(--gold); color:var(--gold);">Voir les programmes-nationaux</a>
             </div>
+        </div>
+        <div style="margin-top: 40px;">
+            <a href="https://edu-nc.gouv.cd/programmes-nationaux" target="_blank" class="btn-general-personnel" style="border-color:var(--primary-blue); color:var(--primary-blue);">Voir les programmes nationaux</a>
         </div>
     </section>
 
+    <!-- PROJETS -->
     <section class="projets">
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <h2 class="section-title" style="text-align: center;">Vision & Projets 2026</h2>
-            <p style="text-align: center; color: #666;">Ce que nous bâtissons pour l'excellence de nos élèves.</p>
-            
-            <div class="grid-projets">
-                <div class="projet-card">
-                    <div class="badge realise">Réalisé</div>
-                    <div class="projet-info">
-                        <h3>Digitalisation du Suivi</h3>
-                        <p>Mise en place du système informatique de gestion des notes, des paiements et du portail web.</p>
-                    </div>
+        <h2 class="section-title" style="text-align: center;">Vision & Projets 2026</h2>
+        <p style="text-align: center; color: #666;">Ce que nous bâtissons pour l'excellence de nos élèves.</p>
+        
+        <div class="grid-projets">
+            <div class="projet-card">
+                <div class="badge réalisé">Réalisé</div>
+                <div class="projet-info">
+                    <h3>Digitalisation du Suivi</h3>
+                    <p>Mise en place du système informatique de gestion des notes, des paiements et du portail web.</p>
                 </div>
+            </div>
 
-                <div class="projet-card">
-                    <div class="badge en-cours">En cours</div>
-                    <div class="projet-info">
-                        <h3>Nouveau Laboratoire</h3>
-                        <p>Installation d'une salle informatique de pointe équipée pour les élèves.</p>
-                    </div>
+            <div class="projet-card">
+                <div class="badge en-cours">En cours</div>
+                <div class="projet-info">
+                    <h3>Nouveau Laboratoire</h3>
+                    <p>Installation d'une salle informatique de pointe équipée pour les élèves.</p>
                 </div>
+            </div>
 
-                <div class="projet-card">
-                    <div class="badge futur">À venir</div>
-                    <div class="projet-info">
-                        <h3>Bibliothèque Moderne</h3>
-                        <p>Construction d'un espace de lecture et de recherche bilingue pour le cycle secondaire.</p>
-                    </div>
+            <div class="projet-card">
+                <div class="badge futur">À venir</div>
+                <div class="projet-info">
+                    <h3>Bibliothèque Moderne</h3>
+                    <p>Construction d'un espace de lecture et de recherche bilingue pour le cycle secondaire.</p>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- TEMOIGNAGES -->
     <section class="temoignages">
         <h2 class="section-title" style="color: white;">Ce que disent les parents</h2>
         <p style="opacity: 0.8; max-width: 600px; margin: 0 auto;">La satisfaction de notre communauté est notre plus belle référence.</p>
@@ -821,10 +741,10 @@
         </div>
     </section>
 
-    <!-- SECTION EQUIPE -->
+    <!-- EQUIPE -->
     <section class="equipe">
         <h2 class="section-title">Notre Équipe Dirigeante</h2>
-        <p style="color: #666; margin-bottom: -15px;">Des professionnels dévoués à l'encadrement de vos enfants.</p>
+        <p style="color: #666;">Des professionnels dévoués à l'encadrement de vos enfants.</p>
         <div class="grid-equipe">
             <div class="equipe-card">
                 <div class="equipe-img">
@@ -855,187 +775,19 @@
         </div>
     </section>
 
-    <!-- SECTION ÉVÉNEMENTS À VENIR -->
-    <section class="evenements">
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <h2 class="section-title">Prochains Événements</h2>
-            <p style="color: #666;">Ne manquez pas les temps forts de la vie scolaire.</p>
-            <div class="grid-evenements">
-                <div class="event-card">
-                    <div class="event-img">
-                        <img src="images/ev1.jpeg" alt="Journée Culturelle">
-                    </div>
-                    <div class="event-body">
-                        <div class="event-date-tag">02 Octobre 2026</div>
-                        <h3>Journée Officielle de la rentrée Scolaire</h3>
-                        <p>Expositions, danses traditionnelles et représentations théâtrales par nos élèves de tous les cycles.</p>
-                    </div>
-                </div>
-                <div class="event-card">
-                    <div class="event-img">
-                        <img src="images/event2.jpeg" alt="Compétition Sportive">
-                    </div>
-                    <div class="event-body">
-                        <div class="event-date-tag">25 Juin 2026</div>
-                        <h3>Grand Tournoi Inter-Classes</h3>
-                        <p>Compétitions de football et de basketball sur le terrain de l'établissement. Venez encourager vos enfants !</p>
-                    </div>
-                </div>
-                <div class="event-card">
-                    <div class="event-img">
-                        <img src="images/event3.jpeg" alt="Fin d'année">
-                    </div>
-                    <div class="event-body">
-                        <div class="event-date-tag">15 Juillet 2026</div>
-                        <h3>Clôture de l'Année Scolaire & Palmarès</h3>
-                        <p>Cérémonie officielle de remise des bulletins, des prix d'excellence et proclamation des résultats.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION GALERIE SOUS FORME DE SLIDER -->
-    <section class="galerie">
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <h2 class="section-title">Galerie Photos</h2>
-            <p style="color: #666;">Immergez-vous dans le quotidien et les infrastructures du CS JOBEC.</p>
-            
-            <div class="slider-container">
-                <div class="slider-track" id="sliderTrack">
-                    <div class="slide">
-                        <img src="images/g1.jpeg" alt="Salle de classe">
-                        <div class="slide-caption">Journée officielle de la porte ouverte</div>
-                    </div>
-                    <div class="slide">
-                        <img src="images/g2.jpeg" alt="Laboratoire informatique">
-                        <div class="slide-caption">Journée officielle de la porte ouverte</div>
-                    </div>
-                    <div class="slide">
-                        <img src="images/g3.jpeg" alt="Cour de récréation">
-                        <div class="slide-caption">Journée officielle de la porte ouverte</div>
-                    </div>
-                    <div class="slide">
-                        <img src="images/g4.jpeg" alt="Activités parascolaires">
-                        <div class="slide-caption">Journée officielle de la porte ouverte</div>
-                    </div>
-                    <div class="slide">
-                        <img src="images/g6.jpeg" alt="Activités parascolaires">
-                        <div class="slide-caption">Journée officielle de la porte ouverte</div>
-                    </div>
-                </div>
-
-                <button class="slider-btn prev-btn" id="prevBtn">&#10094;</button>
-                <button class="slider-btn next-btn" id="nextBtn">&#10095;</button>
-            </div>
-
-            <div class="slider-dots" id="sliderDots">
-                <span class="dot active" data-index="0"></span>
-                <span class="dot" data-index="1"></span>
-                <span class="dot" data-index="2"></span>
-                <span class="dot" data-index="3"></span>
-            </div>
-        </div>
-
-    </section>
-
-    <section class="communiques">
-        <div class="container-comm">
-            <h2 class="section-title">Avis & Communiqués</h2>
-            <p style="color: #666;">Restez informés de toutes nos actualités et événements.</p>
-            <div class="list-communiques">
-                <div class="comm-item">
-                    <div class="comm-date">
-                        <span class="jour">20</span>
-                        <span class="mois">Mai</span>
-                    </div>
-                    <div class="comm-text">
-                        <h3>Réunion des Parents d'élèves</h3>
-                        <p>La direction convoque tous les parents à la réunion trimestrielle ce samedi à 10h00 dans la grande salle.</p>
-                    </div>
-                </div>
-
-                <div class="comm-item">
-                    <div class="comm-date">
-                        <span class="jour">15</span>
-                        <span class="mois">Mai</span>
-                    </div>
-                    <div class="comm-text">
-                        <h3>Congé de l'Ascension</h3>
-                        <p>Nous informons les parents que les cours seront suspendus ce jeudi conformément au calendrier scolaire.</p>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top: 30px;">
-                <a href="annonces.html" class="btn-inscription">Voir toutes les annonces</a>
-            </div>
-        </div>
-    </section>
-
+    <!-- FOOTER -->
     <footer>
-        <p>&copy; 2026 Complexe Scolaire JOBEC - Tous droits réservés.</p>
-        <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 5px;">
-            Développé par le Département Informatique
-        </p>
+        <p>&copy; 2026 Complexe Scolaire JOBEC - Tous droits réservés. Bâti pour l'excellence.</p>
     </footer>
 
+    <!-- Script minimal pour le menu mobile -->
     <script>
-        // Menu Mobile Toggle
         const mobileMenu = document.getElementById('mobile-menu');
         const navList = document.getElementById('nav-list');
 
         mobileMenu.addEventListener('click', () => {
             navList.classList.toggle('active');
         });
-
-        // Script pour le Slider / Carrousel Galerie
-        const track = document.getElementById('sliderTrack');
-        const slides = Array.from(track.children);
-        const nextButton = document.getElementById('nextBtn');
-        const prevButton = document.getElementById('prevBtn');
-        const dotsNav = document.getElementById('sliderDots');
-        const dots = Array.from(dotsNav.children);
-
-        let currentIndex = 0;
-        const slideCount = slides.length;
-
-        function updateSlider(index) {
-            track.style.transform = `translateX(-${index * 100}%)`;
-            dots.forEach(dot => dot.classList.remove('active'));
-            dots[index].classList.add('active');
-        }
-
-        nextButton.addEventListener('click', () => {
-            currentIndex = (currentIndex + 1) % slideCount;
-            updateSlider(currentIndex);
-        });
-
-        prevButton.addEventListener('click', () => {
-            currentIndex = (currentIndex - 1 + slideCount) % slideCount;
-            updateSlider(currentIndex);
-        });
-
-        dots.forEach(dot => {
-            dot.addEventListener('click', (e) => {
-                currentIndex = parseInt(e.target.dataset.index);
-                updateSlider(currentIndex);
-            });
-        });
-
-        let slideInterval = setInterval(() => {
-            currentIndex = (currentIndex + 1) % slideCount;
-            updateSlider(currentIndex);
-        }, 4000);
-
-        const sliderContainer = document.querySelector('.slider-container');
-        sliderContainer.addEventListener('mouseenter', () => clearInterval(slideInterval));
-        sliderContainer.addEventListener('mouseleave', () => {
-            slideInterval = setInterval(() => {
-                currentIndex = (currentIndex + 1) % slideCount;
-                updateSlider(currentIndex);
-            }, 4000);
-        });
     </script>
-
 </body>
 </html>
