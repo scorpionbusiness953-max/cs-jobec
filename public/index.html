@@ -219,96 +219,6 @@
         .card h3 { color: var(--primary-blue); margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600; }
         .card p { color: #666; font-size: 0.95rem; }
 
-        /* SECTION AVIS ET COMMUNIQUÉS */
-        .communique-section {
-            padding: 6rem 8%;
-            background-color: var(--white);
-        }
-        .communique-container {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-        .grid-communiques {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        .communique-card {
-            background: var(--light-gray);
-            border-left: 5px solid var(--gold);
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
-            transition: var(--transition);
-        }
-        .communique-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.06); background: var(--white); }
-        .communique-date {
-            font-size: 0.8rem;
-            color: var(--gold);
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            display: block;
-        }
-        .communique-card h3 {
-            color: var(--primary-blue);
-            font-size: 1.2rem;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-        .communique-card p {
-            color: #555;
-            font-size: 0.92rem;
-            line-height: 1.6;
-        }
-
-        /* SECTION GALERIE PHOTO */
-        .galerie-section {
-            padding: 7rem 8%;
-            background-color: var(--light-gray);
-            text-align: center;
-        }
-        .grid-galerie {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3.5rem;
-            max-width: 1300px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .galerie-item {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            height: 260px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-            background: var(--primary-blue);
-        }
-        .galerie-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-        .galerie-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,33,71,0.9), transparent);
-            padding: 25px 20px 15px;
-            color: white;
-            text-align: left;
-            opacity: 0;
-            transition: var(--transition);
-        }
-        .galerie-item:hover img { transform: scale(1.1); }
-        .galerie-item:hover .galerie-overlay { opacity: 1; }
-        .galerie-overlay h4 { font-size: 1.05rem; font-weight: 600; color: var(--gold); margin-bottom: 4px; }
-        .galerie-overlay p { font-size: 0.82rem; opacity: 0.9; }
-
         /* MOT DU PROMOTEUR */
         .promoteur-section {
             padding: 7rem 8%;
@@ -485,6 +395,116 @@
         .btn-youtube:hover { background-color: #cc0000; transform: scale(1.05); }
         .play-icon { margin-right: 10px; font-size: 1.1rem; }
 
+        /* SECTION GALERIE SLIDER (EN BAS) */
+        .galerie-section {
+            padding: 7rem 8%;
+            background-color: var(--light-gray);
+            text-align: center;
+        }
+        .slider-container {
+            position: relative;
+            max-width: 900px;
+            margin: 3.5rem auto 0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            background: var(--primary-blue);
+        }
+        .slider-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 450px;
+        }
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,33,71,0.95), transparent);
+            padding: 30px 20px 20px;
+            color: white;
+            text-align: left;
+        }
+        .slide-caption h4 { color: var(--gold); font-size: 1.3rem; margin-bottom: 5px; }
+        .slide-caption p { font-size: 0.95rem; opacity: 0.9; }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 33, 71, 0.7);
+            color: white;
+            border: 2px solid var(--gold);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 10;
+        }
+        .slider-btn:hover { background: var(--gold); color: var(--primary-blue); }
+        .prev-btn { left: 20px; }
+        .next-btn { right: 20px; }
+
+        /* SECTION AVIS ET COMMUNIQUÉS (EN BAS) */
+        .communique-section {
+            padding: 6rem 8%;
+            background-color: var(--white);
+        }
+        .communique-container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .grid-communiques {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .communique-card {
+            background: var(--light-gray);
+            border-left: 5px solid var(--gold);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            transition: var(--transition);
+            text-align: left;
+        }
+        .communique-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.06); background: var(--white); }
+        .communique-date {
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .communique-card h3 {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .communique-card p {
+            color: #555;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
         /* SECTION EQUIPE */
         .equipe {
             padding: 7rem 8%;
@@ -567,6 +587,7 @@
         @media (max-width: 768px) {
             .hero-content h1 { font-size: 2.4rem; }
             .section-title { font-size: 2rem; }
+            .slider-track { height: 300px; }
             
             .menu-toggle { display: flex; }
             .nav-links {
@@ -641,62 +662,6 @@
             <div class="card">
                 <h3>Secondaire</h3>
                 <p>Orientation scientifique et littéraire avec un accent marqué sur l'informatique.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION AVIS & COMMUNIQUÉS -->
-    <section class="communique-section">
-        <div class="communique-container">
-            <h2 class="section-title" style="text-align: center;">Avis & Communiqués</h2>
-            <p style="text-align: center; color: #666;">Restez informés des dernières actualités et notes de la direction.</p>
-            
-            <div class="grid-communiques">
-                <div class="communique-card">
-                    <span class="communique-date">10 Août 2026</span>
-                    <h3>Rentrée Scolaire</h3>
-                    <p>Les inscriptions et réinscriptions pour l'année scolaire en cours se poursuivent tous les jours ouvrables de 08h00 à 14h00 au secrétariat.</p>
-                </div>
-                <div class="communique-card">
-                    <span class="communique-date">01 Août 2026</span>
-                    <h3>Réunion des Parents</h3>
-                    <p>Une grande assemblée générale d'information sera organisée le samedi prochain pour présenter les nouveaux projets numériques de l'établissement.</p>
-                </div>
-                <div class="communique-card">
-                    <span class="communique-date">15 Juillet 2026</span>
-                    <h3>Résultats des Examens</h3>
-                    <p>Félicitations à tous nos finalistes pour les excellents taux de réussite enregistrés aux épreuves d'État cette année encore !</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION GALERIE PHOTO -->
-    <section class="galerie-section">
-        <h2 class="section-title">Galerie Photo</h2>
-        <p style="color: #666;">Plongez au cœur de la vie quotidienne et des activités de notre école.</p>
-        
-        <div class="grid-galerie">
-            <div class="galerie-item">
-                <img src="images/baniere.jpeg" alt="Activités scolaires">
-                <div class="galerie-overlay">
-                    <h4>Vie Scolaire</h4>
-                    <p>Nos élèves épanouis dans l'enceinte de l'établissement</p>
-                </div>
-            </div>
-            <div class="galerie-item">
-                <img src="images/jobec.jpeg" alt="Cadre de l'école">
-                <div class="galerie-overlay">
-                    <h4>Infrastructures</h4>
-                    <p>Un cadre moderne propice à l'apprentissage</p>
-                </div>
-            </div>
-            <div class="galerie-item">
-                <img src="images/logo.jpeg" alt="Événements JOBEC">
-                <div class="galerie-overlay">
-                    <h4>Événements & Cérémonies</h4>
-                    <p>Moments forts de la communauté scolaire</p>
-                </div>
             </div>
         </div>
     </section>
@@ -825,6 +790,66 @@
         </div>
     </section>
 
+    <!-- SECTION GALERIE SLIDER (EN BAS) -->
+    <section class="galerie-section">
+        <h2 class="section-title">Galerie Photo</h2>
+        <p style="color: #666;">Plongez au cœur de la vie quotidienne et des activités de notre école.</p>
+        
+        <div class="slider-container">
+            <button class="slider-btn prev-btn" id="prevBtn">&#10094;</button>
+            <div class="slider-track" id="sliderTrack">
+                <div class="slide">
+                    <img src="images/baniere.jpeg" alt="Vie Scolaire">
+                    <div class="slide-caption">
+                        <h4>Vie Scolaire</h4>
+                        <p>Nos élèves épanouis dans l'enceinte de l'établissement</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="images/jobec.jpeg" alt="Infrastructures">
+                    <div class="slide-caption">
+                        <h4>Infrastructures</h4>
+                        <p>Un cadre moderne propice à l'apprentissage</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="images/logo.jpeg" alt="Événements">
+                    <div class="slide-caption">
+                        <h4>Événements & Cérémonies</h4>
+                        <p>Moments forts de la communauté scolaire</p>
+                    </div>
+                </div>
+            </div>
+            <button class="slider-btn next-btn" id="nextBtn">&#10095;</button>
+        </div>
+    </section>
+
+    <!-- SECTION AVIS & COMMUNIQUÉS (EN BAS) -->
+    <section class="communique-section">
+        <div class="communique-container">
+            <h2 class="section-title" style="text-align: center;">Avis & Communiqués</h2>
+            <p style="text-align: center; color: #666;">Restez informés des dernières actualités et notes de la direction.</p>
+            
+            <div class="grid-communiques">
+                <div class="communique-card">
+                    <span class="communique-date">10 Août 2026</span>
+                    <h3>Rentrée Scolaire</h3>
+                    <p>Les inscriptions et réinscriptions pour l'année scolaire en cours se poursuivent tous les jours ouvrables de 08h00 à 14h00 au secrétariat.</p>
+                </div>
+                <div class="communique-card">
+                    <span class="communique-date">01 Août 2026</span>
+                    <h3>Réunion des Parents</h3>
+                    <p>Une grande assemblée générale d'information sera organisée le samedi prochain pour présenter les nouveaux projets numériques de l'établissement.</p>
+                </div>
+                <div class="communique-card">
+                    <span class="communique-date">15 Juillet 2026</span>
+                    <h3>Résultats des Examens</h3>
+                    <p>Félicitations à tous nos finalistes pour les excellents taux de réussite enregistrés aux épreuves d'État cette année encore !</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- EQUIPE -->
     <section class="equipe">
         <h2 class="section-title">Notre Équipe Dirigeante</h2>
@@ -864,14 +889,42 @@
         <p>&copy; 2026 Complexe Scolaire JOBEC - Tous droits réservés. Bâti pour l'excellence.</p>
     </footer>
 
-    <!-- Script minimal pour le menu mobile -->
+    <!-- Scripts pour le menu mobile et le slider -->
     <script>
+        // Menu mobile
         const mobileMenu = document.getElementById('mobile-menu');
         const navList = document.getElementById('nav-list');
 
         mobileMenu.addEventListener('click', () => {
             navList.classList.toggle('active');
         });
+
+        // Carrousel / Slider Galerie
+        const track = document.getElementById('sliderTrack');
+        const slides = Array.from(track.children);
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        let currentIndex = 0;
+
+        function updateSlidePosition() {
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateSlidePosition();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            updateSlidePosition();
+        });
+
+        // Défilement automatique toutes les 4 secondes
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateSlidePosition();
+        }, 4000);
     </script>
 </body>
 </html>
