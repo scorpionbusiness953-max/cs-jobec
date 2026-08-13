@@ -219,6 +219,96 @@
         .card h3 { color: var(--primary-blue); margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600; }
         .card p { color: #666; font-size: 0.95rem; }
 
+        /* SECTION AVIS ET COMMUNIQUÉS */
+        .communique-section {
+            padding: 6rem 8%;
+            background-color: var(--white);
+        }
+        .communique-container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .grid-communiques {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .communique-card {
+            background: var(--light-gray);
+            border-left: 5px solid var(--gold);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            transition: var(--transition);
+        }
+        .communique-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.06); background: var(--white); }
+        .communique-date {
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .communique-card h3 {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .communique-card p {
+            color: #555;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        /* SECTION GALERIE PHOTO */
+        .galerie-section {
+            padding: 7rem 8%;
+            background-color: var(--light-gray);
+            text-align: center;
+        }
+        .grid-galerie {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3.5rem;
+            max-width: 1300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .galerie-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 260px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            background: var(--primary-blue);
+        }
+        .galerie-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        .galerie-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,33,71,0.9), transparent);
+            padding: 25px 20px 15px;
+            color: white;
+            text-align: left;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .galerie-item:hover img { transform: scale(1.1); }
+        .galerie-item:hover .galerie-overlay { opacity: 1; }
+        .galerie-overlay h4 { font-size: 1.05rem; font-weight: 600; color: var(--gold); margin-bottom: 4px; }
+        .galerie-overlay p { font-size: 0.82rem; opacity: 0.9; }
+
         /* MOT DU PROMOTEUR */
         .promoteur-section {
             padding: 7rem 8%;
@@ -463,68 +553,6 @@
         }
         .btn-general-personnel:hover { background: var(--primary-blue); color: var(--white); transform: translateY(-2px); }
 
-        /* ÉVÉNEMENTS */
-        .evenements {
-            padding: 7rem 8%;
-            background-color: var(--light-gray);
-            text-align: center;
-        }
-        .grid-evenements {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3.5rem;
-            text-align: left;
-            max-width: 1300px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .event-card {
-            background: var(--white);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid #eaeaea;
-            transition: var(--transition);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
-        }
-        .event-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            border-color: var(--gold);
-        }
-        .event-img {
-            height: 200px;
-            width: 100%;
-            background-color: var(--primary-blue);
-            position: relative;
-        }
-        .event-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .event-body {
-            padding: 30px;
-        }
-        .event-date-tag {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-        .event-body h3 {
-            color: var(--primary-blue);
-            font-size: 1.25rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-        .event-body p {
-            color: #666;
-            font-size: 0.92rem;
-            margin-bottom: 15px;
-        }
-
         /* FOOTER */
         footer {
             background: var(--primary-dark);
@@ -613,6 +641,62 @@
             <div class="card">
                 <h3>Secondaire</h3>
                 <p>Orientation scientifique et littéraire avec un accent marqué sur l'informatique.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION AVIS & COMMUNIQUÉS -->
+    <section class="communique-section">
+        <div class="communique-container">
+            <h2 class="section-title" style="text-align: center;">Avis & Communiqués</h2>
+            <p style="text-align: center; color: #666;">Restez informés des dernières actualités et notes de la direction.</p>
+            
+            <div class="grid-communiques">
+                <div class="communique-card">
+                    <span class="communique-date">10 Août 2026</span>
+                    <h3>Rentrée Scolaire</h3>
+                    <p>Les inscriptions et réinscriptions pour l'année scolaire en cours se poursuivent tous les jours ouvrables de 08h00 à 14h00 au secrétariat.</p>
+                </div>
+                <div class="communique-card">
+                    <span class="communique-date">01 Août 2026</span>
+                    <h3>Réunion des Parents</h3>
+                    <p>Une grande assemblée générale d'information sera organisée le samedi prochain pour présenter les nouveaux projets numériques de l'établissement.</p>
+                </div>
+                <div class="communique-card">
+                    <span class="communique-date">15 Juillet 2026</span>
+                    <h3>Résultats des Examens</h3>
+                    <p>Félicitations à tous nos finalistes pour les excellents taux de réussite enregistrés aux épreuves d'État cette année encore !</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION GALERIE PHOTO -->
+    <section class="galerie-section">
+        <h2 class="section-title">Galerie Photo</h2>
+        <p style="color: #666;">Plongez au cœur de la vie quotidienne et des activités de notre école.</p>
+        
+        <div class="grid-galerie">
+            <div class="galerie-item">
+                <img src="images/baniere.jpeg" alt="Activités scolaires">
+                <div class="galerie-overlay">
+                    <h4>Vie Scolaire</h4>
+                    <p>Nos élèves épanouis dans l'enceinte de l'établissement</p>
+                </div>
+            </div>
+            <div class="galerie-item">
+                <img src="images/jobec.jpeg" alt="Cadre de l'école">
+                <div class="galerie-overlay">
+                    <h4>Infrastructures</h4>
+                    <p>Un cadre moderne propice à l'apprentissage</p>
+                </div>
+            </div>
+            <div class="galerie-item">
+                <img src="images/logo.jpeg" alt="Événements JOBEC">
+                <div class="galerie-overlay">
+                    <h4>Événements & Cérémonies</h4>
+                    <p>Moments forts de la communauté scolaire</p>
+                </div>
             </div>
         </div>
     </section>
