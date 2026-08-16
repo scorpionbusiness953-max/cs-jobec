@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complexe Scolaire ELIKYA</title>
+    <title>Complexe Scolaire JOBEC</title>
     <style>
         :root {
             --bg-color: #f8f9fa;
@@ -11,8 +11,8 @@
             --border-color: #e2e8f0;
             --text-main: #1a202c;
             --text-muted: #4a5568;
-            --primary-blue: #1e3a8a;
-            --accent-yellow: #d97706;
+            --primary-blue: #0088cc;
+            --primary-dark: #005588;
         }
 
         * {
@@ -33,7 +33,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 50px;
+            padding: 15px 50px;
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
             position: sticky;
@@ -45,10 +45,17 @@
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-weight: bold;
             font-size: 1.2rem;
             color: var(--primary-blue);
+        }
+
+        .logo-container img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         nav ul {
@@ -83,7 +90,7 @@
             opacity: 0.9;
         }
 
-        /* HERO SECTION AVEC SLIDER */
+        /* HERO SECTION AVEC SLIDER D'IMAGES */
         .hero {
             position: relative;
             padding: 100px 20px;
@@ -119,15 +126,15 @@
         }
 
         .hero-slide:nth-child(1) {
-            background-image: url('image1.jpg');
+            background-image: url('jobec.jpeg');
             animation-delay: 0s;
         }
         .hero-slide:nth-child(2) {
-            background-image: url('image2.jpg');
+            background-image: url('g5.jpeg');
             animation-delay: 5s;
         }
         .hero-slide:nth-child(3) {
-            background-image: url('image3.jpg');
+            background-image: url('visionnaire.jpeg');
             animation-delay: 10s;
         }
 
@@ -146,7 +153,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 25, 47, 0.75);
+            background: rgba(0, 30, 60, 0.75);
             z-index: -1;
         }
 
@@ -262,7 +269,70 @@
             font-size: 0.95rem;
         }
 
-        /* ANNONCES / COMMUNIQUÉS */
+        /* ÉQUIPE & DIRECTION CARDS */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.3s;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-blue);
+        }
+
+        .team-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .team-info {
+            padding: 20px;
+        }
+
+        .team-info h3 {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .team-info p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .add-staff-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* BADGES & ANNONCES */
         .badge {
             display: inline-block;
             background-color: #e0f2fe;
@@ -365,21 +435,22 @@
     <!-- HEADER -->
     <header>
         <div class="logo-container">
-            <span>🛡️ C.S Elikya</span>
+            <img src="logo.jpeg" alt="Logo C.S JOBEC">
+            <span>C.S JOBEC</span>
         </div>
         <nav>
             <ul>
                 <li><a href="#" class="active">Accueil</a></li>
-                <li><a href="#">À Propos</a></li>
-                <li><a href="#">Actualités</a></li>
-                <li><a href="#">Galleries</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="#apropos">À Propos</a></li>
+                <li><a href="#equipe">Notre Équipe</a></li>
+                <li><a href="#annonces">Communiqués</a></li>
+                <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
-        <a href="https://wa.me/243844699375" class="whatsapp-btn">💬 WhatsApp</a>
+        <a href="https://wa.me/" class="whatsapp-btn">💬 WhatsApp</a>
     </header>
 
-    <!-- HERO SECTION AVEC SLIDER -->
+    <!-- HERO SECTION AVEC SLIDER ET PHOTO DU COUPLE -->
     <section class="hero">
         <div class="hero-slider">
             <div class="hero-slide"></div>
@@ -387,179 +458,199 @@
             <div class="hero-slide"></div>
         </div>
 
-        <h1>Complexe Scolaire ELIKYA</h1>
-        <p>École privée diocésaine catholique de l'Archidiocèse de Kinshasa, De la maternelle au secondaire, nous formons les élites de demain avec excellence et valeurs.</p>
+        <h1>Complexe Scolaire JOBEC</h1>
+        <p>Fondement de la transformation. De la maternelle au secondaire, nous formons les élites de demain avec rigueur, excellence et valeurs.</p>
         
         <div class="stats-grid">
             <div class="stat-card">
-                <h3>2500+</h3>
+                <h3>1500+</h3>
                 <p>Élèves</p>
             </div>
             <div class="stat-card">
-                <h3>54</h3>
+                <h3>35</h3>
                 <p>Classes</p>
             </div>
             <div class="stat-card">
-                <h3>7</h3>
+                <h3>6</h3>
                 <p>Options</p>
             </div>
             <div class="stat-card">
                 <h3>4</h3>
-                <p>Sections</p>
+                <p>Cycles</p>
             </div>
         </div>
     </section>
 
-    <!-- MOT DU PROMOTEUR -->
-    <section style="background-color: #ffffff;">
+    <!-- MOT DU PROMOTEUR (COUPLE JOBEC) -->
+    <section id="apropos" style="background-color: #ffffff;">
         <h2>Mot du Promoteur</h2>
         <p class="subtitle">Notre vision pour l'éducation et l'avenir de vos enfants</p>
         <div style="max-width: 800px; margin: 0 auto; font-size: 1.05rem; color: var(--text-muted); text-align: justify;">
-            <p style="margin-bottom: 20px;">« Bienvenue au Complexe Scolaire ELIKYA. Fondé sur des valeurs chrétiennes et morales solides, notre établissement s'engage à offrir un cadre d'apprentissage rigoureux et épanouissant. Nous croyons fermement que chaque enfant possède un potentiel unique qui ne demande qu'à être révélé et guidé vers l'excellence. »</p>
-            <p style="text-align: right; font-weight: bold; color: var(--primary-blue);">— L'Abbé KOYANGBA BOMA Blaise</p>
+            <p style="margin-bottom: 20px;">« Bienvenue au Complexe Scolaire JOBEC. En tant que fondement de la transformation, notre établissement s'engage à offrir un cadre d'apprentissage rigoureux, moderne et épanouissant. Nous croyons fermement que chaque élève porte en lui un potentiel extraordinaire prêt à être révélé et guidé vers la réussite. »</p>
+            <p style="text-align: right; font-weight: bold; color: var(--primary-blue);">— Le Couple Promoteur JOBEC</p>
+        </div>
+    </section>
+
+    <!-- SECTION NOTRE ÉQUIPE (DIRIGEANTS & PERSONNEL) -->
+    <section id="equipe">
+        <h2>Notre Équipe Dirigeante</h2>
+        <p class="subtitle">Des figures d'engagement et des professionnels qualifiés au service de l'excellence</p>
+        
+        <div class="team-grid">
+            <!-- Membre 1 -->
+            <div class="team-card">
+                <img src="visionnaire.jpeg" alt="Visionnaire / Direction" class="team-img">
+                <div class="team-info">
+                    <h3>[Nom du Visionnaire]</h3>
+                    <p>Propriétaire / Visionnaire</p>
+                </div>
+            </div>
+
+            <!-- Membre 2 -->
+            <div class="team-card">
+                <img src="batiste.jpeg" alt="Responsable / Staff" class="team-img">
+                <div class="team-info">
+                    <h3>[Nom du Responsable]</h3>
+                    <p>Administration / Coordination</p>
+                </div>
+            </div>
+
+            <!-- Membre 3 -->
+            <div class="team-card">
+                <img src="ir.jpeg" alt="Cadre / Enseignant" class="team-img">
+                <div class="team-info">
+                    <h3>[Nom du Cadre]</h3>
+                    <p>Direction Pédagogique / Technique</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lien / Bouton pour ajouter ou compléter d'autres personnels -->
+        <div class="add-staff-container">
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Vous souhaitez ajouter d'autres membres du personnel ou enseignants à la liste ?</p>
+            <a href="https://wa.me/?text=Bonjour,%20je%20souhaite%20ajouter%20un%20nouveau%20membre%20du%20personnel%20au%20site%20du%20C.S%20JOBEC." target="_blank" class="btn-primary">➕ Compléter d'autres personnels</a>
         </div>
     </section>
 
     <!-- SECTION COMMUNIQUÉS & ANNONCES -->
-    <section>
+    <section id="annonces" style="background-color: #ffffff;">
         <h2>Communiqués & Annonces</h2>
         <p class="subtitle">Restez informés des dernières notes officielles et actualités de l'école</p>
         
         <div class="grid-3">
             <div class="card">
                 <span class="badge">Inscriptions</span>
-                <span class="annonce-date">📅 16/06/2026</span>
-                <h3>Début des inscriptions 2026-2027</h3>
-                <p>Les inscriptions pour la nouvelle année scolaire sont officiellement lancées. Venez enregistrer vos enfants de la maternelle au secondaire dès maintenant.</p>
+                <span class="annonce-date">📅 16/08/2026</span>
+                <h3>Rentrée Scolaire & Inscriptions</h3>
+                <p>Les inscriptions et réinscriptions pour l'année scolaire en cours se poursuivent tous les jours ouvrables de 08h00 à 14h00 au sein de l'établissement.</p>
             </div>
 
             <div class="card">
                 <span class="badge" style="background-color: #fef3c7; color: #92400e;">Communiqué Officiel</span>
-                <span class="annonce-date">📅 10/06/2026</span>
-                <h3>Réunion des parents d'élèves</h3>
-                <p>La direction invite l'ensemble des parents à la grande assemblée générale trimestrielle ce samedi à partir de 09h00 dans l'enceinte de l'établissement.</p>
+                <span class="annonce-date">📅 10/08/2026</span>
+                <h3>Permanence Pédagogique</h3>
+                <p>Note à l'attention des parents : les bulletins de la fin de période sont disponibles auprès des titulaires de classe respectifs.</p>
             </div>
 
             <div class="card">
                 <span class="badge" style="background-color: #d1fae5; color: #065f46;">Événement</span>
-                <span class="annonce-date">📅 01/06/2026</span>
-                <h3>Célébration de la Messe</h3>
-                <p>Un rassemblement de prière et d'action de grâce sera organisé pour recommander les finalistes aux épreuves d'État.</p>
+                <span class="annonce-date">📅 01/08/2026</span>
+                <h3>Activités Para-scolaires</h3>
+                <p>Lancement officiel des programmes de renforcement et des ateliers culturels pour stimuler la créativité de nos apprenants.</p>
             </div>
         </div>
     </section>
 
-    <!-- SECTION NOS DIRECTIONS (OPTIONS) -->
-    <section style="background-color: #ffffff;">
-        <h2>Nos Directions</h2>
-        <p class="subtitle">De la maternelle au secondaire, découvrez toutes nos directions</p>
+    <!-- SECTION NOS DIRECTIONS / CYCLES -->
+    <section>
+        <h2>Nos Cycles & Options</h2>
+        <p class="subtitle">Un parcours complet de la maternelle aux humanités</p>
         <div class="grid-4">
             <div class="card">
                 <h3>Maternelle</h3>
-                <p>Éveil et développement des tout-petits</p>
+                <p>Éveil et épanouissement des tout-petits</p>
                 <ul>
                     <li>✔ Crèche</li>
-                    <li>✔ 1è Maternelle</li>
-                    <li>✔ 2è Maternelle</li>
-                    <li>✔ 3è Maternelle</li>
+                    <li>✔ 1ère Maternelle</li>
+                    <li>✔ 2ème Maternelle</li>
+                    <li>✔ 3ème Maternelle</li>
                 </ul>
             </div>
             <div class="card">
                 <h3>Primaire</h3>
-                <p>Fondements solides pour l'apprentissage</p>
+                <p>Acquisition des bases fondamentales</p>
                 <ul>
-                    <li>✔ Degré Élémentaire</li>
-                    <li>✔ Degré Moyen</li>
-                    <li>✔ Degré Terminal</li>
+                    <li>✔ 1ère & 2ème Année</li>
+                    <li>✔ 3ème & 4ème Année</li>
+                    <li>✔ 5ème & 6ème Année</li>
                 </ul>
             </div>
             <div class="card">
-                <h3>Secondaire Avant Midi</h3>
-                <p>Sciences & Humanités</p>
+                <h3>Secondaire Général</h3>
+                <p>Orientation et culture générale</p>
                 <ul>
-                    <li>✔ Sciences</li>
-                    <li>✔ Latin-Philo</li>
-                    <li>✔ Pédagogie Générale</li>
+                    <li>✔ 1ère Humanités</li>
+                    <li>✔ 2ème Humanités</li>
                 </ul>
             </div>
             <div class="card">
-                <h3>Secondaire Après Midi</h3>
-                <p>Techniques professionnelles</p>
+                <h3>Humanités Techniques</h3>
+                <p>Formations professionnalisantes</p>
                 <ul>
                     <li>✔ Commerciale & Gestion</li>
-                    <li>✔ Coupe & Couture</li>
-                    <li>✔ Hôtellerie & Restauration</li>
-                    <li>✔ Électricité</li>
+                    <li>✔ Scientifique</li>
+                    <li>✔ Pédagogie</li>
                 </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- NOTRE ÉQUIPE -->
-    <section>
-        <h2>Notre Équipe</h2>
-        <p class="subtitle">Des professionnels dévoués pour l'encadrement de vos enfants</p>
-        <div class="grid-2">
-            <div class="card">
-                <h3>Administration & Direction</h3>
-                <p>Une équipe de direction rigoureuse veillant à la discipline, au suivi pédagogique et à l'application des programmes officiels sous l'égide de l'Archidiocèse de Kinshasa.</p>
-            </div>
-            <div class="card">
-                <h3>Corps Enseignant</h3>
-                <p>Des enseignants qualifiés, expérimentés et passionnés, engagés à transmettre non seulement des connaissances académiques, mais aussi des valeurs de travail et d'intégrité.</p>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer>
+    <footer id="contact">
         <div class="footer-container">
             <div class="footer-col">
-                <h4>C.S ELIKYA</h4>
-                <p><strong>Discipline - Travail - Réussite</strong></p>
-                <p>École privée diocésaine catholique offrant une formation complète de la maternelle au secondaire, dirigée par l'Abbé KOYANGBA BOMA Blaise sous l'Archidiocèse de Kinshasa.</p>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <img src="logo.jpeg" alt="Logo" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                    <h4 style="margin: 0;">C.S JOBEC</h4>
+                </div>
+                <p><strong>Fondement de la transformation</strong></p>
+                <p>Établissement scolaire d'excellence proposant un enseignement de qualité de la maternelle au secondaire.</p>
             </div>
 
             <div class="footer-col">
                 <h4>Liens Rapides</h4>
                 <ul>
                     <li><a href="#">Accueil</a></li>
-                    <li><a href="#">À Propos</a></li>
-                    <li><a href="#">Actualités</a></li>
-                    <li><a href="#">Médias</a></li>
+                    <li><a href="#apropos">À Propos</a></li>
+                    <li><a href="#equipe">Notre Équipe</a></li>
+                    <li><a href="#annonces">Communiqués</a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
-                <h4>Nos Formations</h4>
+                <h4>Cycles & Options</h4>
                 <ul>
-                    <li><a href="#">Maternelle</a></li>
-                    <li><a href="#">Primaire</a></li>
+                    <li><a href="#">Maternelle & Primaire</a></li>
                     <li><a href="#">Secondaire Général</a></li>
-                    <li><a href="#">Secondaire Technique</a></li>
-                    <li><a href="#">Sciences & Latin-Philo</a></li>
                     <li><a href="#">Commerciale & Gestion</a></li>
-                    <li><a href="#">Hôtellerie & Restauration</a></li>
-                    <li><a href="#">Électricité</a></li>
-                    <li><a href="#">Coupe et Couture</a></li>
+                    <li><a href="#">Scientifique</a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
                 <h4>Contact</h4>
-                <p>📞 +243 844 699 375</p>
-                <p>✉️ ecoleelikya@gmail.com</p>
-                <p>📍 Av. kamina n° 1 bis, quartier 7, Commune de N'DJILI, Kinshasa, RDC</p>
-                <p><a href="https://wa.me/243844699375" style="color: #25d366; text-decoration: none; font-weight: 500;">💬 Contactez-nous sur WhatsApp</a></p>
+                <p>📞 +243 [Votre Numéro]</p>
+                <p>✉️ contact@csjobec.com</p>
+                <p>📍 Kinshasa, RDC</p>
+                <p><a href="https://wa.me/" style="color: #25d366; text-decoration: none; font-weight: 500;">💬 Discuter sur WhatsApp</a></p>
             </div>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2025 Complexe Scolaire Elikya. Tous droits réservés.</p>
+            <p>&copy; 2026 Complexe Scolaire JOBEC. Tous droits réservés.</p>
             <div style="display: flex; gap: 15px;">
                 <a href="#" style="color: #cbd5e1; text-decoration: none;">Facebook</a>
                 <a href="#" style="color: #cbd5e1; text-decoration: none;">Instagram</a>
-                <a href="#" style="color: #cbd5e1; text-decoration: none;">YouTube</a>
             </div>
         </div>
     </footer>
