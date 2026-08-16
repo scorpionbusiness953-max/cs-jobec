@@ -3,928 +3,566 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complexe Scolaire JOBEC | Excellence & Innovation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Complexe Scolaire ELIKYA</title>
     <style>
         :root {
-            --primary-blue: #002147;
-            --primary-dark: #001529;
-            --gold: #D4AF37;
-            --gold-light: #f3e5ab;
-            --light-gray: #f8f9fa;
-            --white: #ffffff;
-            --text-color: #333333;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1a202c;
+            --text-muted: #4a5568;
+            --primary-blue: #1e3a8a;
+            --accent-yellow: #d97706;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        body { 
-            background-color: var(--white); 
-            color: var(--text-color); 
-            line-height: 1.7; 
-            overflow-x: hidden;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
         }
 
-        /* BARRE DE NAVIGATION */
-        nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 5%;
+        /* HEADER */
+        header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 20px 50px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .logo-container {
             display: flex;
             align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-blue);
         }
 
-        .nav-logo {
-            height: 50px;
-            width: auto;
-            display: block;
-            transition: var(--transition);
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
         }
-        .nav-logo:hover { transform: scale(1.05); }
 
-        .nav-links { list-style: none; display: flex; align-items: center; }
-        .nav-links li { margin-left: 1.8rem; }
-        .nav-links a { 
-            color: var(--text-color); 
-            text-decoration: none; 
-            font-weight: 500; 
-            transition: var(--transition); 
-            font-size: 0.92rem; 
+        nav ul li a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary-blue);
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* HERO SECTION AVEC SLIDER */
+        .hero {
             position: relative;
+            padding: 100px 20px;
+            text-align: center;
+            color: #ffffff;
+            overflow: hidden;
+            min-height: 550px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .nav-links a:hover, .nav-links a.active { color: var(--gold); }
-        
-        .nav-links a::after {
+
+        .hero-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: slideAnimation 15s infinite;
+        }
+
+        .hero-slide:nth-child(1) {
+            background-image: url('image1.jpg');
+            animation-delay: 0s;
+        }
+        .hero-slide:nth-child(2) {
+            background-image: url('image2.jpg');
+            animation-delay: 5s;
+        }
+        .hero-slide:nth-child(3) {
+            background-image: url('image3.jpg');
+            animation-delay: 10s;
+        }
+
+        @keyframes slideAnimation {
+            0% { opacity: 0; transform: scale(1); }
+            10% { opacity: 1; }
+            33% { opacity: 1; }
+            43% { opacity: 0; transform: scale(1.05); }
+            100% { opacity: 0; }
+        }
+
+        .hero::after {
             content: '';
             position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
+            top: 0;
             left: 0;
-            background-color: var(--gold);
-            transition: var(--transition);
-        }
-        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
-
-        /* Bouton Menu Hamburger pour Mobile */
-        .menu-toggle {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            background: none;
-            border: none;
-        }
-        .menu-toggle span {
-            height: 3px;
-            width: 28px;
-            background: var(--primary-blue);
-            margin-bottom: 5px;
-            border-radius: 3px;
-            transition: var(--transition);
-        }
-
-        /* SECTION HERO (ACCUEIL) */
-        .hero {
-            background: linear-gradient(135deg, #fdfbf7 0%, var(--white) 100%);
-            padding: 90px 8%;
-            min-height: 85vh;
-            display: flex;
-            align-items: center;
-        }
-
-        .hero-container {
-            display: flex;
-            align-items: center;
-            gap: 60px;
-            flex-wrap: wrap;
             width: 100%;
-            max-width: 1300px;
+            height: 100%;
+            background: rgba(10, 25, 47, 0.75);
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+            font-size: 1.1rem;
+            z-index: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .stat-card p {
+            color: #e2e8f0;
+            margin-bottom: 0;
+        }
+
+        /* SECTIONS COMMUNES */
+        section {
+            padding: 80px 20px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .hero-image {
-            flex: 1.1;
-            min-width: 320px;
-            position: relative;
-        }
-
-        .hero-image::before {
-            content: '';
-            position: absolute;
-            top: -15px;
-            left: -15px;
-            right: 15px;
-            bottom: 15px;
-            border: 2px solid var(--gold);
-            border-radius: 24px;
-            z-index: 0;
-            opacity: 0.5;
-        }
-
-        .hero-image img {
-            width: 100%;
-            height: auto;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,33,71,0.15);
-            position: relative;
-            z-index: 1;
-            display: block;
-        }
-
-        .hero-content {
-            flex: 1.3;
-            color: var(--text-color);
-        }
-
-        .hero-subtitle {
-            display: inline-block;
-            font-weight: 600;
-            letter-spacing: 2px;
+        section h2 {
+            text-align: center;
+            font-size: 2.5rem;
             margin-bottom: 15px;
-            color: var(--gold);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-
-        .hero-content h1 {
-            font-size: 3.4rem;
-            line-height: 1.15;
-            margin-bottom: 20px;
-            font-weight: 700;
             color: var(--primary-blue);
         }
 
-        .hero-description {
-            font-size: 1.05rem;
-            margin-bottom: 35px;
-            line-height: 1.7;
-            color: #555555;
+        section > p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 50px;
         }
-        
-        .btn-inscription {
-            background: var(--gold);
-            color: var(--primary-blue);
-            padding: 0.9rem 2.4rem;
-            text-decoration: none;
-            font-weight: 700;
-            border-radius: 50px;
-            display: inline-block;
-            transition: var(--transition);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
-            font-size: 0.95rem;
-        }
-        .btn-inscription:hover { background: var(--primary-blue); color: var(--white); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,33,71,0.2); }
 
-        /* SECTION SERVICES / CYCLES */
-        .cycles { padding: 7rem 8%; text-align: center; background-color: var(--light-gray); }
-        .section-title { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary-blue); font-weight: 700; letter-spacing: -0.5px; }
-        
-        .grid-cycles {
+        .grid-4, .grid-2, .grid-3 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3.5rem;
+            gap: 25px;
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
         }
 
         .card {
-            background: var(--white);
-            padding: 3rem 2.2rem;
-            border-radius: 20px;
-            border-bottom: 4px solid var(--gold);
-            transition: var(--transition);
-            text-align: left;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            border-top: 1px solid rgba(0,0,0,0.02);
-            border-left: 1px solid rgba(0,0,0,0.02);
-            border-right: 1px solid rgba(0,0,0,0.02);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.3s;
         }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,33,71,0.08); }
-        .card h3 { color: var(--primary-blue); margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600; }
-        .card p { color: #666; font-size: 0.95rem; }
 
-        /* MOT DU PROMOTEUR */
-        .promoteur-section {
-            padding: 7rem 8%;
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
-            color: white;
-            position: relative;
-        }
-        .container-pro {
-            display: flex;
-            align-items: center;
-            gap: 60px;
-            flex-wrap: wrap;
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-        .pro-text { flex: 1.5; min-width: 320px; }
-        .pro-img { flex: 1; text-align: center; min-width: 280px; }
-        
-        .quote {
-            font-style: italic;
-            font-size: 1.1rem;
-            border-left: 4px solid var(--gold);
-            padding: 20px 24px;
-            margin: 25px 0;
-            line-height: 1.8;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 0 12px 12px 0;
-            color: #fcfcfc;
-        }
-        .pro-text p {
-            font-size: 0.98rem;
-            opacity: 0.9;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-        .pro-name { margin-top: 25px; font-size: 1.05rem; }
-        .pro-photo {
-            width: 100%;
-            max-width: 320px;
-            height: auto;
-            border-radius: 20px;
-            border: 4px solid var(--gold);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            transition: var(--transition);
-        }
-        .pro-photo:hover { transform: scale(1.02); }
-
-        /* ATOUTS */
-        .atouts {
-            padding: 7rem 8%;
-            background-color: var(--white);
-            text-align: center;
-        }
-        .grid-atouts {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3.5rem;
-            text-align: left;
-        }
-        .atout-card {
-            padding: 3rem 2.2rem;
-            background: var(--light-gray);
-            border-radius: 20px;
-            transition: var(--transition);
-            border: 1px solid #eee;
-        }
-        .atout-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
-            border-color: var(--gold);
-            background: var(--white);
-        }
-        .atout-card .icon { font-size: 2.8rem; margin-bottom: 1.2rem; display: inline-block; }
-        .atout-card h3 { color: var(--primary-blue); margin-bottom: 0.8rem; font-size: 1.25rem; font-weight: 600; }
-        .atout-card p { font-size: 0.95rem; color: #666; }
-
-        /* NOS PROJETS */
-        .projets {
-            padding: 7rem 8%;
-            background-color: var(--light-gray);
-        }
-        .grid-projets {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3.5rem;
-            max-width: 1300px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .projet-card {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            padding: 35px;
-            transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-        }
-        .projet-card:hover {
-            border-color: var(--gold);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+        .card:hover {
             transform: translateY(-5px);
+            border-color: var(--primary-blue);
         }
+
+        .card h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+        }
+
+        .card ul {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .card ul li {
+            padding: 5px 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* ANNONCES / COMMUNIQUÉS */
         .badge {
             display: inline-block;
-            padding: 6px 14px;
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            letter-spacing: 0.5px;
-        }
-        .réalisé { background: #d4edda; color: #155724; }
-        .en-cours { background: #fff3cd; color: #856404; }
-        .futur { background: #cce5ff; color: #004085; }
-        .projet-info h3 { margin: 0 0 10px 0; color: var(--primary-blue); font-size: 1.25rem; font-weight: 600; }
-        .projet-info p { font-size: 0.92rem; color: #555; margin: 0; line-height: 1.6; }
-
-        /* TEMOIGNAGES & TIKTOK */
-        .temoignages {
-            padding: 7rem 8%;
-            background-color: var(--primary-blue);
-            color: white;
-            text-align: center;
-        }
-        .grid-temoignages {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3.5rem;
-            max-width: 1300px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .temoin-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 40px 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            text-align: left;
-            transition: var(--transition);
-        }
-        .temoin-card:hover {
-            background: rgba(255, 255, 255, 0.09);
-            transform: translateY(-5px);
-            border-color: var(--gold);
-        }
-        .stars { color: var(--gold); margin-bottom: 15px; font-size: 1.1rem; letter-spacing: 2px; }
-        .temoin-quote { font-style: italic; line-height: 1.7; margin-bottom: 20px; font-size: 0.95rem; opacity: 0.9; }
-        .auteur strong { display: block; color: var(--gold); font-size: 0.95rem; font-weight: 600; }
-        .auteur span { font-size: 0.8rem; opacity: 0.7; }
-
-        .youtube-cta {
-            margin-top: 60px;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            padding-top: 40px;
-        }
-        .youtube-cta p { font-size: 1.1rem; margin-bottom: 20px; opacity: 0.9; }
-        .btn-youtube {
-            display: inline-flex;
-            align-items: center;
-            background-color: #FF0000;
-            color: white;
-            text-decoration: none;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: var(--transition);
-            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
-            font-size: 0.95rem;
-        }
-        .btn-youtube:hover { background-color: #cc0000; transform: scale(1.05); }
-        .play-icon { margin-right: 10px; font-size: 1.1rem; }
-
-        /* SECTION GALERIE SLIDER (EN BAS) */
-        .galerie-section {
-            padding: 7rem 8%;
-            background-color: var(--light-gray);
-            text-align: center;
-        }
-        .slider-container {
-            position: relative;
-            max-width: 900px;
-            margin: 3.5rem auto 0;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            background: var(--primary-blue);
-        }
-        .slider-track {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-            height: 450px;
-        }
-        .slide {
-            min-width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .slide-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,33,71,0.95), transparent);
-            padding: 30px 20px 20px;
-            color: white;
-            text-align: left;
-        }
-        .slide-caption h4 { color: var(--gold); font-size: 1.3rem; margin-bottom: 5px; }
-        .slide-caption p { font-size: 0.95rem; opacity: 0.9; }
-
-        .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 33, 71, 0.7);
-            color: white;
-            border: 2px solid var(--gold);
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            z-index: 10;
-        }
-        .slider-btn:hover { background: var(--gold); color: var(--primary-blue); }
-        .prev-btn { left: 20px; }
-        .next-btn { right: 20px; }
-
-        /* SECTION AVIS ET COMMUNIQUÉS (EN BAS) */
-        .communique-section {
-            padding: 6rem 8%;
-            background-color: var(--white);
-        }
-        .communique-container {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-        .grid-communiques {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        .communique-card {
-            background: var(--light-gray);
-            border-left: 5px solid var(--gold);
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
-            transition: var(--transition);
-            text-align: left;
-        }
-        .communique-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.06); background: var(--white); }
-        .communique-date {
             font-size: 0.8rem;
-            color: var(--gold);
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            display: block;
-        }
-        .communique-card h3 {
-            color: var(--primary-blue);
-            font-size: 1.2rem;
+            font-weight: 600;
             margin-bottom: 12px;
-            font-weight: 600;
-        }
-        .communique-card p {
-            color: #555;
-            font-size: 0.92rem;
-            line-height: 1.6;
         }
 
-        /* SECTION EQUIPE */
-        .equipe {
-            padding: 7rem 8%;
-            background-color: var(--white);
-            text-align: center;
-        }
-        .grid-equipe {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3.5rem;
-            max-width: 1300px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .equipe-card {
-            background: var(--light-gray);
-            padding: 3.5rem 2rem;
-            border-radius: 20px;
-            border: 1px solid #e2e8f0;
-            transition: var(--transition);
-        }
-        .equipe-card:hover { 
-            transform: translateY(-8px); 
-            border-color: var(--gold); 
-            box-shadow: 0 15px 30px rgba(0,33,71,0.08);
-            background: var(--white);
-        }
-        .equipe-img {
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 1.8rem;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--gold);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        .equipe-img img { width: 100%; height: 100%; object-fit: cover; }
-        .equipe-card h3 { 
-            color: var(--primary-blue); 
-            font-size: 1.15rem; 
-            margin-bottom: 10px; 
-            font-weight: 600; 
-        }
-        .poste { 
-            color: #666; 
-            font-weight: 600; 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
+        .annonce-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
             display: block;
         }
-
-        .btn-general-personnel {
-            display: inline-block;
-            padding: 14px 35px;
-            border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
-            text-decoration: none;
-            font-weight: 600;
-            border-radius: 30px;
-            transition: var(--transition);
-            margin-top: 50px;
-            font-size: 0.95rem;
-            background: transparent;
-        }
-        .btn-general-personnel:hover { background: var(--primary-blue); color: var(--white); transform: translateY(-2px); }
 
         /* FOOTER */
         footer {
-            background: var(--primary-dark);
-            color: var(--white);
-            text-align: center;
-            padding: 3.5rem 2rem;
-            border-top: 3px solid var(--gold);
+            background-color: #0f172a;
+            color: #cbd5e1;
+            padding: 60px 20px 20px 20px;
+            border-top: 1px solid var(--border-color);
         }
-        footer p { font-size: 0.9rem; opacity: 0.9; }
 
-        /* RESPONSIVE DESIGN */
-        @media (max-width: 768px) {
-            .hero-content h1 { font-size: 2.4rem; }
-            .section-title { font-size: 2rem; }
-            .slider-track { height: 300px; }
-            
-            .menu-toggle { display: flex; }
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: var(--white);
-                padding: 25px 0;
-                box-shadow: 0 15px 20px rgba(0,0,0,0.08);
-                text-align: center;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .footer-col p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-col ul li a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
             }
-            .nav-links.active { display: flex; }
-            .nav-links li { margin: 12px 0; }
+        }
+
+        @media (max-width: 600px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            header {
+                padding: 15px 20px;
+            }
+            nav ul {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
 
-    <nav>
-        <a href="index.html" class="logo-container">
-            <img src="images/logo.jpeg" alt="Logo JOBEC" class="nav-logo">
-        </a>
-        
-        <button class="menu-toggle" id="mobile-menu" aria-label="Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-
-        <ul class="nav-links" id="nav-list">
-            <li><a href="index.html" class="active">Accueil</a></li>
-            <li><a href="bibliotheque.html">Bibliothèque</a></li>
-            <li><a href="espace-parent.html">Espace Parent</a></li>
-            <li><a href="admin.html">Espace RH</a></li>
-            <li><a href="admin-bibliotheque.html">Espace Enseignant</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
-
-    <!-- SECTION HERO -->
-    <section class="hero">
-        <div class="hero-container">
-            <div class="hero-image">
-                <img src="images/baniere.jpeg" alt="Élèves du CS JOBEC">
-            </div>
-            <div class="hero-content">
-                <p class="hero-subtitle">BIENVENUE AU COMPLEXE SCOLAIRE JOBEC</p>
-                <h1>Fondement de la Transformation</h1>
-                <p class="hero-description">Une éducation moderne, un environnement sécurisé et une préparation solide pour les leaders de demain à Kinshasa.</p>
-                <a href="inscription.html" class="btn-inscription">Inscrire mon enfant</a>
-            </div>
+    <!-- HEADER -->
+    <header>
+        <div class="logo-container">
+            <span>🛡️ C.S Elikya</span>
         </div>
-    </section>
+        <nav>
+            <ul>
+                <li><a href="#" class="active">Accueil</a></li>
+                <li><a href="#">À Propos</a></li>
+                <li><a href="#">Actualités</a></li>
+                <li><a href="#">Galleries</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/243844699375" class="whatsapp-btn">💬 WhatsApp</a>
+    </header>
 
-    <!-- CYCLES -->
-    <section class="cycles">
-        <h2 class="section-title">Nos Cycles d'Enseignement</h2>
-        <p style="color: #666; max-width: 600px; margin: 0 auto;">Un parcours complet de la petite enfance jusqu'aux portes de l'université.</p>
-        <div class="grid-cycles" style="max-width: 1300px; margin-left: auto; margin-right: auto;">
-            <div class="card">
-                <h3>Maternel</h3>
-                <p>Éveil, créativité et socialisation dans un cadre ludique et bienveillant.</p>
+    <!-- HERO SECTION AVEC SLIDER -->
+    <section class="hero">
+        <div class="hero-slider">
+            <div class="hero-slide"></div>
+            <div class="hero-slide"></div>
+            <div class="hero-slide"></div>
+        </div>
+
+        <h1>Complexe Scolaire ELIKYA</h1>
+        <p>École privée diocésaine catholique de l'Archidiocèse de Kinshasa, De la maternelle au secondaire, nous formons les élites de demain avec excellence et valeurs.</p>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>2500+</h3>
+                <p>Élèves</p>
             </div>
-            <div class="card">
-                <h3>Primaire</h3>
-                <p>Acquisition des bases fondamentales : lecture, écriture et calcul rigoureux.</p>
+            <div class="stat-card">
+                <h3>54</h3>
+                <p>Classes</p>
             </div>
-            <div class="card">
-                <h3>Secondaire</h3>
-                <p>Orientation scientifique et littéraire avec un accent marqué sur l'informatique.</p>
+            <div class="stat-card">
+                <h3>7</h3>
+                <p>Options</p>
+            </div>
+            <div class="stat-card">
+                <h3>4</h3>
+                <p>Sections</p>
             </div>
         </div>
     </section>
 
     <!-- MOT DU PROMOTEUR -->
-    <section class="promoteur-section">
-        <div class="container-pro">
-            <div class="pro-text">
-                <h2 class="section-title" style="color: white; text-align: left;">Mot du Promoteur</h2>
-                <div class="quote">
-                    "Nous avons toujours eu à cœur de contribuer au développement et au rayonnement de notre pays. Nous sommes convaincus que cet objectif passe avant tout par la formation d’une élite compétente, responsable et porteuse de valeurs, grâce à une éducation de qualité."
-                </div>
-                <p>
-                    C’est dans cette vision que le Complexe Scolaire Jobec a vu le jour. Notre mission est d’offrir un enseignement d’excellence dans un environnement propice à l’épanouissement, afin de former les leaders et les bâtisseurs de demain.
-                </p>
-                <p style="margin-top: 15px;">
-                    À travers une pédagogie moderne, un encadrement rigoureux et la transmission de solides valeurs humaines, nous aspirons à contribuer à une transformation durable de notre société.
-                </p>
-                <div>
-                    <a href="historique.html" class="btn-general-personnel" style="border-color:var(--gold); color:var(--gold); margin-top: 25px;">Découvrir l'historique complet</a>
-                </div>
-                <p class="pro-name"><strong>Direction Générale</strong><br><span style="color:var(--gold)">Complexe Scolaire Jobec</span></p>
-            </div>
-            <div class="pro-img">
-                <img src="images/jobec.jpeg" alt="Photo du Promoteur" class="pro-photo">
-            </div>
+    <section style="background-color: #ffffff;">
+        <h2>Mot du Promoteur</h2>
+        <p class="subtitle">Notre vision pour l'éducation et l'avenir de vos enfants</p>
+        <div style="max-width: 800px; margin: 0 auto; font-size: 1.05rem; color: var(--text-muted); text-align: justify;">
+            <p style="margin-bottom: 20px;">« Bienvenue au Complexe Scolaire ELIKYA. Fondé sur des valeurs chrétiennes et morales solides, notre établissement s'engage à offrir un cadre d'apprentissage rigoureux et épanouissant. Nous croyons fermement que chaque enfant possède un potentiel unique qui ne demande qu'à être révélé et guidé vers l'excellence. »</p>
+            <p style="text-align: right; font-weight: bold; color: var(--primary-blue);">— L'Abbé KOYANGBA BOMA Blaise</p>
         </div>
     </section>
 
-    <!-- ATOUTS -->
-    <section class="atouts">
-        <h2 class="section-title">Pourquoi nous choisir ?</h2>
-        <p style="color: #666;">Nos engagements pour la réussite de vos enfants.</p>
-        <div class="grid-atouts" style="max-width: 1300px; margin-left: auto; margin-right: auto;">
-            <div class="atout-card">
-                <div class="icon">💻</div>
-                <h3>Informatique Avancée</h3>
-                <p>Apprentissage du numérique dès le plus jeune âge pour préparer les métiers du futur.</p>
-            </div>
-            <div class="atout-card">
-                <div class="icon">📊</div>
-                <h3>Suivi Digital</h3>
-                <p>Une gestion informatisée permettant aux parents de suivre les notes et les frais en temps réel.</p>
-            </div>
-            <div class="atout-card">
-                <div class="icon">🛡️</div>
-                <h3>Discipline & Rigueur</h3>
-                <p>Un environnement sécurisé et des valeurs morales fortes pour une éducation intégrale.</p>
-            </div>
-        </div>
-        <div style="margin-top: 40px;">
-            <a href="https://edu-nc.gouv.cd/programmes-nationaux" target="_blank" class="btn-general-personnel" style="border-color:var(--primary-blue); color:var(--primary-blue);">Voir les programmes nationaux</a>
-        </div>
-    </section>
-
-    <!-- PROJETS -->
-    <section class="projets">
-        <h2 class="section-title" style="text-align: center;">Vision & Projets 2026</h2>
-        <p style="text-align: center; color: #666;">Ce que nous bâtissons pour l'excellence de nos élèves.</p>
+    <!-- SECTION COMMUNIQUÉS & ANNONCES -->
+    <section>
+        <h2>Communiqués & Annonces</h2>
+        <p class="subtitle">Restez informés des dernières notes officielles et actualités de l'école</p>
         
-        <div class="grid-projets">
-            <div class="projet-card">
-                <div class="badge réalisé">Réalisé</div>
-                <div class="projet-info">
-                    <h3>Digitalisation du Suivi</h3>
-                    <p>Mise en place du système informatique de gestion des notes, des paiements et du portail web.</p>
-                </div>
+        <div class="grid-3">
+            <div class="card">
+                <span class="badge">Inscriptions</span>
+                <span class="annonce-date">📅 16/06/2026</span>
+                <h3>Début des inscriptions 2026-2027</h3>
+                <p>Les inscriptions pour la nouvelle année scolaire sont officiellement lancées. Venez enregistrer vos enfants de la maternelle au secondaire dès maintenant.</p>
             </div>
 
-            <div class="projet-card">
-                <div class="badge en-cours">En cours</div>
-                <div class="projet-info">
-                    <h3>Nouveau Laboratoire</h3>
-                    <p>Installation d'une salle informatique de pointe équipée pour les élèves.</p>
-                </div>
+            <div class="card">
+                <span class="badge" style="background-color: #fef3c7; color: #92400e;">Communiqué Officiel</span>
+                <span class="annonce-date">📅 10/06/2026</span>
+                <h3>Réunion des parents d'élèves</h3>
+                <p>La direction invite l'ensemble des parents à la grande assemblée générale trimestrielle ce samedi à partir de 09h00 dans l'enceinte de l'établissement.</p>
             </div>
 
-            <div class="projet-card">
-                <div class="badge futur">À venir</div>
-                <div class="projet-info">
-                    <h3>Bibliothèque Moderne</h3>
-                    <p>Construction d'un espace de lecture et de recherche bilingue pour le cycle secondaire.</p>
-                </div>
+            <div class="card">
+                <span class="badge" style="background-color: #d1fae5; color: #065f46;">Événement</span>
+                <span class="annonce-date">📅 01/06/2026</span>
+                <h3>Célébration de la Messe</h3>
+                <p>Un rassemblement de prière et d'action de grâce sera organisé pour recommander les finalistes aux épreuves d'État.</p>
             </div>
         </div>
     </section>
 
-    <!-- TEMOIGNAGES -->
-    <section class="temoignages">
-        <h2 class="section-title" style="color: white;">Ce que disent les parents</h2>
-        <p style="opacity: 0.8; max-width: 600px; margin: 0 auto;">La satisfaction de notre communauté est notre plus belle référence.</p>
-        <div class="grid-temoignages">
-            <div class="temoin-card">
-                <div class="stars">★★★★★</div>
-                <p class="temoin-quote">"Une école qui allie discipline et modernité. Mon fils a énormément progressé en informatique depuis son arrivée au CS JOBEC."</p>
-                <div class="auteur">
-                    <strong>Mme Sarah Lukusa</strong>
-                    <span>Parent d'élève (Primaire)</span>
-                </div>
+    <!-- SECTION NOS DIRECTIONS (OPTIONS) -->
+    <section style="background-color: #ffffff;">
+        <h2>Nos Directions</h2>
+        <p class="subtitle">De la maternelle au secondaire, découvrez toutes nos directions</p>
+        <div class="grid-4">
+            <div class="card">
+                <h3>Maternelle</h3>
+                <p>Éveil et développement des tout-petits</p>
+                <ul>
+                    <li>✔ Crèche</li>
+                    <li>✔ 1è Maternelle</li>
+                    <li>✔ 2è Maternelle</li>
+                    <li>✔ 3è Maternelle</li>
+                </ul>
             </div>
-
-            <div class="temoin-card">
-                <div class="stars">★★★★★</div>
-                <p class="temoin-quote">"Le suivi des frais en ligne est une révolution. Plus besoin de se déplacer pour vérifier l'état financier de nos enfants."</p>
-                <div class="auteur">
-                    <strong>M. Jean Kabamba</strong>
-                    <span>Parent d'élève (Secondaire)</span>
-                </div>
+            <div class="card">
+                <h3>Primaire</h3>
+                <p>Fondements solides pour l'apprentissage</p>
+                <ul>
+                    <li>✔ Degré Élémentaire</li>
+                    <li>✔ Degré Moyen</li>
+                    <li>✔ Degré Terminal</li>
+                </ul>
             </div>
-
-            <div class="temoin-card">
-                <div class="stars">★★★★★</div>
-                <p class="temoin-quote">"La vision du promoteur est claire : l'excellence. On sent l'influence des standards internationaux dans l'enseignement."</p>
-                <div class="auteur">
-                    <strong>Mme Dorcas Mwamba</strong>
-                    <span>Ancienne Élève</span>
-                </div>
+            <div class="card">
+                <h3>Secondaire Avant Midi</h3>
+                <p>Sciences & Humanités</p>
+                <ul>
+                    <li>✔ Sciences</li>
+                    <li>✔ Latin-Philo</li>
+                    <li>✔ Pédagogie Générale</li>
+                </ul>
             </div>
-        </div>
-
-        <div class="youtube-cta">
-            <p>Découvrez la vie à l'école en vidéos</p>
-            <a href="https://www.tiktok.com/@c.s_jobec" target="_blank" class="btn-youtube">
-                <span class="play-icon">▶</span> Voir notre chaîne TikTok
-            </a>
-        </div>
-    </section>
-
-    <!-- SECTION GALERIE SLIDER (EN BAS) -->
-    <section class="galerie-section">
-        <h2 class="section-title">Galerie Photo</h2>
-        <p style="color: #666;">Plongez au cœur de la vie quotidienne et des activités de notre école.</p>
-        
-        <div class="slider-container">
-            <button class="slider-btn prev-btn" id="prevBtn">&#10094;</button>
-            <div class="slider-track" id="sliderTrack">
-                <div class="slide">
-                    <img src="images/baniere.jpeg" alt="Vie Scolaire">
-                    <div class="slide-caption">
-                        <h4>Vie Scolaire</h4>
-                        <p>Nos élèves épanouis dans l'enceinte de l'établissement</p>
-                    </div>
-                </div>
-                <div class="slide">
-                    <img src="images/jobec.jpeg" alt="Infrastructures">
-                    <div class="slide-caption">
-                        <h4>Infrastructures</h4>
-                        <p>Un cadre moderne propice à l'apprentissage</p>
-                    </div>
-                </div>
-                <div class="slide">
-                    <img src="images/logo.jpeg" alt="Événements">
-                    <div class="slide-caption">
-                        <h4>Événements & Cérémonies</h4>
-                        <p>Moments forts de la communauté scolaire</p>
-                    </div>
-                </div>
-            </div>
-            <button class="slider-btn next-btn" id="nextBtn">&#10095;</button>
-        </div>
-    </section>
-
-    <!-- SECTION AVIS & COMMUNIQUÉS (EN BAS) -->
-    <section class="communique-section">
-        <div class="communique-container">
-            <h2 class="section-title" style="text-align: center;">Avis & Communiqués</h2>
-            <p style="text-align: center; color: #666;">Restez informés des dernières actualités et notes de la direction.</p>
-            
-            <div class="grid-communiques">
-                <div class="communique-card">
-                    <span class="communique-date">10 Août 2026</span>
-                    <h3>Rentrée Scolaire</h3>
-                    <p>Les inscriptions et réinscriptions pour l'année scolaire en cours se poursuivent tous les jours ouvrables de 08h00 à 14h00 au secrétariat.</p>
-                </div>
-                <div class="communique-card">
-                    <span class="communique-date">01 Août 2026</span>
-                    <h3>Réunion des Parents</h3>
-                    <p>Une grande assemblée générale d'information sera organisée le samedi prochain pour présenter les nouveaux projets numériques de l'établissement.</p>
-                </div>
-                <div class="communique-card">
-                    <span class="communique-date">15 Juillet 2026</span>
-                    <h3>Résultats des Examens</h3>
-                    <p>Félicitations à tous nos finalistes pour les excellents taux de réussite enregistrés aux épreuves d'État cette année encore !</p>
-                </div>
+            <div class="card">
+                <h3>Secondaire Après Midi</h3>
+                <p>Techniques professionnelles</p>
+                <ul>
+                    <li>✔ Commerciale & Gestion</li>
+                    <li>✔ Coupe & Couture</li>
+                    <li>✔ Hôtellerie & Restauration</li>
+                    <li>✔ Électricité</li>
+                </ul>
             </div>
         </div>
     </section>
 
-    <!-- EQUIPE -->
-    <section class="equipe">
-        <h2 class="section-title">Notre Équipe Dirigeante</h2>
-        <p style="color: #666;">Des professionnels dévoués à l'encadrement de vos enfants.</p>
-        <div class="grid-equipe">
-            <div class="equipe-card">
-                <div class="equipe-img">
-                    <img src="images/visionnaire.jpeg" alt="Directeur">
-                </div>
-                <h3>M. le Promoteur Jonathan</h3>
-                <span class="poste">Vision & Direction Générale</span>
+    <!-- NOTRE ÉQUIPE -->
+    <section>
+        <h2>Notre Équipe</h2>
+        <p class="subtitle">Des professionnels dévoués pour l'encadrement de vos enfants</p>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Administration & Direction</h3>
+                <p>Une équipe de direction rigoureuse veillant à la discipline, au suivi pédagogique et à l'application des programmes officiels sous l'égide de l'Archidiocèse de Kinshasa.</p>
             </div>
-
-            <div class="equipe-card">
-                <div class="equipe-img">
-                    <img src="images/ir.jpeg" alt="Informaticien">
-                </div>
-                <h3>SHAKO AMBEDI MECHACK</h3>
-                <span class="poste">Responsable Système & Digital</span>
+            <div class="card">
+                <h3>Corps Enseignant</h3>
+                <p>Des enseignants qualifiés, expérimentés et passionnés, engagés à transmettre non seulement des connaissances académiques, mais aussi des valeurs de travail et d'intégrité.</p>
             </div>
-
-            <div class="equipe-card">
-                <div class="equipe-img">
-                    <img src="images/batiste.jpeg" alt="Préfet">
-                </div>
-                <h3>Mr OMBA OMANDJELA Batiste</h3>
-                <span class="poste">Secrétaire Général</span>
-            </div>
-        </div>
-        <div>
-            <a href="equipe.html" class="btn-general-personnel">Voir tout le personnel</a>
         </div>
     </section>
 
     <!-- FOOTER -->
     <footer>
-        <p>&copy; 2026 Complexe Scolaire JOBEC - Tous droits réservés. Bâti pour l'excellence.</p>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>C.S ELIKYA</h4>
+                <p><strong>Discipline - Travail - Réussite</strong></p>
+                <p>École privée diocésaine catholique offrant une formation complète de la maternelle au secondaire, dirigée par l'Abbé KOYANGBA BOMA Blaise sous l'Archidiocèse de Kinshasa.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Liens Rapides</h4>
+                <ul>
+                    <li><a href="#">Accueil</a></li>
+                    <li><a href="#">À Propos</a></li>
+                    <li><a href="#">Actualités</a></li>
+                    <li><a href="#">Médias</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Nos Formations</h4>
+                <ul>
+                    <li><a href="#">Maternelle</a></li>
+                    <li><a href="#">Primaire</a></li>
+                    <li><a href="#">Secondaire Général</a></li>
+                    <li><a href="#">Secondaire Technique</a></li>
+                    <li><a href="#">Sciences & Latin-Philo</a></li>
+                    <li><a href="#">Commerciale & Gestion</a></li>
+                    <li><a href="#">Hôtellerie & Restauration</a></li>
+                    <li><a href="#">Électricité</a></li>
+                    <li><a href="#">Coupe et Couture</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>📞 +243 844 699 375</p>
+                <p>✉️ ecoleelikya@gmail.com</p>
+                <p>📍 Av. kamina n° 1 bis, quartier 7, Commune de N'DJILI, Kinshasa, RDC</p>
+                <p><a href="https://wa.me/243844699375" style="color: #25d366; text-decoration: none; font-weight: 500;">💬 Contactez-nous sur WhatsApp</a></p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Complexe Scolaire Elikya. Tous droits réservés.</p>
+            <div style="display: flex; gap: 15px;">
+                <a href="#" style="color: #cbd5e1; text-decoration: none;">Facebook</a>
+                <a href="#" style="color: #cbd5e1; text-decoration: none;">Instagram</a>
+                <a href="#" style="color: #cbd5e1; text-decoration: none;">YouTube</a>
+            </div>
+        </div>
     </footer>
 
-    <!-- Scripts pour le menu mobile et le slider -->
-    <script>
-        // Menu mobile
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navList = document.getElementById('nav-list');
-
-        mobileMenu.addEventListener('click', () => {
-            navList.classList.toggle('active');
-        });
-
-        // Carrousel / Slider Galerie
-        const track = document.getElementById('sliderTrack');
-        const slides = Array.from(track.children);
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        let currentIndex = 0;
-
-        function updateSlidePosition() {
-            track.style.transform = `translateX(-${currentIndex * 100}%)`;
-        }
-
-        nextBtn.addEventListener('click', () => {
-            currentIndex = (currentIndex + 1) % slides.length;
-            updateSlidePosition();
-        });
-
-        prevBtn.addEventListener('click', () => {
-            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-            updateSlidePosition();
-        });
-
-        // Défilement automatique toutes les 4 secondes
-        setInterval(() => {
-            currentIndex = (currentIndex + 1) % slides.length;
-            updateSlidePosition();
-        }, 4000);
-    </script>
 </body>
 </html>
