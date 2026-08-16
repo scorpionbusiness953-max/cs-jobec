@@ -90,14 +90,14 @@
             opacity: 0.9;
         }
 
-        /* HERO SECTION AVEC SLIDER D'IMAGES */
+        /* HERO SECTION AVEC SLIDER PROFESSIONNEL */
         .hero {
             position: relative;
             padding: 100px 20px;
             text-align: center;
             color: #ffffff;
             overflow: hidden;
-            min-height: 550px;
+            min-height: 600px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -122,28 +122,13 @@
             background-size: cover;
             background-position: center;
             opacity: 0;
-            animation: slideAnimation 15s infinite;
+            transition: opacity 1s ease-in-out, transform 6s ease;
+            transform: scale(1);
         }
 
-        .hero-slide:nth-child(1) {
-            background-image: url('public/images/jobec.jpeg');
-            animation-delay: 0s;
-        }
-        .hero-slide:nth-child(2) {
-            background-image: url('public/images/g5.jpeg');
-            animation-delay: 5s;
-        }
-        .hero-slide:nth-child(3) {
-            background-image: url('public/images/visionnaire.jpeg');
-            animation-delay: 10s;
-        }
-
-        @keyframes slideAnimation {
-            0% { opacity: 0; transform: scale(1); }
-            10% { opacity: 1; }
-            33% { opacity: 1; }
-            43% { opacity: 0; transform: scale(1.05); }
-            100% { opacity: 0; }
+        .hero-slide.active {
+            opacity: 1;
+            transform: scale(1.05);
         }
 
         .hero::after {
@@ -155,6 +140,62 @@
             height: 100%;
             background: rgba(0, 30, 60, 0.75);
             z-index: -1;
+        }
+
+        /* Boutons de navigation du Slider */
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, transform 0.2s;
+            z-index: 10;
+        }
+
+        .slider-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .slider-prev {
+            left: 25px;
+        }
+
+        .slider-next {
+            right: 25px;
+        }
+
+        /* Indicateurs (dots) du slider */
+        .slider-dots {
+            position: absolute;
+            bottom: 25px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .dot.active {
+            background: #ffffff;
+            transform: scale(1.2);
         }
 
         .hero h1 {
@@ -435,7 +476,7 @@
     <!-- HEADER -->
     <header>
         <div class="logo-container">
-            <img src="public/images/logo.jpeg" alt="Logo C.S JOBEC">
+            <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
             <span>C.S JOBEC</span>
         </div>
         <nav>
@@ -450,12 +491,23 @@
         <a href="https://wa.me/" class="whatsapp-btn">💬 WhatsApp</a>
     </header>
 
-    <!-- HERO SECTION AVEC SLIDER ET PHOTO DU COUPLE -->
+    <!-- HERO SECTION AVEC SLIDER PROFESSIONNEL ET BOUTONS / DOTS -->
     <section class="hero">
         <div class="hero-slider">
-            <div class="hero-slide"></div>
-            <div class="hero-slide"></div>
-            <div class="hero-slide"></div>
+            <div class="hero-slide active" style="background-image: url('images/jobec.jpeg');"></div>
+            <div class="hero-slide" style="background-image: url('images/g5.jpeg');"></div>
+            <div class="hero-slide" style="background-image: url('images/visionnaire.jpeg');"></div>
+        </div>
+
+        <!-- Boutons Précédent / Suivant -->
+        <button class="slider-btn slider-prev" onclick="prevSlide()">&#10094;</button>
+        <button class="slider-btn slider-next" onclick="nextSlide()">&#10095;</button>
+
+        <!-- Indicateurs (Points de navigation) -->
+        <div class="slider-dots">
+            <span class="dot active" onclick="currentSlideIndex(0)"></span>
+            <span class="dot" onclick="currentSlideIndex(1)"></span>
+            <span class="dot" onclick="currentSlideIndex(2)"></span>
         </div>
 
         <h1>Complexe Scolaire JOBEC</h1>
@@ -499,7 +551,7 @@
         <div class="team-grid">
             <!-- Membre 1 -->
             <div class="team-card">
-                <img src="public/images/visionnaire.jpeg" alt="Visionnaire / Direction" class="team-img">
+                <img src="images/visionnaire.jpeg" alt="Visionnaire / Direction" class="team-img">
                 <div class="team-info">
                     <h3>[Nom du Visionnaire]</h3>
                     <p>Propriétaire / Visionnaire</p>
@@ -508,7 +560,7 @@
 
             <!-- Membre 2 -->
             <div class="team-card">
-                <img src="public/images/batiste.jpeg" alt="Responsable / Staff" class="team-img">
+                <img src="images/batiste.jpeg" alt="Responsable / Staff" class="team-img">
                 <div class="team-info">
                     <h3>[Nom du Responsable]</h3>
                     <p>Administration / Coordination</p>
@@ -517,7 +569,7 @@
 
             <!-- Membre 3 -->
             <div class="team-card">
-                <img src="public/images/ir.jpeg" alt="Cadre / Enseignant" class="team-img">
+                <img src="images/ir.jpeg" alt="Cadre / Enseignant" class="team-img">
                 <div class="team-info">
                     <h3>[Nom du Cadre]</h3>
                     <p>Direction Pédagogique / Technique</p>
@@ -525,7 +577,6 @@
             </div>
         </div>
 
-        <!-- Lien / Bouton pour ajouter ou compléter d'autres personnels -->
         <div class="add-staff-container">
             <p style="color: var(--text-muted); margin-bottom: 15px;">Vous souhaitez ajouter d'autres membres du personnel ou enseignants à la liste ?</p>
             <a href="https://wa.me/?text=Bonjour,%20je%20souhaite%20ajouter%20un%20nouveau%20membre%20du%20personnel%20au%20site%20du%20C.S%20JOBEC." target="_blank" class="btn-primary">➕ Compléter d'autres personnels</a>
@@ -655,5 +706,50 @@
         </div>
     </footer>
 
+    <!-- SCRIPT JAVASCRIPT PROFESSIONNEL POUR LE SLIDER -->
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.hero-slide');
+        const dots = document.querySelectorAll('.dot');
+        let slideInterval;
+
+        function updateSlider(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                dots[i].classList.remove('active');
+            });
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlider(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSlider(currentSlide);
+        }
+
+        function currentSlideIndex(index) {
+            currentSlide = index;
+            updateSlider(currentSlide);
+            resetTimer();
+        }
+
+        // Défilement automatique toutes les 5 secondes
+        function startTimer() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetTimer() {
+            clearInterval(slideInterval);
+            startTimer();
+        }
+
+        // Initialisation du timer automatique au chargement
+        startTimer();
+    </script>
 </body>
 </html>
