@@ -26,6 +26,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         /* HEADER */
@@ -90,7 +91,7 @@
             opacity: 0.9;
         }
 
-        /* HERO SECTION AVEC SLIDER PROFESSIONNEL */
+        /* HERO SECTION AVEC SLIDER PROFESSIONNEL (PLEINE LARGEUR) */
         .hero {
             position: relative;
             padding: 100px 20px;
@@ -102,6 +103,9 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            max-width: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
         }
 
         .hero-slider {
@@ -353,11 +357,6 @@
             font-size: 0.95rem;
         }
 
-        .add-staff-container {
-            text-align: center;
-            margin-top: 40px;
-        }
-
         .btn-primary {
             display: inline-block;
             background-color: var(--primary-blue);
@@ -491,7 +490,7 @@
         <a href="https://wa.me/" class="whatsapp-btn">💬 WhatsApp</a>
     </header>
 
-    <!-- HERO SECTION AVEC SLIDER PROFESSIONNEL ET BOUTONS / DOTS -->
+    <!-- HERO SECTION AVEC SLIDER PROFESSIONNEL ET PLEINE LARGEUR -->
     <section class="hero">
         <div class="hero-slider">
             <div class="hero-slide active" style="background-image: url('images/jobec.jpeg');"></div>
@@ -530,44 +529,45 @@
                 <h3>4</h3>
                 <p>Cycles</p>
             </div>
-            <div style="text-align: right;">
-                <a href="inscription.html" style="display: inline-block; padding: 10px 20px; background-color: var(--primary-blue, #0056b3); color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; transition: background 0.3s;">Inscrire En Ligne &rarr;</a>
-            </div>
+        </div>
+
+        <div style="margin-top: 30px; z-index: 1;">
+            <a href="inscription.html" style="display: inline-block; padding: 12px 25px; background-color: var(--primary-blue, #0056b3); color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; transition: background 0.3s;">Inscrire En Ligne &rarr;</a>
         </div>
     </section>
 
-  <!-- MOT DU PROMOTEUR (COUPLE JOBEC) -->
-<section id="apropos" style="background-color: #ffffff; padding: 40px 20px;">
-    <h2>Mot du Promoteur</h2>
-    <p class="subtitle" style="text-align: center; margin-bottom: 30px;">Notre vision pour l'éducation et l'avenir de vos enfants</p>
-    
-    <div style="max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px;">
+    <!-- MOT DU PROMOTEUR (COUPLE JOBEC) -->
+    <section id="apropos" style="background-color: #ffffff; padding: 40px 20px;">
+        <h2>Mot du Promoteur</h2>
+        <p class="subtitle" style="text-align: center; margin-bottom: 30px;">Notre vision pour l'éducation et l'avenir de vos enfants</p>
         
-        <!-- Photo du couple promoteur -->
-        <div style="flex: 1; min-width: 280px; text-align: center;">
-            <img src="images/jobec.jpeg" alt="Le Couple Promoteur JOBEC" style="width: 100%; max-width: 350px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); object-fit: cover;">
-        </div>
-
-        <!-- Texte et lien -->
-        <div style="flex: 1.5; min-width: 300px; font-size: 1.05rem; color: var(--text-muted); text-align: justify;">
-            <p style="margin-bottom: 20px;">« Nous avons toujours eu à cœur de contribuer au développement et au rayonnement de notre pays. Nous sommes convaincus que cet objectif passe avant tout par la formation d’une élite compétente, responsable et porteuse de valeurs, grâce à une éducation de qualité. »</p>
+        <div style="max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px;">
             
-            <p style="margin-bottom: 20px;">« C’est dans cette vision que le Complexe Scolaire Jobec a vu le jour. Notre mission est d’offrir un enseignement d’excellence dans un environnement propice à l’épanouissement, afin de former les leaders et les bâtisseurs de demain. »</p>
-
-            <p style="margin-bottom: 20px;">« À travers une pédagogie moderne, un encadrement rigoureux et la transmission de solides valeurs humaines, nous aspirons à contribuer à une transformation durable de notre société en préparant une nouvelle génération de citoyens compétents, intègres et engagés. »</p>
-
-            <p style="margin-bottom: 20px;">« Au Complexe Scolaire Jobec, nous croyons que chaque enfant possède un potentiel exceptionnel. Ensemble, donnons à nos enfants les moyens de construire un avenir meilleur pour eux-mêmes, pour leur communauté et pour notre nation. »</p>
-            
-            <p style="text-align: right; font-weight: bold; color: var(--primary-blue); margin-bottom: 20px;">— Le Couple Promoteur JOBEC</p>
-            
-            <!-- Lien LIRE PLUS -->
-            <div style="text-align: right;">
-                <a href="historique.html" style="display: inline-block; padding: 10px 20px; background-color: var(--primary-blue, #0056b3); color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; transition: background 0.3s;">LIRE PLUS &rarr;</a>
+            <!-- Photo du couple promoteur -->
+            <div style="flex: 1; min-width: 280px; text-align: center;">
+                <img src="images/jobec.jpeg" alt="Le Couple Promoteur JOBEC" style="width: 100%; max-width: 350px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); object-fit: cover;">
             </div>
-        </div>
 
-    </div>
-</section>
+            <!-- Texte et lien -->
+            <div style="flex: 1.5; min-width: 300px; font-size: 1.05rem; color: var(--text-muted); text-align: justify;">
+                <p style="margin-bottom: 20px;">« Nous avons toujours eu à cœur de contribuer au développement et au rayonnement de notre pays. Nous sommes convaincus que cet objectif passe avant tout par la formation d’une élite compétente, responsable et porteuse de valeurs, grâce à une éducation de qualité. »</p>
+                
+                <p style="margin-bottom: 20px;">« C’est dans cette vision que le Complexe Scolaire Jobec a vu le jour. Notre mission est d’offrir un enseignement d’excellence dans un environnement propice à l’épanouissement, afin de former les leaders et les bâtisseurs de demain. »</p>
+
+                <p style="margin-bottom: 20px;">« À travers une pédagogie moderne, un encadrement rigoureux et la transmission de solides valeurs humaines, nous aspirons à contribuer à une transformation durable de notre société en préparant une nouvelle génération de citoyens compétents, intègres et engagés. »</p>
+
+                <p style="margin-bottom: 20px;">« Au Complexe Scolaire Jobec, nous croyons que chaque enfant possède un potentiel exceptionnel. Ensemble, donnons à nos enfants les moyens de construire un avenir meilleur pour eux-mêmes, pour leur communauté et pour notre nation. »</p>
+                
+                <p style="text-align: right; font-weight: bold; color: var(--primary-blue); margin-bottom: 20px;">— Le Couple Promoteur JOBEC</p>
+                
+                <!-- Lien LIRE PLUS -->
+                <div style="text-align: right;">
+                    <a href="historique.html" style="display: inline-block; padding: 10px 20px; background-color: var(--primary-blue, #0056b3); color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; transition: background 0.3s;">LIRE PLUS &rarr;</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
 
     <!-- SECTION NOTRE ÉQUIPE (DIRIGEANTS & PERSONNEL) -->
     <section id="equipe">
@@ -603,8 +603,8 @@
             </div>
         </div>
 
-        <div style="text-align: right;">
-                <a href="equipe.html" style="display: inline-block; padding: 10px 20px; background-color: var(--primary-blue, #0056b3); color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; transition: background 0.3s;">VOIR PLUS &rarr;</a>
+        <div style="text-align: right; margin-top: 30px;">
+            <a href="equipe.html" style="display: inline-block; padding: 10px 20px; background-color: var(--primary-blue, #0056b3); color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; transition: background 0.3s;">VOIR PLUS &rarr;</a>
         </div>
     </section>
 
