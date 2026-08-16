@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complexe Scolaire JOBEC - Actualités & Événements</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --primary-blue: #0088cc;
+            --primary-dark: #005588;
+            --accent-yellow: #f1e05a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+        }
+
+        .logo-container img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary-blue);
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* HERO SECTION ACTUALITÉS */
+        .news-hero {
+            position: relative;
+            padding: 90px 20px 140px 20px;
+            text-align: center;
+            color: #ffffff;
+            background: linear-gradient(rgba(13, 17, 23, 0.85), rgba(13, 17, 23, 0.95)), url('images/jobec.jpeg');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .news-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .news-hero p {
+            max-width: 650px;
+            margin: 0 auto 40px auto;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* BARRE DE RECHERCHE ET FILTRES */
+        .search-filter-container {
+            max-width: 900px;
+            margin: -40px auto 0 auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            position: relative;
+            z-index: 10;
+            gap: 15px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .filter-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: #30363d;
+        }
+
+        /* CONTENU SECTION ACTUALITÉS */
+        section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--text-main);
+        }
+
+        /* ARTICLE À LA UNE */
+        .featured-article {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            overflow: hidden;
+            margin-bottom: 60px;
+            transition: border-color 0.3s;
+        }
+
+        .featured-article:hover {
+            border-color: var(--primary-blue);
+        }
+
+        .featured-img {
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            object-fit: cover;
+        }
+
+        .featured-content {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .meta-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .meta-tag {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        .featured-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        .featured-content p {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .read-more {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .read-more:hover {
+            text-decoration: underline;
+        }
+
+        /* GRILLE DE TOUTES LES ACTUALITÉS */
+        .section-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .articles-count {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .article-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-blue);
+        }
+
+        .article-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .article-body {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .badge-cat {
+            display: inline-block;
+            background-color: #21262d;
+            color: var(--accent-yellow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            width: fit-content;
+            border: 1px solid var(--border-color);
+        }
+
+        .article-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .article-body h4 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .article-body p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #090d16;
+            color: #8b949e;
+            padding: 60px 20px 20px 20px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .footer-col p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a {
+            color: #8b949e;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-col ul li a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .featured-article {
+                grid-template-columns: 1fr;
+            }
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            header {
+                padding: 15px 20px;
+            }
+            nav ul {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            .search-filter-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
+            <span>C.S JOBEC</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="index.html#apropos">À Propos</a></li>
+                <li><a href="actualites.html" class="active">Actualités</a></li>
+                <li><a href="index.html#equipe">Notre Équipe</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/" class="whatsapp-btn">💬 WhatsApp</a>
+    </header>
+
+    <!-- HERO SECTION ACTUALITÉS -->
+    <div class="news-hero">
+        <h1>Actualités & Événements</h1>
+        <p>Suivez la vie du Complexe Scolaire JOBEC et découvrez nos dernières réalisations, communiqués et moments forts.</p>
+    </div>
+
+    <!-- BARRE DE RECHERCHE & FILTRES -->
+    <div class="search-filter-container">
+        <div class="search-box">
+            <svg width="18" height="18" fill="none" stroke="#8b949e" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" placeholder="Rechercher des actualités...">
+        </div>
+        <div class="filter-actions">
+            <button class="filter-btn">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                Filtres
+            </button>
+            <button class="filter-btn" title="Vue Grille">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- SECTION PRINCIPALE DES ACTUALITÉS -->
+    <section>
+        <!-- ARTICLE À LA UNE -->
+        <h2 style="margin-bottom: 20px;">À la Une</h2>
+        <div class="featured-article">
+            <img src="images/jobec.jpeg" alt="Messe du Saint Esprit" class="featured-img">
+            <div class="featured-content">
+                <div class="meta-info">
+                    <span class="meta-tag">À la Une</span>
+                    <span>📅 16 août 2026</span>
+                </div>
+                <h3>Célébration et Lancement de l'Année Scolaire 2026-2027 au C.S JOBEC</h3>
+                <p>Le Complexe Scolaire JOBEC a officiellement ouvert ses portes pour la nouvelle année avec une forte mobilisation des élèves, des enseignants et des parents d'élèves autour des valeurs d'excellence et de rigueur.</p>
+                <a href="#" class="read-more">Lire l'article complet &rarr;</a>
+            </div>
+        </div>
+
+        <!-- TOUTES LES ACTUALITÉS -->
+        <div class="section-header-flex">
+            <h2>Toutes les Actualités</h2>
+            <span class="articles-count">3 articles trouvés</span>
+        </div>
+
+        <div class="grid-3">
+            <!-- CARTE 1 -->
+            <div class="article-card">
+                <img src="images/visionnaire.jpeg" alt="Fête de l'Enseignement">
+                <div class="article-body">
+                    <span class="badge-cat">Enseignement</span>
+                    <div class="article-meta">
+                        <span>📅 25 Juillet 2026</span>
+                        <span>⏰ 02:49:00</span>
+                    </div>
+                    <h4>Fête de l'Enseignement : Honneur à nos éducateurs</h4>
+                    <p>À l'occasion de la journée nationale de l'enseignement, notre école a organisé une célébration festive en l'honneur de ses enseignants dévoués.</p>
+                    <a href="#" class="read-more">Lire la suite &rarr;</a>
+                </div>
+            </div>
+
+            <!-- CARTE 2 -->
+            <div class="article-card">
+                <img src="images/ir.jpeg" alt="Inauguration Atelier">
+                <div class="article-body">
+                    <span class="badge-cat">Infrastructure</span>
+                    <div class="article-meta">
+                        <span>📅 25 Juin 2026</span>
+                        <span>⏰ 02:47:00</span>
+                    </div>
+                    <h4>Inauguration du Nouvel Atelier d'Hôtellerie et Restauration</h4>
+                    <p>Notre école franchit une nouvelle étape dans la professionnalisation de ses filières techniques avec cet espace ultramoderne.</p>
+                    <a href="#" class="read-more">Lire la suite &rarr;</a>
+                </div>
+            </div>
+
+            <!-- CARTE 3 -->
+            <div class="article-card">
+                <img src="images/batiste.jpeg" alt="Début des inscriptions">
+                <div class="article-body">
+                    <span class="badge-cat">Inscriptions</span>
+                    <div class="article-meta">
+                        <span>📅 25 Juin 2026</span>
+                        <span>⏰ 07:30:00</span>
+                    </div>
+                    <h4>Début des inscriptions pour l'année Scolaire : Une nouvelle année pleine de promesses !</h4>
+                    <p>La cloche a sonné, marquant officiellement le début des inscriptions pour l'année académique au C.S JOBEC.</p>
+                    <a href="#" class="read-more">Lire la suite &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contact">
+        <div class="footer-container">
+            <div class="footer-col">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <img src="images/logo.jpeg" alt="Logo" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                    <h4 style="margin: 0;">C.S JOBEC</h4>
+                </div>
+                <p><strong>Fondement de la transformation</strong></p>
+                <p>Établissement scolaire d'excellence proposant un enseignement de qualité de la maternelle au secondaire.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Liens Rapides</h4>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="index.html#apropos">À Propos</a></li>
+                    <li><a href="actualites.html">Actualités</a></li>
+                    <li><a href="index.html#equipe">Notre Équipe</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Cycles & Options</h4>
+                <ul>
+                    <li><a href="#">Maternelle & Primaire</a></li>
+                    <li><a href="#">Secondaire Général</a></li>
+                    <li><a href="#">Commerciale & Gestion</a></li>
+                    <li><a href="#">Scientifique</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>📞 +243 [Votre Numéro]</p>
+                <p>✉️ contact@csjobec.com</p>
+                <p>📍 Kinshasa, RDC</p>
+                <p><a href="https://wa.me/" style="color: #25d366; text-decoration: none; font-weight: 500;">💬 Discuter sur WhatsApp</a></p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Complexe Scolaire JOBEC. Tous droits réservés.</p>
+            <div style="display: flex; gap: 15px;">
+                <a href="#" style="color: #8b949e; text-decoration: none;">Facebook</a>
+                <a href="#" style="color: #8b949e; text-decoration: none;">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
