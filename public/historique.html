@@ -2,66 +2,138 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Mot du Promoteur & Historique - CS JOBEC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>À Propos - C.S JOBEC</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1a202c;
+            --text-muted: #4a5568;
             --primary-blue: #002147;
+            --primary-dark: #001224;
             --gold: #D4AF37;
-            --bg-light: #f8fafc;
-            --text-dark: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
+            background-color: var(--bg-color);
+            color: var(--text-main);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
+        /* EN-TÊTE */
         header {
-            background: var(--primary-blue);
-            color: white;
-            padding: 3rem 2rem;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 2.5rem;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-blue);
         }
 
-        header p {
-            margin: 10px 0 0;
+        .logo-container img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
             color: var(--gold);
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* HERO SECTION À PROPOS */
+        .hero-apropos {
+            position: relative;
+            padding: 100px 20px 80px 20px;
+            text-align: center;
+            color: #ffffff;
+            background: linear-gradient(rgba(0, 33, 71, 0.9), rgba(0, 33, 71, 0.9)), url('images/ban1.jpeg') center/cover no-repeat;
+        }
+
+        .hero-apropos span.badge-icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .hero-apropos h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .hero-apropos p {
+            font-size: 1.2rem;
+            color: var(--gold);
+            max-width: 700px;
+            margin: 0 auto;
             font-weight: 300;
         }
 
-        .container {
+        /* CONTENU PRINCIPAL */
+        .main-content {
             max-width: 1000px;
-            margin: 0 auto;
-            padding: 3rem 20px;
+            margin: -40px auto 60px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-bottom: 30px;
-            color: var(--primary-blue);
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-
-        .back-link:hover {
-            color: var(--gold);
-        }
-
-        /* Section Mot du Promoteur */
+        /* SECTION MOT DU PROMOTEUR */
         .promoter-section {
-            background: white;
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
@@ -70,11 +142,18 @@
             gap: 40px;
             align-items: center;
             margin-bottom: 50px;
+            border: 1px solid var(--border-color);
         }
 
         .promoter-content {
             flex: 1;
             min-width: 300px;
+        }
+
+        .promoter-content h2 {
+            color: var(--primary-blue);
+            font-size: 2rem;
+            margin-bottom: 20px;
         }
 
         .promoter-image {
@@ -96,7 +175,7 @@
             border-left: 5px solid var(--gold);
             margin: 0 0 20px 0;
             padding-left: 20px;
-            color: #1e293b;
+            color: var(--text-main);
             font-size: 1.1rem;
         }
 
@@ -113,12 +192,14 @@
             font-size: 0.95rem;
         }
 
-        /* Section Historique / Timeline */
+        /* SECTION HISTORIQUE */
         .history-section {
-            background: white;
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 60px;
         }
 
         .history-section h2 {
@@ -130,7 +211,7 @@
 
         .history-text-content {
             font-size: 1.05rem;
-            color: var(--text-dark);
+            color: var(--text-muted);
         }
 
         .history-text-content p {
@@ -148,18 +229,152 @@
             font-weight: 500;
             border-radius: 0 10px 10px 0;
         }
+
+        /* SECTION VALEURS / POINTS CLÉS */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto 80px auto;
+            padding: 0 20px;
+        }
+
+        .feature-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.3s;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-box h3 {
+            color: var(--primary-blue);
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+        }
+
+        .feature-box p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: var(--primary-dark);
+            color: #cbd5e1;
+            padding: 60px 20px 20px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .footer-col p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-col ul li a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            header {
+                padding: 15px 20px;
+            }
+            nav ul {
+                display: none;
+            }
+            .promoter-section, .history-section {
+                padding: 25px;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <!-- HEADER -->
     <header>
-        <h1>Le Mot du Promoteur & Historique</h1>
-        <p>Les racines de notre vision et le parcours du CS JOBEC</p>
+        <div class="logo-container">
+            <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
+            <span>C.S JOBEC</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="apropos.html" class="active">À Propos</a></li>
+                <li><a href="actualite.html">Actualités</a></li>
+                <li><a href="galeries.html">Galeries</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/" class="whatsapp-btn">💬 WhatsApp</a>
     </header>
 
-    <div class="container">
-        <a href="index.html" class="back-link">← Retour à l'accueil</a>
+    <!-- HERO SECTION -->
+    <section class="hero-apropos">
+        <span class="badge-icon">✨</span>
+        <h1>À Propos</h1>
+        <p>Les racines de notre vision et le parcours du Complexe Scolaire JOBEC</p>
+    </section>
 
+    <!-- CONTENU PRINCIPAL -->
+    <main class="main-content">
         <!-- Section Mot du Promoteur -->
         <section class="promoter-section">
             <div class="promoter-content">
@@ -178,7 +393,6 @@
         <!-- Section Historique Complète -->
         <section class="history-section">
             <h2>L'Historique du Complexe Scolaire Jobec</h2>
-            
             <div class="history-text-content">
                 <p>Depuis le jour où nous avons quitté notre pays d’origine, la République démocratique du Congo, nous nous sommes fait une promesse : revenir un jour afin de contribuer concrètement à son développement.</p>
                 
@@ -201,8 +415,72 @@
                 </div>
             </div>
         </section>
+    </main>
 
-    </div>
+    <!-- SECTION VALEURS / POINTS CLÉS -->
+    <section class="features-grid">
+        <div class="feature-box">
+            <h3>🎯 Notre Vision</h3>
+            <p>Bâtir un pôle d'excellence incontournable en matière d'éducation, formant des citoyens intègres, compétents et acteurs du développement.</p>
+        </div>
+        <div class="feature-box">
+            <h3>💡 Notre Mission</h3>
+            <p>Encadrer les élèves de la maternelle jusqu'aux humanités en leur fournissant des bases scientifiques, techniques et humaines solides.</p>
+        </div>
+        <div class="feature-box">
+            <h3>🤝 Nos Valeurs</h3>
+            <p>Discipline, Travail, Intégrité, Esprit de communauté et Recherche permanente de l'excellence académique et humaine.</p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contact">
+        <div class="footer-container">
+            <div class="footer-col">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <img src="images/logo.jpeg" alt="Logo" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                    <h4 style="margin: 0;">C.S JOBEC</h4>
+                </div>
+                <p><strong>Fondement de la transformation</strong></p>
+                <p>Établissement scolaire d'excellence proposant un enseignement de qualité de la maternelle au secondaire à N'Sele, Kinshasa.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Liens Rapides</h4>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="apropos.html">À Propos</a></li>
+                    <li><a href="actualite.html">Actualités</a></li>
+                    <li><a href="galeries.html">Galeries</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Applications</h4>
+                <ul>
+                    <li><a href="bibliotheque.html">Bibliothèque en Ligne</a></li>
+                    <li><a href="espace-parent.html">Espace Parent</a></li>
+                    <li><a href="admin.html">Espace RH</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>📞 +243 [Votre Numéro]</p>
+                <p>✉️ complexescolairejobec@gmail.com</p>
+                <p>📍 N'Sele, Kinshasa, RDC</p>
+                <p><a href="https://wa.me/" style="color: #25d366; text-decoration: none; font-weight: 500;">💬 Discuter sur WhatsApp</a></p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Complexe Scolaire JOBEC. Tous droits réservés.</p>
+            <div style="display: flex; gap: 15px;">
+                <a href="#" style="color: #cbd5e1; text-decoration: none;">Facebook</a>
+                <a href="#" style="color: #cbd5e1; text-decoration: none;">Instagram</a>
+            </div>
+        </div>
+    </footer>
 
 </body>
 </html>

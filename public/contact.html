@@ -3,292 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - CS JOBEC</title>
+    <title>Contact - C.S JOBEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --border-color: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --primary-blue: #002147;
+            --gold: #D4AF37;
             --whatsapp-color: #25d366;
-            --whatsapp-hover: #20ba5a;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --border-color: #cbd5e1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            background-color: var(--card-bg);
-            width: 100%;
-            max-width: 650px;
-            padding: 35px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 4px 10px rgba(0, 0, 0, 0.03);
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 25px;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-
-        .back-link:hover {
-            color: var(--primary-hover);
-            text-decoration: underline;
-        }
-
-        h2 {
-            margin-top: 0;
-            margin-bottom: 6px;
-            font-size: 1.8rem;
-            color: var(--text-color);
-        }
-
-        .subtitle {
-            color: #64748b;
-            font-size: 0.95rem;
-            margin-bottom: 25px;
-            line-height: 1.5;
-        }
-
-        /* Section Adresses Professionnelle */
-        .addresses-box {
-            background-color: #f1f5f9;
-            border-left: 4px solid var(--primary-color);
-            padding: 16px 20px;
-            border-radius: 0 10px 10px 0;
-            margin-bottom: 25px;
-        }
-
-        .addresses-box h3 {
-            margin: 0 0 10px 0;
-            font-size: 1rem;
-            color: var(--text-color);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .addresses-box ul {
-            margin: 0;
-            padding-left: 18px;
-            color: #475569;
-            font-size: 0.9rem;
+            color: var(--text-main);
             line-height: 1.6;
         }
 
-        .addresses-box li strong {
-            color: var(--text-color);
+        /* EN-TÊTE */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        /* Bouton WhatsApp Direct */
-        .whatsapp-direct-btn {
+        .logo-container {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background-color: var(--whatsapp-color);
-            color: white;
-            text-decoration: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 1rem;
+            gap: 12px;
             font-weight: bold;
-            margin-bottom: 25px;
-            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+            font-size: 1.2rem;
+            color: var(--text-main);
         }
 
-        .whatsapp-direct-btn:hover {
-            background-color: var(--whatsapp-hover);
-            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3);
+        .logo-container img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
-        .whatsapp-direct-btn:active {
-            transform: scale(0.98);
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
         }
 
-        .divider {
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-            line-height: 0.1em;
-            margin: 30px 0;
+        nav ul li a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
         }
 
-        .divider span {
-            background: #fff;
-            padding: 0 12px;
-            color: #94a3b8;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--gold);
         }
 
-        form {
+        .whatsapp-btn {
+            background: var(--whatsapp-color);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* CONTENU PRINCIPAL */
+        .contact-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 40px;
+        }
+
+        /* COLONNE INFORMATIONS */
+        .info-column {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 20px;
+        }
+
+        .info-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .info-icon {
+            font-size: 1.8rem;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            color: var(--gold);
+        }
+
+        .info-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        .info-content p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* COLONNE FORMULAIRE */
+        .form-column {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .form-column h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
         label {
-            font-weight: 600;
+            display: block;
             font-size: 0.9rem;
-            color: #334155;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-weight: 500;
         }
 
         input, textarea {
             width: 100%;
-            padding: 12px 14px;
+            padding: 12px 16px;
+            background-color: transparent;
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 8px;
+            color: var(--text-main);
             font-size: 0.95rem;
-            background-color: #fff;
-            box-sizing: border-box;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            font-family: inherit;
+            transition: border-color 0.3s;
         }
 
         input:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            border-color: var(--gold);
         }
 
         textarea {
             resize: vertical;
-            min-height: 130px;
+            min-height: 120px;
         }
 
-        button[type="submit"] {
-            margin-top: 10px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 10px;
+        .submit-btn {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            width: 100%;
             padding: 14px;
+            border-radius: 8px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
         }
 
-        button[type="submit"]:hover {
-            background-color: var(--primary-hover);
-            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+        .submit-btn:hover {
+            background-color: var(--gold);
+            color: #000;
+            border-color: var(--gold);
         }
 
-        button[type="submit"]:active {
-            transform: scale(0.98);
+        @media (max-width: 900px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            header {
+                padding: 15px 20px;
+            }
+            nav ul {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html" class="back-link">← Retour au site officiel</a>
-        
-        <h2>Contactez-nous</h2>
-        <p class="subtitle">Une question ? Laissez-nous un message ou écrivez-nous directement en un clic.</p>
 
-        <!-- Bloc Adresses Intégré et Mis en Page -->
-        <div class="addresses-box">
-            <h3>Nos Adresses Officielles</h3>
+    <!-- HEADER -->
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
+            <span>C.S JOBEC</span>
+        </div>
+        <nav>
             <ul>
-                <li><strong>Adresse Principale :</strong> Av. Ntembola n°9, Q/Mobanse, Commune de N'sele / Kinshasa, RDC</li>
-                <li><strong>Secrétariat Général :</strong> Bureau administratif du Complexe Scolaire Jobec</li>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="apropos.html">À Propos</a></li>
+                <li><a href="actualite.html">Actualités</a></li>
+                <li><a href="galeries.html">Galeries</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
             </ul>
+        </nav>
+        <a href="https://wa.me/243818826384" class="whatsapp-btn" target="_blank">💬 WhatsApp</a>
+    </header>
+
+    <!-- CONTENU CONTACT -->
+    <div class="contact-container">
+        
+        <!-- INFORMATIONS -->
+        <div class="info-column">
+            <div class="info-card">
+                <div class="info-icon">📞</div>
+                <div class="info-content">
+                    <h3>Téléphone</h3>
+                    <p>+243 818 826 384</p>
+                    <p style="font-size: 0.85rem; color: var(--gold); margin-top: 4px;">Appelez-nous du lundi au vendredi</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">✉️</div>
+                <div class="info-content">
+                    <h3>Email</h3>
+                    <p>complexescolairejobec@gmail.com</p>
+                    <p style="font-size: 0.85rem; color: var(--gold); margin-top: 4px;">Écrivez-nous à tout moment</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">📍</div>
+                <div class="info-content">
+                    <h3>Localisation</h3>
+                    <p>Av. Ntembola n°9, Q/Mobanse</p>
+                    <p style="font-size: 0.85rem; color: var(--gold); margin-top: 4px;">Commune de N'Sele, Kinshasa, RDC</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">🕒</div>
+                <div class="info-content">
+                    <h3>Horaires</h3>
+                    <p>Lun - Ven : 7h00 - 17h00</p>
+                    <p style="font-size: 0.85rem; color: var(--gold); margin-top: 4px;">Samedi : 8h00 - 13h00</p>
+                </div>
+            </div>
         </div>
 
-        <!-- Bouton de contact direct WhatsApp -->
-        <a href="https://wa.me/243818826384?text=Bonjour%20l'administration%20du%20CS%20JOBEC,%20je%20vous%20contacte%20depuis%20le%20site%20web." 
-           target="_blank" 
-           class="whatsapp-direct-btn">
-            💬 Discuter directement sur WhatsApp
-        </a>
+        <!-- FORMULAIRE -->
+        <div class="form-column">
+            <h2>👤 Envoyez-nous un message</h2>
+            
+            <!-- Formspree gère l'envoi direct par e-mail sans erreur de blocage -->
+            <form action="https://formspree.io/f/votre-id-formspree" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nom">Nom complet *</label>
+                        <input type="text" id="nom" name="nom" placeholder="Votre nom complet" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" placeholder="votre@email.com" required>
+                    </div>
+                </div>
 
-        <div class="divider"><span>Ou envoyez un message</span></div>
-        
-        <form id="formContact" onsubmit="envoyerMessage(event)">
-            <div class="form-group">
-                <label for="nom">Nom complet :</label>
-                <input type="text" id="nom" placeholder="Votre nom complet" required>
-            </div>
+                <div class="form-group">
+                    <label for="sujet">Sujet *</label>
+                    <input type="text" id="sujet" name="sujet" placeholder="Objet du message" required>
+                </div>
 
-            <div class="form-group">
-                <label for="email">Adresse Email :</label>
-                <input type="email" id="email" placeholder="votre.email@exemple.com" required>
-            </div>
+                <div class="form-group">
+                    <label for="message">Message *</label>
+                    <textarea id="message" name="message" placeholder="Votre message..." required></textarea>
+                </div>
 
-            <div class="form-group">
-                <label for="sujet">Sujet :</label>
-                <input type="text" id="sujet" placeholder="Le motif de votre message" required>
-            </div>
+                <button type="submit" class="submit-btn">
+                    ✈️ Envoyer le message
+                </button>
+            </form>
+        </div>
 
-            <div class="form-group">
-                <label for="message">Message :</label>
-                <textarea id="message" placeholder="Votre message ici..." required></textarea>
-            </div>
-
-            <button type="submit">Envoyer le message</button>
-        </form>
     </div>
 
-    <script>
-    async function envoyerMessage(event) {
-        event.preventDefault();
-
-        const formData = {
-            nom: document.getElementById('nom').value,
-            email: document.getElementById('email').value,
-            sujet: document.getElementById('sujet').value,
-            message: document.getElementById('message').value
-        };
-
-        try {
-            const response = await fetch('/api/contact', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert("Votre message a bien été envoyé à l'administration du CS JOBEC !");
-                document.getElementById('formContact').reset();
-            } else {
-                alert("Erreur : " + (result.error || "Impossible d'envoyer le message."));
-            }
-        } catch (error) {
-            console.error("Erreur réseau:", error);
-            alert("Erreur de connexion au serveur.");
-        }
-    }
-    </script>
 </body>
 </html>

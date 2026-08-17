@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galerie Photo - C.S JOBEC</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1a202c;
+            --text-muted: #4a5568;
+            --primary-blue: #0088cc;
+            --primary-dark: #005588;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* EN-TÊTE */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+        }
+
+        .logo-container img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary-blue);
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* HERO GALERIE */
+        .hero-gallery {
+            position: relative;
+            padding: 80px 20px 60px 20px;
+            text-align: center;
+            color: #ffffff;
+            background: linear-gradient(rgba(0, 30, 60, 0.85), rgba(0, 30, 60, 0.85)), url('images/ban1.jpeg') center/cover no-repeat;
+        }
+
+        .hero-gallery h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+        }
+
+        .hero-gallery p {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            margin-bottom: 30px;
+        }
+
+        /* BARRE DE RECHERCHE ET FILTRES */
+        .filter-container {
+            max-width: 900px;
+            margin: -30px auto 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 15px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary-blue);
+            color: #ffffff;
+        }
+
+        /* GRILLE DE LA GALERIE */
+        .gallery-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 20px 80px 20px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .gallery-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.08);
+        }
+
+        .gallery-img-container {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gallery-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .gallery-item:hover .gallery-img-container img {
+            transform: scale(1.08);
+        }
+
+        .gallery-info {
+            padding: 20px;
+        }
+
+        .gallery-tag {
+            display: inline-block;
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .gallery-info h3 {
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+
+        .gallery-info p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #0f172a;
+            color: #cbd5e1;
+            padding: 60px 20px 20px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .footer-col p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-col ul li a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            header {
+                padding: 15px 20px;
+            }
+            nav ul {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
+            <span>C.S JOBEC</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="index.html#apropos">À Propos</a></li>
+                <li><a href="actualite.html">Actualités</a></li>
+                <li><a href="galeries.html" class="active">Galeries</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/" class="whatsapp-btn">💬 WhatsApp</a>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero-gallery">
+        <h1>Galerie Photo</h1>
+        <p>Découvrez les moments forts, les infrastructures et la vie de notre établissement d'excellence.</p>
+    </section>
+
+    <!-- BARRE DE FILTRE ET RECHERCHE -->
+    <div class="filter-container">
+        <div class="search-box">
+            <span>🔍</span>
+            <input type="text" id="searchInput" placeholder="Rechercher des photos...">
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterGallery('all')">Tous</button>
+            <button class="filter-btn" onclick="filterGallery('evenement')">Événements</button>
+            <button class="filter-btn" onclick="filterGallery('ecole')">Infrastructures</button>
+            <button class="filter-btn" onclick="filterGallery('classes')">Classes</button>
+        </div>
+    </div>
+
+    <!-- SECTION GRILLE GALERIE -->
+    <section class="gallery-section">
+        <div class="gallery-grid" id="galleryGrid">
+            
+            <!-- Élément 1 -->
+            <div class="gallery-item" data-category="evenement">
+                <div class="gallery-img-container">
+                    <img src="images/ban1.jpeg" alt="Conférence et Événement">
+                </div>
+                <div class="gallery-info">
+                    <span class="gallery-tag">Événements</span>
+                    <h3>Conférence & Séminaire</h3>
+                    <p>Intervention de la direction lors de la réunion pédagogique.</p>
+                </div>
+            </div>
+
+            <!-- Élément 2 -->
+            <div class="gallery-item" data-category="classes">
+                <div class="gallery-img-container">
+                    <img src="images/g3.jpeg" alt="Salle de classe">
+                </div>
+                <div class="gallery-info">
+                    <span class="gallery-tag">Classes</span>
+                    <h3>Séance d'Informatique</h3>
+                    <p>Élèves en plein apprentissage pratique dans notre salle multimédia.</p>
+                </div>
+            </div>
+
+            <!-- Élément 3 -->
+            <div class="gallery-item" data-category="ecole">
+                <div class="gallery-img-container">
+                    <img src="images/ban2.jpeg" alt="Infrastructures">
+                </div>
+                <div class="gallery-info">
+                    <span class="gallery-tag">Infrastructures</span>
+                    <h3>Bâtiment Principal</h3>
+                    <p>Vue d'ensemble de nos installations modernes et sécurisées.</p>
+                </div>
+            </div>
+
+            <!-- Élément 4 -->
+            <div class="gallery-item" data-category="evenement">
+                <div class="gallery-img-container">
+                    <img src="images/jobec.jpeg" alt="Direction">
+                </div>
+                <div class="gallery-info">
+                    <span class="gallery-tag">Événements</span>
+                    <h3>Le Couple Promoteur</h3>
+                    <p>Moment marquant de l'engagement de la direction pour l'école.</p>
+                </div>
+            </div>
+
+            <!-- Élément 5 -->
+            <div class="gallery-item" data-category="classes">
+                <div class="gallery-img-container">
+                    <img src="images/visionnaire.jpeg" alt="Encadrement">
+                </div>
+                <div class="gallery-info">
+                    <span class="gallery-tag">Classes</span>
+                    <h3>Encadrement Pédagogique</h3>
+                    <p>Suivi rapproché des apprenants par notre corps professoral qualifié.</p>
+                </div>
+            </div>
+
+            <!-- Élément 6 -->
+            <div class="gallery-item" data-category="ecole">
+                <div class="gallery-img-container">
+                    <img src="images/batiste.jpeg" alt="Staff">
+                </div>
+                <div class="gallery-info">
+                    <span class="gallery-tag">Infrastructures</span>
+                    <h3>Administration</h3>
+                    <p>Notre équipe administrative prête à vous accompagner au quotidien.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contact">
+        <div class="footer-container">
+            <div class="footer-col">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <img src="images/logo.jpeg" alt="Logo" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                    <h4 style="margin: 0;">C.S JOBEC</h4>
+                </div>
+                <p><strong>Fondement de la transformation</strong></p>
+                <p>Établissement scolaire d'excellence proposant un enseignement de qualité de la maternelle au secondaire.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Liens Rapides</h4>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="index.html#apropos">À Propos</a></li>
+                    <li><a href="actualite.html">Actualités</a></li>
+                    <li><a href="galeries.html">Galeries</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Applications</h4>
+                <ul>
+                    <li><a href="bibliotheque.html">Bibliothèque en Ligne</a></li>
+                    <li><a href="espace-parent.html">Espace Parent</a></li>
+                    <li><a href="admin.html">Espace RH</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>📞 +243 [Votre Numéro]</p>
+                <p>✉️ complexescolairejobec@gmail.com</p>
+                <p>📍 Kinshasa, RDC</p>
+                <p><a href="https://wa.me/" style="color: #25d366; text-decoration: none; font-weight: 500;">💬 Discuter sur WhatsApp</a></p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Complexe Scolaire JOBEC. Tous droits réservés.</p>
+            <div style="display: flex; gap: 15px;">
+                <a href="#" style="color: #cbd5e1; text-decoration: none;">Facebook</a>
+                <a href="#" style="color: #cbd5e1; text-decoration: none;">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DE FILTRAGE ET RECHERCHE -->
+    <script>
+        // Fonction de filtrage par catégorie
+        function filterGallery(category) {
+            const items = document.querySelectorAll('.gallery-item');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            items.forEach(item => {
+                if (category === 'all' || item.getAttribute('data-category') === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Fonction de recherche textuelle en temps réel
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.gallery-item');
+
+            items.forEach(item => {
+                const title = item.querySelector('h3').innerText.toLowerCase();
+                const desc = item.querySelector('p').innerText.toLowerCase();
+                if (title.includes(term) || desc.includes(term)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
