@@ -39,7 +39,7 @@
         .form-card.active { display: block; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .table-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700; }
-        
+
         /* Styles pour le dashboard financier */
         .finance-dashboard {
             display: grid;
@@ -62,7 +62,7 @@
 <body>
 
 <div class="card-container" id="mainContainer">
-    
+
     <!-- SECTION 1 : CONNEXION -->
     <div id="loginSection" class="section active">
         <img src="images/logo.png" alt="Logo CS Jobec" class="logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2270%22 height=%2270%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23ffd700%22 stroke-width=%222%22><circle cx=%2212%22 cy=%228%22 r=%224%22/><path d=%22M4 20c0-4 4-6 8-6s8 2 8 6%22/></svg>'">
@@ -79,10 +79,10 @@
 
     <!-- SECTION 2 : TABLEAU DE BORD -->
     <div id="dashboardSection" class="section">
-        
+
         <h1>Tableau de Bord - Personnel & Finances</h1>
         <p>Suivi global des recettes scolaires (synchronisé avec la base de données Neon) et gestion du personnel.</p>
-        
+
         <!-- AFFICHAGE DES TOTAUX FINANCIERS DEPUIS LA BDD -->
         <h3 style="color: #ffd700; margin-bottom: 15px;">📊 Totaux des Recettes (Base de données)</h3>
         <div class="finance-dashboard">
@@ -103,8 +103,16 @@
                 <span id="sumT3">0.00 $</span>
             </div>
             <div class="finance-card total-card">
-                <h4>Total Général Recettes</h4>
+                <h4>Solde Général</h4>
                 <span id="sumGeneral">0.00 $</span>
+            </div>
+            <div class="finance-card">
+                <h4>Total Salaires</h4>
+                <span id="sumSalaires">0.00 $</span>
+            </div>
+            <div class="finance-card">
+                <h4>Total Dépenses</h4>
+                <span id="sumDepenses">0.00 $</span>
             </div>
         </div>
 
@@ -127,7 +135,7 @@
                     <div class="input-group"><label>Adresse</label><input type="text" id="adresse"></div>
                     <div class="input-group"><label>Date de Naissance</label><input type="date" id="date_naissance"></div>
                     <div class="input-group"><label>Salaire de Base ($)</label><input type="number" step="0.01" id="salaire_base"></div>
-                    
+
                     <div class="input-group">
                         <label>État civil</label>
                         <select id="etat_civil">
@@ -269,43 +277,43 @@
         document.getElementById("transactionFormCard").classList.toggle("active");
     }
 
-async function loadFinanceTotals() {
-    try {
-        const response = await fetch('/api/finances/totaux'); 
-        if (response.ok) {
-            const fullResponse = await response.json(); 
-            const financeData = fullResponse.data;      
+    async function loadFinanceTotals() {
+        try {
+            const response = await fetch('/api/finances/totaux'); 
+            if (response.ok) {
+                const fullResponse = await response.json(); 
+                const financeData = fullResponse.data;      
 
-            const totalInscription = parseFloat(financeData.total_inscription || 0);
-            const totalT1 = parseFloat(financeData.total_t1 || 0);
-            const totalT2 = parseFloat(financeData.total_t2 || 0);
-            const totalT3 = parseFloat(financeData.total_t3 || 0);
-            
-            // Total des recettes brutes
-            const totalRecettesBrutes = totalInscription + totalT1 + totalT2 + totalT3;
-            
-            // On récupère le total des dépenses valides renvoyé par le backend
-            const totalDepenses = parseFloat(financeData.total_depenses || 0);
+                const totalInscription = parseFloat(financeData.total_inscription || 0);
+                const totalT1 = parseFloat(financeData.total_t1 || 0);
+                const totalT2 = parseFloat(financeData.total_t2 || 0);
+                const totalT3 = parseFloat(financeData.total_t3 || 0);
+                const totalRecettesBrutes = totalInscription + totalT1 + totalT2 + totalT3;
 
-            // Le solde réel (Recettes - Dépenses)
-            const totalGeneral = totalRecettesBrutes - totalDepenses;
+                const totalSalaires = parseFloat(financeData.total_salaires || 0);
+                const totalDepensesDiverses = parseFloat(financeData.total_depenses_diverses || 0);
+                const totalSortiesGlobal = parseFloat(financeData.total_sorties_global || 0);
 
-            document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
-            document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
-            document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
-            document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
-            document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
+                const totalGeneral = totalRecettesBrutes - totalSortiesGlobal;
+
+                document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
+                document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
+                document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
+                document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
+                document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
+                document.getElementById("sumSalaires").innerText = totalSalaires.toFixed(2) + " $";
+                document.getElementById("sumDepenses").innerText = totalDepensesDiverses.toFixed(2) + " $";
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement des totaux financiers :", error);
         }
-    } catch (error) {
-        console.error("Erreur lors du chargement des totaux financiers :", error);
     }
-}
 
     async function loadPersonnelData() {
         try {
             const response = await fetch('/api/personnels');
             allEmployees = await response.json();
-            
+
             const tbody = document.getElementById("personnelTableBody");
             tbody.innerHTML = "";
 
@@ -353,7 +361,7 @@ async function loadFinanceTotals() {
         try {
             const response = await fetch('/api/transactions');
             allTransactions = await response.json();
-            
+
             const tbody = document.getElementById("transactionsTableBody");
             tbody.innerHTML = "";
 
@@ -412,6 +420,7 @@ async function loadFinanceTotals() {
                 document.getElementById("transactionForm").reset();
                 document.getElementById("transactionFormCard").classList.remove("active");
                 loadTransactions();
+                loadFinanceTotals();
             } else {
                 alert("Erreur lors de l'enregistrement de la transaction.");
             }
@@ -442,6 +451,7 @@ async function loadFinanceTotals() {
                 if (response.ok) {
                     alert("Transaction annulée.");
                     loadTransactions();
+                    loadFinanceTotals();
                 } else {
                     alert("Erreur lors de l'annulation.");
                 }
@@ -455,7 +465,7 @@ async function loadFinanceTotals() {
         event.preventDefault();
         const id = document.getElementById("employeeId").value;
         const formData = new FormData();
-        
+
         formData.append("nom", document.getElementById("nom").value);
         formData.append("prenom", document.getElementById("prenom").value);
         formData.append("fonction", document.getElementById("fonction").value);

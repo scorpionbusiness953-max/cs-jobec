@@ -152,54 +152,37 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
-// --- ROUTE FINANCES : TOTAUX (Recettes - Dépenses Valides) ---
+// --- ROUTE MISE À JOUR : TOTAUX AVEC DÉTAIL DÉPENSES/SALAIRES ---
 app.get('/api/finances/totaux', async (req, res) => {
     try {
-        // 1. Récupérer les totaux des recettes (élèves)
         const queryEntrees = `
-            SELECT 
-                SUM(frais_inscription) AS total_inscription, 
-                SUM(montant_t1) AS total_t1, 
-                SUM(montant_t2) AS total_t2, 
-                SUM(montant_t3) AS total_t3 
-            FROM paiements;
+            SELECT SUM(frais_inscription) AS total_inscription, SUM(montant_t1) AS total_t1, 
+                   SUM(montant_t2) AS total_t2, SUM(montant_t3) AS total_t3 FROM paiements;
         `;
         const resEntrees = await pool.query(queryEntrees);
 
-        // 2. Récupérer le total des dépenses dont le statut est VALIDE uniquement
+        // On sépare les sommes selon le type (VALIDE uniquement)
         const querySorties = `
-            SELECT SUM(montant) AS total_depenses 
+            SELECT 
+                SUM(CASE WHEN type = 'SALAIRE' THEN montant ELSE 0 END) AS total_salaires,
+                SUM(CASE WHEN type = 'DEPENSE' THEN montant ELSE 0 END) AS total_depenses_diverses,
+                SUM(montant) AS total_sorties_global
             FROM transactions_sorties 
             WHERE statut = 'VALIDE';
         `;
         const resSorties = await pool.query(querySorties);
 
-        // On combine les résultats pour que le front-office puisse les utiliser facilement
         res.json({ 
             success: true, 
             data: {
                 ...resEntrees.rows[0],
-                total_depenses: resSorties.rows[0].total_depenses || 0
+                total_salaires: resSorties.rows[0].total_salaires || 0,
+                total_depenses_diverses: resSorties.rows[0].total_depenses_diverses || 0,
+                total_sorties_global: resSorties.rows[0].total_sorties_global || 0
             }
         });
     } catch (err) {
-        console.error("Erreur lors de la récupération des totaux financiers :", err);
         res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// Enregistrer un nouveau paiement / dépense
-app.post('/api/transactions', async (req, res) => {
-    try {
-        const { type, destinataire, montant, description } = req.body;
-        const result = await pool.query(
-            `INSERT INTO transactions_sorties (type_transaction, destinataire, montant, description, statut) 
-             VALUES ($1, $2, $3, $4, 'VALIDE') RETURNING *`,
-            [type, destinataire, montant, description]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
     }
 });
 
