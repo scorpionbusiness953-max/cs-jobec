@@ -270,29 +270,36 @@
     }
 
     async function loadFinanceTotals() {
-        try {
-            const response = await fetch('/api/finances/totaux'); 
-            if (response.ok) {
-                const fullResponse = await response.json(); 
-                const financeData = fullResponse.data;      
+    try {
+        const response = await fetch('/api/finances/totaux'); 
+        if (response.ok) {
+            const fullResponse = await response.json(); 
+            const financeData = fullResponse.data;      
 
-                const totalInscription = parseFloat(financeData.total_inscription || 0);
-                const totalT1 = parseFloat(financeData.total_t1 || 0);
-                const totalT2 = parseFloat(financeData.total_t2 || 0);
-                const totalT3 = parseFloat(financeData.total_t3 || 0);
-                const totalGeneral = totalInscription + totalT1 + totalT2 + totalT3;
+            const totalInscription = parseFloat(financeData.total_inscription || 0);
+            const totalT1 = parseFloat(financeData.total_t1 || 0);
+            const totalT2 = parseFloat(financeData.total_t2 || 0);
+            const totalT3 = parseFloat(financeData.total_t3 || 0);
+            
+            // Total des recettes brutes
+            const totalRecettesBrutes = totalInscription + totalT1 + totalT2 + totalT3;
+            
+            // On récupère le total des dépenses valides renvoyé par le backend
+            const totalDepenses = parseFloat(financeData.total_depenses || 0);
 
-                document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
-                document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
-                document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
-                document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
-                document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
-            }
-        } catch (error) {
-            console.error("Erreur lors du chargement des totaux financiers :", error);
+            // Le solde réel (Recettes - Dépenses)
+            const totalGeneral = totalRecettesBrutes - totalDepenses;
+
+            document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
+            document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
+            document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
+            document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
+            document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
         }
+    } catch (error) {
+        console.error("Erreur lors du chargement des totaux financiers :", error);
     }
-
+}
     async function loadPersonnelData() {
         try {
             const response = await fetch('/api/personnels');
