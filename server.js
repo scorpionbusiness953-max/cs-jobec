@@ -66,8 +66,10 @@ async function sendWhatsAppNotification(to, messageText) {
 }
 
 // Configuration de Multer : 
+// 1. Pour le personnel (stockage en mémoire pour insertion en base de données)
 const uploadMemory = multer({ storage: multer.memoryStorage() });
 
+// 2. Pour la bibliothèque (stockage disque avec conservation de l'extension d'origine .pdf)
 const storageDisk = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/uploads/');
@@ -79,7 +81,7 @@ const storageDisk = multer.diskStorage({
 });
 const uploadDisk = multer({ storage: storageDisk });
 
-// Connexion à la base de données Neon
+// Connexion à la base de données Neon (avec options de robustesse et SSL strict)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
@@ -95,7 +97,7 @@ pool.connect()
   .then(() => console.log('Connecté à la base de données Neon avec succès !'))
   .catch(err => console.error('Erreur de connexion à la base de données', err));
 
-// --- TÂCHE PLANIFIÉE : VÉRIFICATION DES ANNIVERSAIRES ---
+// --- TÂCHE PLANIFIÉE : VÉRIFICATION DES ANNIVERSAIRES (Tous les jours à 08h00) ---
 cron.schedule('0 8 * * *', async () => {
   console.log("Vérification quotidienne des anniversaires du personnel...");
   try {
@@ -150,37 +152,54 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
-// --- ROUTE CORRIGÉE : TOTAUX FINANCIERS ---
+// --- ROUTE FINANCES : TOTAUX (Recettes - Dépenses Valides) ---
 app.get('/api/finances/totaux', async (req, res) => {
     try {
+        // 1. Récupérer les totaux des recettes (élèves)
         const queryEntrees = `
-            SELECT SUM(frais_inscription) AS total_inscription, SUM(montant_t1) AS total_t1, 
-                   SUM(montant_t2) AS total_t2, SUM(montant_t3) AS total_t3 FROM paiements;
+            SELECT 
+                SUM(frais_inscription) AS total_inscription, 
+                SUM(montant_t1) AS total_t1, 
+                SUM(montant_t2) AS total_t2, 
+                SUM(montant_t3) AS total_t3 
+            FROM paiements;
         `;
         const resEntrees = await pool.query(queryEntrees);
 
-        // Correction ici : utilisation de type_transaction au lieu de type
+        // 2. Récupérer le total des dépenses dont le statut est VALIDE uniquement
         const querySorties = `
-            SELECT 
-                SUM(CASE WHEN type_transaction = 'SALAIRE' THEN montant ELSE 0 END) AS total_salaires,
-                SUM(CASE WHEN type_transaction = 'DEPENSE' THEN montant ELSE 0 END) AS total_depenses_diverses,
-                SUM(montant) AS total_sorties_global
+            SELECT SUM(montant) AS total_depenses 
             FROM transactions_sorties 
             WHERE statut = 'VALIDE';
         `;
         const resSorties = await pool.query(querySorties);
 
+        // On combine les résultats pour que le front-office puisse les utiliser facilement
         res.json({ 
             success: true, 
             data: {
                 ...resEntrees.rows[0],
-                total_salaires: resSorties.rows[0].total_salaires || 0,
-                total_depenses_diverses: resSorties.rows[0].total_depenses_diverses || 0,
-                total_sorties_global: resSorties.rows[0].total_sorties_global || 0
+                total_depenses: resSorties.rows[0].total_depenses || 0
             }
         });
     } catch (err) {
+        console.error("Erreur lors de la récupération des totaux financiers :", err);
         res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Enregistrer un nouveau paiement / dépense
+app.post('/api/transactions', async (req, res) => {
+    try {
+        const { type, destinataire, montant, description } = req.body;
+        const result = await pool.query(
+            `INSERT INTO transactions_sorties (type_transaction, destinataire, montant, description, statut) 
+             VALUES ($1, $2, $3, $4, 'VALIDE') RETURNING *`,
+            [type, destinataire, montant, description]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -200,7 +219,6 @@ app.put('/api/transactions/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
 // Récupérer toutes les transactions de sortie
 app.get('/api/transactions', async (req, res) => {
     try {
@@ -210,8 +228,7 @@ app.get('/api/transactions', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
-// Route pour "Annuler" un paiement
+// Route pour "Annuler" un paiement au lieu de le supprimer
 app.put('/api/transactions/annuler/:id', async (req, res) => {
     try {
         const result = await pool.query(
@@ -223,6 +240,7 @@ app.put('/api/transactions/annuler/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 app.get('/api/personnels', async (req, res) => {
   try {
@@ -460,6 +478,7 @@ app.delete('/api/notes/eleve/:matricule', async (req, res) => {
     }
 });
 
+// Configuration du transporteur d'e-mails
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -488,6 +507,8 @@ app.post('/api/contact', async (req, res) => {
 });
 
 // --- GESTION DE LA BIBLIOTHÈQUE ---
+
+// 1. Récupérer tous les livres de la bibliothèque
 app.get('/api/bibliotheque', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM bibliotheque ORDER BY date_ajout DESC');
@@ -498,6 +519,7 @@ app.get('/api/bibliotheque', async (req, res) => {
     }
 });
 
+// 2. Publier un document (Gère le fichier PDF local)
 app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res) => {
     try {
         const { titre, auteur, categorie } = req.body;
