@@ -103,10 +103,9 @@
                 <span id="sumT3">0.00 $</span>
             </div>
             <div class="finance-card total-card">
-                <p>Total Salaires: <span id="sumSalaires">0.00 $</span></p>
-                <p>Total Dépenses: <span id="sumDepenses">0.00 $</span></p>
+                <h4>Total Général Recettes</h4>
+                <span id="sumGeneral">0.00 $</span>
             </div>
-            
         </div>
 
         <div style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
@@ -270,46 +269,30 @@
         document.getElementById("transactionFormCard").classList.toggle("active");
     }
 
-async function loadFinanceTotals() {
-    try {
-        const response = await fetch('/api/finances/totaux'); 
-        if (response.ok) {
-            const fullResponse = await response.json(); 
-            const financeData = fullResponse.data;      
+    async function loadFinanceTotals() {
+        try {
+            const response = await fetch('/api/finances/totaux'); 
+            if (response.ok) {
+                const fullResponse = await response.json(); 
+                const financeData = fullResponse.data;      
 
-            // Recettes
-            const totalInscription = parseFloat(financeData.total_inscription || 0);
-            const totalT1 = parseFloat(financeData.total_t1 || 0);
-            const totalT2 = parseFloat(financeData.total_t2 || 0);
-            const totalT3 = parseFloat(financeData.total_t3 || 0);
-            const totalRecettesBrutes = totalInscription + totalT1 + totalT2 + totalT3;
-            
-            // Nouvelles variables pour les dépenses et salaires
-            const totalSalaires = parseFloat(financeData.total_salaires || 0);
-            const totalDepensesDiverses = parseFloat(financeData.total_depenses_diverses || 0);
-            const totalSortiesGlobal = parseFloat(financeData.total_sorties_global || 0);
+                const totalInscription = parseFloat(financeData.total_inscription || 0);
+                const totalT1 = parseFloat(financeData.total_t1 || 0);
+                const totalT2 = parseFloat(financeData.total_t2 || 0);
+                const totalT3 = parseFloat(financeData.total_t3 || 0);
+                const totalGeneral = totalInscription + totalT1 + totalT2 + totalT3;
 
-            // Le solde réel (Recettes - Toutes les sorties)
-            const totalGeneral = totalRecettesBrutes - totalSortiesGlobal;
-
-            // Affichage de base
-            document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
-            document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
-            document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
-            document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
-            document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
-
-            document.getElementById("sumSalaires").innerText = totalSalaires.toFixed(2) + " $";
-            document.getElementById("sumDepenses").innerText = totalDepensesDiverses.toFixed(2) + " $";
-
-            // Si vous voulez aussi afficher le détail dans la console ou des nouveaux éléments HTML :
-            console.log("Total Salaires :", totalSalaires);
-            console.log("Total Dépenses Diverses :", totalDepensesDiverses);
+                document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
+                document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
+                document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
+                document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
+                document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement des totaux financiers :", error);
         }
-    } catch (error) {
-        console.error("Erreur lors du chargement des totaux financiers :", error);
     }
-}
+
     async function loadPersonnelData() {
         try {
             const response = await fetch('/api/personnels');
