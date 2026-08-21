@@ -21,13 +21,11 @@
         select option { background-color: #111; color: #fff; }
         .btn { width: 100%; padding: 12px; background-color: #ffffff; color: #000000; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
         .btn:hover { background-color: #ffd700; }
-        .btn-gold { background-color: #ffd700; color: #000000; width: auto; padding: 10px 20px; margin-bottom: 20px; }
+        .btn-gold { background-color: #ffd700; color: #000000; width: auto; padding: 10px 20px; margin-bottom: 20px; display: inline-block; }
         .btn-gold:hover { background-color: #e6c200; }
         .btn-action { padding: 6px 12px; font-size: 12px; border-radius: 5px; border: none; cursor: pointer; margin-right: 5px; font-weight: bold; }
         .btn-edit { background-color: #3498db; color: white; }
-        .btn-edit:hover { background-color: #2980b9; }
         .btn-del { background-color: #e74c3c; color: white; }
-        .btn-del:hover { background-color: #c0392b; }
         .back-link { display: inline-block; margin-top: 20px; color: #ffd700; text-decoration: none; font-size: 14px; }
         .section { display: none; }
         .section.active { display: block; }
@@ -41,6 +39,24 @@
         .form-card.active { display: block; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .table-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700; }
+        
+        /* Styles pour le dashboard financier */
+        .finance-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .finance-card {
+            background-color: #111111;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .finance-card h4 { font-size: 13px; color: #b0b0b0; margin-bottom: 8px; text-transform: uppercase; }
+        .finance-card span { font-size: 20px; font-weight: bold; color: #ffd700; }
+        .finance-card.total-card { border-color: #ffd700; background: rgba(255, 215, 0, 0.05); }
     </style>
 </head>
 <body>
@@ -49,10 +65,9 @@
     
     <!-- SECTION 1 : CONNEXION -->
     <div id="loginSection" class="section active">
-        <!-- Remplacement du placeholder externe par un SVG intégré 100% hors-ligne -->
         <img src="images/logo.png" alt="Logo CS Jobec" class="logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2270%22 height=%2270%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23ffd700%22 stroke-width=%222%22><circle cx=%2212%22 cy=%228%22 r=%224%22/><path d=%22M4 20c0-4 4-6 8-6s8 2 8 6%22/></svg>'">
         <h2>Espace RH & Promoteur</h2>
-        <p>Veuillez entrer le mot de passe sécurisé pour accéder à la gestion du personnel.</p>
+        <p>Veuillez entrer le mot de passe sécurisé pour accéder au tableau de bord.</p>
         <div class="input-group">
             <label for="adminPassword">Mot de passe administrateur</label>
             <input type="password" id="adminPassword" placeholder="Entrez le mot de passe">
@@ -65,12 +80,39 @@
     <!-- SECTION 2 : TABLEAU DE BORD -->
     <div id="dashboardSection" class="section">
         
-        <h1>Tableau de Bord - Personnel</h1>
-        <p>Gestion centralisée des employés du Complexe Scolaire Jobec.</p>
+        <h1>Tableau de Bord - Personnel & Finances</h1>
+        <p>Suivi global des recettes scolaires (synchronisé avec la base de données Neon) et gestion du personnel.</p>
         
-        <button class="btn btn-gold" onclick="openAddForm()">+ Ajouter un employé</button>
+        <!-- AFFICHAGE DES TOTAUX FINANCIERS DEPUIS LA BDD -->
+        <h3 style="color: #ffd700; margin-bottom: 15px;">📊 Totaux des Recettes (Base de données)</h3>
+        <div class="finance-dashboard">
+            <div class="finance-card">
+                <h4>Total Inscriptions</h4>
+                <span id="sumInscription">0.00 $</span>
+            </div>
+            <div class="finance-card">
+                <h4>Total Trimestre 1 (T1)</h4>
+                <span id="sumT1">0.00 $</span>
+            </div>
+            <div class="finance-card">
+                <h4>Total Trimestre 2 (T2)</h4>
+                <span id="sumT2">0.00 $</span>
+            </div>
+            <div class="finance-card">
+                <h4>Total Trimestre 3 (T3)</h4>
+                <span id="sumT3">0.00 $</span>
+            </div>
+            <div class="finance-card total-card">
+                <h4>Total Général Recettes</h4>
+                <span id="sumGeneral">0.00 $</span>
+            </div>
+        </div>
 
-        <!-- Formulaire d'ajout / modification -->
+        <div style="margin-bottom: 25px;">
+            <button class="btn btn-gold" onclick="openAddForm()">+ Ajouter un employé</button>
+        </div>
+
+        <!-- Formulaire d'ajout / modification employé -->
         <div class="form-card" id="addFormCard">
             <h3 id="formTitle" style="color: #ffd700; margin-bottom: 15px;">Enregistrer un nouveau membre du personnel</h3>
             <form id="employeeForm" onsubmit="saveEmployee(event)">
@@ -110,6 +152,7 @@
             </form>
         </div>
 
+        <h3 style="color: #ffd700; margin-top: 30px; margin-bottom: 10px;">📋 Liste du Personnel</h3>
         <div class="table-responsive">
             <table>
                 <thead>
@@ -152,6 +195,7 @@
             document.getElementById("dashboardSection").classList.add("active");
             document.getElementById("mainContainer").classList.add("dashboard-active");
             loadPersonnelData();
+            loadFinanceTotals(); // Charge les totaux depuis la BDD Neon
         } else {
             document.getElementById("errorMsg").innerText = "Mot de passe incorrect !";
         }
@@ -173,6 +217,30 @@
         document.getElementById("addFormCard").classList.toggle("active");
     }
 
+    // Récupération des totaux financiers depuis le backend (qui interroge Neon)
+    async function loadFinanceTotals() {
+        try {
+            const response = await fetch('/api/finances/totaux'); // Assurez-vous d'avoir cette route sur votre serveur
+            if (response.ok) {
+                const data = await response.json();
+                
+                const totalInscription = parseFloat(data.total_inscription || 0);
+                const totalT1 = parseFloat(data.total_t1 || 0);
+                const totalT2 = parseFloat(data.total_t2 || 0);
+                const totalT3 = parseFloat(data.total_t3 || 0);
+                const totalGeneral = totalInscription + totalT1 + totalT2 + totalT3;
+
+                document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
+                document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
+                document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
+                document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
+                document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement des totaux financiers :", error);
+        }
+    }
+
     async function loadPersonnelData() {
         try {
             const response = await fetch('/api/personnels');
@@ -182,7 +250,6 @@
             tbody.innerHTML = "";
 
             if(allEmployees.length === 0) {
-                // Attention à passer le colspan à 17 si vous ajoutez une colonne
                 tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; color:#888;">Aucun personnel enregistré.</td></tr>`;
                 return;
             }
@@ -190,8 +257,6 @@
             allEmployees.forEach(p => {
                 let photoHtml = p.photo ? `<img src="${p.photo}" class="table-img">` : 'Aucune';
                 let pdfHtml = p.dossier_pdf ? `<a href="${p.dossier_pdf}" target="_blank" style="color: #ffd700;">📄 Voir</a>` : 'Aucun';
-                
-                // Formater la date pour ne garder que l'année-mois-jour (ex: 1995-05-12)
                 let dateNaissanceFormatee = p.date_naissance ? p.date_naissance.split('T')[0] : '';
 
                 const tr = document.createElement("tr");
@@ -206,13 +271,12 @@
                     <td>${p.titre_scolaire || ''}</td>
                     <td>${p.option_scolaire || ''}</td>
                     <td>${p.annee_titre_scolaire || ''}</td>
-                    <td>${dateNaissanceFormatee}</td>  <!-- Ajout de la date ici -->
+                    <td>${dateNaissanceFormatee}</td>
                     <td>${p.titre_academique || ''}</td>
                     <td>${p.filiere_academique || ''}</td>
                     <td>${p.annee_titre_academique || ''}</td>
                     <td>${p.salaire_base ? p.salaire_base + ' $' : ''}</td>
                     <td>${pdfHtml}</td>
- 
                     <td>
                         <button class="btn-action btn-edit" onclick="prepareEdit(${p.id})">Modifier</button>
                         <button class="btn-action btn-del" onclick="deleteEmployee(${p.id})">Supprimer</button>
@@ -221,7 +285,7 @@
                 tbody.appendChild(tr);
             });
         } catch (error) {
-            console.error("Erreur :", error);
+            console.error("Erreur chargement personnel :", error);
         }
     }
 
@@ -238,8 +302,6 @@
         formData.append("adresse", document.getElementById("adresse").value);
         formData.append("date_naissance", document.getElementById("date_naissance").value);
         formData.append("salaire_base", document.getElementById("salaire_base").value);
-        
-        
         formData.append("etat_civil", document.getElementById("etat_civil").value);
         formData.append("nbr_enfant", document.getElementById("nbr_enfant").value);
         formData.append("titre_scolaire", document.getElementById("titre_scolaire").value);
@@ -286,7 +348,6 @@
         document.getElementById("adresse").value = emp.adresse || '';
         document.getElementById("date_naissance").value = emp.date_naissance ? emp.date_naissance.split('T')[0] : '';
         document.getElementById("salaire_base").value = emp.salaire_base || '';
-
         document.getElementById("etat_civil").value = emp.etat_civil || 'Célibataire';
         document.getElementById("nbr_enfant").value = emp.nbr_enfant || 0;
         document.getElementById("titre_scolaire").value = emp.titre_scolaire || '';

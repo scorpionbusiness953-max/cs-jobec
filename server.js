@@ -152,6 +152,25 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
+// --- NOUVELLE ROUTE : TOTAUX DES FINANCES / PAIEMENTS ---
+app.get('/api/finances/totaux', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                SUM(frais_inscription) AS total_inscription, 
+                SUM(montant_t1) AS total_t1, 
+                SUM(montant_t2) AS total_t2, 
+                SUM(montant_t3) AS total_t3 
+            FROM paiements;
+        `;
+        const result = await pool.query(query);
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        console.error("Erreur lors de la récupération des totaux financiers :", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 app.get('/api/personnels', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM personnels ORDER BY nom ASC');
