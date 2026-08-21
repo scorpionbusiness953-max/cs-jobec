@@ -152,11 +152,10 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
-// --- ROUTE MISE À JOUR : TOTAUX DES FINANCES (Entrées et Sorties) ---
+// --- ROUTE FINANCES : TOTAUX (Compatible avec admin.html) ---
 app.get('/api/finances/totaux', async (req, res) => {
     try {
-        // 1. Total des entrées (élèves)
-        const queryEntrees = `
+        const query = `
             SELECT 
                 SUM(frais_inscription) AS total_inscription, 
                 SUM(montant_t1) AS total_t1, 
@@ -164,20 +163,12 @@ app.get('/api/finances/totaux', async (req, res) => {
                 SUM(montant_t3) AS total_t3 
             FROM paiements;
         `;
-        const resEntrees = await pool.query(queryEntrees);
-
-        // 2. Total des sorties / dépenses VALIDES uniquement (exclut les annulées)
-        const querySorties = `
-            SELECT SUM(montant) AS total_depenses 
-            FROM transactions_sorties 
-            WHERE statut = 'VALIDE';
-        `;
-        const resSorties = await pool.query(querySorties);
-
+        const result = await pool.query(query);
+        
+        // On renvoie directement l'objet avec les propriétés attendues par le HTML
         res.json({ 
             success: true, 
-            entrees: resEntrees.rows[0], 
-            total_depenses: resSorties.rows[0].total_depenses || 0 
+            data: result.rows[0] 
         });
     } catch (err) {
         console.error("Erreur lors de la récupération des totaux financiers :", err);
