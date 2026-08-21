@@ -108,8 +108,9 @@
             </div>
         </div>
 
-        <div style="margin-bottom: 25px;">
+        <div style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
             <button class="btn btn-gold" onclick="openAddForm()">+ Ajouter un employé</button>
+            <button class="btn btn-gold" onclick="openTransactionForm()" style="background-color: #27ae60; color: white;">💸 Effectuer un Paiement / Dépense</button>
         </div>
 
         <!-- Formulaire d'ajout / modification employé -->
@@ -152,6 +153,46 @@
             </form>
         </div>
 
+        <!-- Formulaire de Paiement / Dépense -->
+        <div class="form-card" id="transactionFormCard">
+            <h3 id="transFormTitle" style="color: #27ae60; margin-bottom: 15px;">Effectuer un Paiement ou une Dépense</h3>
+            <form id="transactionForm" onsubmit="saveTransaction(event)">
+                <input type="hidden" id="transactionId">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Type de transaction</label>
+                        <select id="type_transaction">
+                            <option value="SALAIRE">Paiement Salaire</option>
+                            <option value="DEPENSE">Autre Dépense</option>
+                        </select>
+                    </div>
+                    <div class="input-group"><label>Destinataire / Fournisseur</label><input type="text" id="destinataire" placeholder="Nom de l'employé ou motif" required></div>
+                    <div class="input-group"><label>Montant ($)</label><input type="number" step="0.01" id="montant_trans" required></div>
+                    <div class="input-group" style="grid-column: 1 / -1;"><label>Description / Motif</label><textarea id="desc_trans" rows="2" placeholder="Détails du paiement..."></textarea></div>
+                </div>
+                <button type="submit" class="btn" style="background-color: #27ae60; color: white;" id="transBtnText">Valider le paiement</button>
+            </form>
+        </div>
+
+        <!-- Tableau des Paiements et Dépenses -->
+        <h3 style="color: #ffd700; margin-top: 30px; margin-bottom: 10px;">💸 Historique des Paiements & Sorties</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Destinataire</th>
+                        <th>Montant</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionsTableBody"></tbody>
+            </table>
+        </div>
+
         <h3 style="color: #ffd700; margin-top: 30px; margin-bottom: 10px;">📋 Liste du Personnel</h3>
         <div class="table-responsive">
             <table>
@@ -188,6 +229,7 @@
 <script>
     const ADMIN_PASSWORD = "jobecRH2026"; 
     let allEmployees = []; 
+    let allTransactions = [];
 
     function checkLogin() {
         if (document.getElementById("adminPassword").value === ADMIN_PASSWORD) {
@@ -195,7 +237,8 @@
             document.getElementById("dashboardSection").classList.add("active");
             document.getElementById("mainContainer").classList.add("dashboard-active");
             loadPersonnelData();
-            loadFinanceTotals(); // Charge les totaux depuis la BDD Neon
+            loadFinanceTotals(); 
+            loadTransactions();
         } else {
             document.getElementById("errorMsg").innerText = "Mot de passe incorrect !";
         }
@@ -207,6 +250,7 @@
         document.getElementById("mainContainer").classList.remove("dashboard-active");
         document.getElementById("adminPassword").value = "";
         document.getElementById("addFormCard").classList.remove("active");
+        document.getElementById("transactionFormCard").classList.remove("active");
     }
 
     function openAddForm() {
@@ -217,34 +261,37 @@
         document.getElementById("addFormCard").classList.toggle("active");
     }
 
-async function loadFinanceTotals() {
-    try {
-        const response = await fetch('/api/finances/totaux'); 
-
-        if (response.ok) {
-            const fullResponse = await response.json(); 
-            const financeData = fullResponse.data;      
-
-            const totalInscription = parseFloat(financeData.total_inscription || 0);
-            const totalT1 = parseFloat(financeData.total_t1 || 0);
-            const totalT2 = parseFloat(financeData.total_t2 || 0);
-            const totalT3 = parseFloat(financeData.total_t3 || 0);
-            const totalGeneral = totalInscription + totalT1 + totalT2 + totalT3;
-
-            // Mise à jour de l'affichage
-            document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
-            document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
-            document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
-            document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
-            document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
-        }
-    } catch (error) {
-        console.error("Erreur lors du chargement des totaux financiers :", error);
+    function openTransactionForm() {
+        document.getElementById("transactionForm").reset();
+        document.getElementById("transactionId").value = "";
+        document.getElementById("transFormTitle").innerText = "Effectuer un Paiement ou une Dépense";
+        document.getElementById("transBtnText").innerText = "Valider le paiement";
+        document.getElementById("transactionFormCard").classList.toggle("active");
     }
-}
 
-// APPEL DE LA FONCTION
-loadFinanceTotals();
+    async function loadFinanceTotals() {
+        try {
+            const response = await fetch('/api/finances/totaux'); 
+            if (response.ok) {
+                const fullResponse = await response.json(); 
+                const financeData = fullResponse.data;      
+
+                const totalInscription = parseFloat(financeData.total_inscription || 0);
+                const totalT1 = parseFloat(financeData.total_t1 || 0);
+                const totalT2 = parseFloat(financeData.total_t2 || 0);
+                const totalT3 = parseFloat(financeData.total_t3 || 0);
+                const totalGeneral = totalInscription + totalT1 + totalT2 + totalT3;
+
+                document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
+                document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
+                document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
+                document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
+                document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement des totaux financiers :", error);
+        }
+    }
 
     async function loadPersonnelData() {
         try {
@@ -291,6 +338,108 @@ loadFinanceTotals();
             });
         } catch (error) {
             console.error("Erreur chargement personnel :", error);
+        }
+    }
+
+    async function loadTransactions() {
+        try {
+            const response = await fetch('/api/transactions');
+            allTransactions = await response.json();
+            
+            const tbody = document.getElementById("transactionsTableBody");
+            tbody.innerHTML = "";
+
+            if(allTransactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">Aucune transaction enregistrée.</td></tr>`;
+                return;
+            }
+
+            allTransactions.forEach(t => {
+                let dateFormatee = t.date_transaction ? t.date_transaction.split('T')[0] : '';
+                let badgeStatut = t.statut === 'ANNULE' ? '<span style="color:#ff4d4d; font-weight:bold;">ANNULÉ</span>' : '<span style="color:#2ecc71; font-weight:bold;">VALIDE</span>';
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${t.type_transaction}</td>
+                    <td>${t.destinataire}</td>
+                    <td>${parseFloat(t.montant).toFixed(2)} $</td>
+                    <td>${dateFormatee}</td>
+                    <td>${t.description || ''}</td>
+                    <td>${badgeStatut}</td>
+                    <td>
+                        ${t.statut !== 'ANNULE' ? `
+                            <button class="btn-action btn-edit" onclick="prepareEditTransaction(${t.id})">Modifier</button>
+                            <button class="btn-action btn-del" onclick="cancelTransaction(${t.id})">Annuler</button>
+                        ` : '<span style="color: #888; font-size:11px;">Aucune action</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error("Erreur chargement transactions :", error);
+        }
+    }
+
+    async function saveTransaction(event) {
+        event.preventDefault();
+        const id = document.getElementById("transactionId").value;
+        const data = {
+            type: document.getElementById("type_transaction").value,
+            destinataire: document.getElementById("destinataire").value,
+            montant: document.getElementById("montant_trans").value,
+            description: document.getElementById("desc_trans").value
+        };
+
+        const url = id ? `/api/transactions/${id}` : '/api/transactions';
+        const method = id ? 'PUT' : 'POST';
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                alert(id ? "Transaction modifiée avec succès !" : "Paiement enregistré avec succès !");
+                document.getElementById("transactionForm").reset();
+                document.getElementById("transactionFormCard").classList.remove("active");
+                loadTransactions();
+            } else {
+                alert("Erreur lors de l'enregistrement de la transaction.");
+            }
+        } catch (error) {
+            console.error("Erreur réseau :", error);
+        }
+    }
+
+    function prepareEditTransaction(id) {
+        const trans = allTransactions.find(t => t.id === id);
+        if (!trans) return;
+
+        document.getElementById("transactionId").value = trans.id;
+        document.getElementById("type_transaction").value = trans.type_transaction;
+        document.getElementById("destinataire").value = trans.destinataire;
+        document.getElementById("montant_trans").value = trans.montant;
+        document.getElementById("desc_trans").value = trans.description || '';
+
+        document.getElementById("transFormTitle").innerText = "Modifier la transaction";
+        document.getElementById("transBtnText").innerText = "Mettre à jour";
+        document.getElementById("transactionFormCard").classList.add("active");
+    }
+
+    async function cancelTransaction(id) {
+        if (confirm("Voulez-vous vraiment annuler ce paiement ? Il sera exclu des calculs financiers.")) {
+            try {
+                const response = await fetch(`/api/transactions/annuler/${id}`, { method: 'PUT' });
+                if (response.ok) {
+                    alert("Transaction annulée.");
+                    loadTransactions();
+                } else {
+                    alert("Erreur lors de l'annulation.");
+                }
+            } catch (error) {
+                console.error("Erreur réseau :", error);
+            }
         }
     }
 

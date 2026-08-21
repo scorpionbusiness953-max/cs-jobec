@@ -152,10 +152,11 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
-// --- NOUVELLE ROUTE : TOTAUX DES FINANCES / PAIEMENTS ---
+// --- ROUTE MISE À JOUR : TOTAUX DES FINANCES (Entrées et Sorties) ---
 app.get('/api/finances/totaux', async (req, res) => {
     try {
-        const query = `
+        // 1. Total des entrées (élèves)
+        const queryEntrees = `
             SELECT 
                 SUM(frais_inscription) AS total_inscription, 
                 SUM(montant_t1) AS total_t1, 
@@ -163,13 +164,80 @@ app.get('/api/finances/totaux', async (req, res) => {
                 SUM(montant_t3) AS total_t3 
             FROM paiements;
         `;
-        const result = await pool.query(query);
-        res.json({ success: true, data: result.rows[0] });
+        const resEntrees = await pool.query(queryEntrees);
+
+        // 2. Total des sorties / dépenses VALIDES uniquement (exclut les annulées)
+        const querySorties = `
+            SELECT SUM(montant) AS total_depenses 
+            FROM transactions_sorties 
+            WHERE statut = 'VALIDE';
+        `;
+        const resSorties = await pool.query(querySorties);
+
+        res.json({ 
+            success: true, 
+            entrees: resEntrees.rows[0], 
+            total_depenses: resSorties.rows[0].total_depenses || 0 
+        });
     } catch (err) {
         console.error("Erreur lors de la récupération des totaux financiers :", err);
         res.status(500).json({ success: false, error: err.message });
     }
 });
+
+// Enregistrer un nouveau paiement / dépense
+app.post('/api/transactions', async (req, res) => {
+    try {
+        const { type, destinataire, montant, description } = req.body;
+        const result = await pool.query(
+            `INSERT INTO transactions_sorties (type_transaction, destinataire, montant, description, statut) 
+             VALUES ($1, $2, $3, $4, 'VALIDE') RETURNING *`,
+            [type, destinataire, montant, description]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Modifier un paiement / dépense existant
+app.put('/api/transactions/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { type, destinataire, montant, description } = req.body;
+        const result = await pool.query(
+            `UPDATE transactions_sorties 
+             SET type_transaction = $1, destinataire = $2, montant = $3, description = $4 
+             WHERE id = $5 RETURNING *`,
+            [type, destinataire, montant, description, id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+// Récupérer toutes les transactions de sortie
+app.get('/api/transactions', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM transactions_sorties ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+// Route pour "Annuler" un paiement au lieu de le supprimer
+app.put('/api/transactions/annuler/:id', async (req, res) => {
+    try {
+        const result = await pool.query(
+            "UPDATE transactions_sorties SET statut = 'ANNULE' WHERE id = $1 RETURNING *",
+            [req.params.id]
+        );
+        res.json({ success: true, message: "Transaction annulée" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 app.get('/api/personnels', async (req, res) => {
   try {
