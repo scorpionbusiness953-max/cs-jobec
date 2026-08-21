@@ -217,29 +217,34 @@
         document.getElementById("addFormCard").classList.toggle("active");
     }
 
-    // Récupération des totaux financiers depuis le backend (qui interroge Neon)
-    async function loadFinanceTotals() {
-        try {
-            const response = await fetch('/api/finances/totaux'); // Assurez-vous d'avoir cette route sur votre serveur
-            if (response.ok) {
-                const data = await response.json();
-                
-                const totalInscription = parseFloat(data.total_inscription || 0);
-                const totalT1 = parseFloat(data.total_t1 || 0);
-                const totalT2 = parseFloat(data.total_t2 || 0);
-                const totalT3 = parseFloat(data.total_t3 || 0);
-                const totalGeneral = totalInscription + totalT1 + totalT2 + totalT3;
+async function loadFinanceTotals() {
+    try {
+        const response = await fetch('/api/finances/totaux'); 
 
-                document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
-                document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
-                document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
-                document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
-                document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
-            }
-        } catch (error) {
-            console.error("Erreur lors du chargement des totaux financiers :", error);
+        if (response.ok) {
+            const fullResponse = await response.json(); 
+            const financeData = fullResponse.data;      
+
+            const totalInscription = parseFloat(financeData.total_inscription || 0);
+            const totalT1 = parseFloat(financeData.total_t1 || 0);
+            const totalT2 = parseFloat(financeData.total_t2 || 0);
+            const totalT3 = parseFloat(financeData.total_t3 || 0);
+            const totalGeneral = totalInscription + totalT1 + totalT2 + totalT3;
+
+            // Mise à jour de l'affichage
+            document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
+            document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
+            document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
+            document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
+            document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
         }
+    } catch (error) {
+        console.error("Erreur lors du chargement des totaux financiers :", error);
     }
+}
+
+// APPEL DE LA FONCTION
+loadFinanceTotals();
 
     async function loadPersonnelData() {
         try {
