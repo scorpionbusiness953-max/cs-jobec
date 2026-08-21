@@ -66,10 +66,8 @@ async function sendWhatsAppNotification(to, messageText) {
 }
 
 // Configuration de Multer : 
-// 1. Pour le personnel (stockage en mémoire pour insertion en base de données)
 const uploadMemory = multer({ storage: multer.memoryStorage() });
 
-// 2. Pour la bibliothèque (stockage disque avec conservation de l'extension d'origine .pdf)
 const storageDisk = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/uploads/');
@@ -81,7 +79,7 @@ const storageDisk = multer.diskStorage({
 });
 const uploadDisk = multer({ storage: storageDisk });
 
-// Connexion à la base de données Neon (avec options de robustesse et SSL strict)
+// Connexion à la base de données Neon
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
@@ -97,7 +95,7 @@ pool.connect()
   .then(() => console.log('Connecté à la base de données Neon avec succès !'))
   .catch(err => console.error('Erreur de connexion à la base de données', err));
 
-// --- TÂCHE PLANIFIÉE : VÉRIFICATION DES ANNIVERSAIRES (Tous les jours à 08h00) ---
+// --- TÂCHE PLANIFIÉE : VÉRIFICATION DES ANNIVERSAIRES ---
 cron.schedule('0 8 * * *', async () => {
   console.log("Vérification quotidienne des anniversaires du personnel...");
   try {
@@ -152,7 +150,7 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
-// --- ROUTE MISE À JOUR : TOTAUX AVEC DÉTAIL DÉPENSES/SALAIRES ---
+// --- ROUTE CORRIGÉE : TOTAUX FINANCIERS ---
 app.get('/api/finances/totaux', async (req, res) => {
     try {
         const queryEntrees = `
@@ -161,11 +159,11 @@ app.get('/api/finances/totaux', async (req, res) => {
         `;
         const resEntrees = await pool.query(queryEntrees);
 
-        // On sépare les sommes selon le type (VALIDE uniquement)
+        // Correction ici : utilisation de type_transaction au lieu de type
         const querySorties = `
             SELECT 
-                SUM(CASE WHEN type = 'SALAIRE' THEN montant ELSE 0 END) AS total_salaires,
-                SUM(CASE WHEN type = 'DEPENSE' THEN montant ELSE 0 END) AS total_depenses_diverses,
+                SUM(CASE WHEN type_transaction = 'SALAIRE' THEN montant ELSE 0 END) AS total_salaires,
+                SUM(CASE WHEN type_transaction = 'DEPENSE' THEN montant ELSE 0 END) AS total_depenses_diverses,
                 SUM(montant) AS total_sorties_global
             FROM transactions_sorties 
             WHERE statut = 'VALIDE';
@@ -202,6 +200,7 @@ app.put('/api/transactions/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
 // Récupérer toutes les transactions de sortie
 app.get('/api/transactions', async (req, res) => {
     try {
@@ -211,7 +210,8 @@ app.get('/api/transactions', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-// Route pour "Annuler" un paiement au lieu de le supprimer
+
+// Route pour "Annuler" un paiement
 app.put('/api/transactions/annuler/:id', async (req, res) => {
     try {
         const result = await pool.query(
@@ -223,7 +223,6 @@ app.put('/api/transactions/annuler/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
 
 app.get('/api/personnels', async (req, res) => {
   try {
@@ -461,7 +460,6 @@ app.delete('/api/notes/eleve/:matricule', async (req, res) => {
     }
 });
 
-// Configuration du transporteur d'e-mails
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -490,8 +488,6 @@ app.post('/api/contact', async (req, res) => {
 });
 
 // --- GESTION DE LA BIBLIOTHÈQUE ---
-
-// 1. Récupérer tous les livres de la bibliothèque
 app.get('/api/bibliotheque', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM bibliotheque ORDER BY date_ajout DESC');
@@ -502,7 +498,6 @@ app.get('/api/bibliotheque', async (req, res) => {
     }
 });
 
-// 2. Publier un document (Gère le fichier PDF local)
 app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res) => {
     try {
         const { titre, auteur, categorie } = req.body;
