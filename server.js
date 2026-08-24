@@ -228,6 +228,18 @@ app.get('/api/transactions', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// --- ROUTE POUR RÉCUPÉRER TOUS LES ÉLÈVES ---
+app.get('/api/eleves', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, nom, postnom, prenom, classe FROM eleves ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Erreur lors de la récupération des élèves :", err);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+});
+
 // Route pour "Annuler" un paiement au lieu de le supprimer
 app.put('/api/transactions/annuler/:id', async (req, res) => {
     try {
