@@ -119,12 +119,12 @@
                 <label>Sélectionner le cycle</label>
                 <select id="cycleFilter" onchange="filterElevesByCycle()">
                     <option value="TOUS">Tous les cycles</option>
-                    <option value="Maternelle">Maternelle</option>
+                    <option value="Maternel">Maternelle</option>
                     <option value="Primaire">Primaire</option>
-                    <option value="Secondaire">Secondaire</option>
+                    <option value="Humanités">Humanités</option>
                 </select>
             </div>
-            <div class="table-responsive">
+                <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
@@ -417,15 +417,17 @@
         });
     }
 
+   
+
     function filterElevesByCycle() {
-        const selectedCycle = document.getElementById("cycleFilter").value;
-        if (selectedCycle === "TOUS") {
-            renderElevesTable(allEleves);
-        } else {
-            const filtered = allEleves.filter(e => e.classe && e.classe.toLowerCase().includes(selectedCycle.toLowerCase()));
-            renderElevesTable(filtered);
-        }
+    const selectedCycle = document.getElementById("cycleFilter").value;
+    if (selectedCycle === "TOUS") {
+        renderElevesTable(allEleves);
+    } else {
+        const filtered = allEleves.filter(e => e.cycle && e.cycle.toLowerCase() === selectedCycle.toLowerCase());
+        renderElevesTable(filtered);
     }
+}
 
     async function loadPersonnelData() {
         try {
