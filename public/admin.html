@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace RH & Promoteur - CS Jobec</title>
+    <title>Espace RH & Secrétariat - CS Jobec</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #0b1c3d; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -39,7 +39,7 @@
         .form-card.active { display: block; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .table-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700; }
-        
+
         /* Styles pour le dashboard financier */
         .finance-dashboard {
             display: grid;
@@ -66,10 +66,10 @@
     <!-- SECTION 1 : CONNEXION -->
     <div id="loginSection" class="section active">
         <img src="images/logo.png" alt="Logo CS Jobec" class="logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2270%22 height=%2270%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23ffd700%22 stroke-width=%222%22><circle cx=%2212%22 cy=%228%22 r=%224%22/><path d=%22M4 20c0-4 4-6 8-6s8 2 8 6%22/></svg>'">
-        <h2>Espace RH & Promoteur</h2>
-        <p>Veuillez entrer le mot de passe sécurisé pour accéder au tableau de bord.</p>
+        <h2>Espace RH & Secrétariat</h2>
+        <p>Veuillez entrer votre mot de passe pour accéder au tableau de bord.</p>
         <div class="input-group">
-            <label for="adminPassword">Mot de passe administrateur</label>
+            <label for="adminPassword">Mot de passe</label>
             <input type="password" id="adminPassword" placeholder="Entrez le mot de passe">
         </div>
         <button class="btn" onclick="checkLogin()">Se connecter</button>
@@ -80,8 +80,8 @@
     <!-- SECTION 2 : TABLEAU DE BORD -->
     <div id="dashboardSection" class="section">
         
-        <h1>Tableau de Bord - Personnel & Finances</h1>
-        <p>Suivi global des recettes scolaires (synchronisé avec la base de données Neon) et gestion du personnel.</p>
+        <h1 id="dashboardTitle">Tableau de Bord - Personnel & Finances</h1>
+        <p id="userRoleSubtitle">Suivi global des recettes scolaires et gestion du personnel.</p>
         
         <!-- AFFICHAGE DES TOTAUX FINANCIERS DEPUIS LA BDD -->
         <h3 style="color: #ffd700; margin-bottom: 15px;">📊 Totaux des Recettes (Base de données)</h3>
@@ -108,7 +108,8 @@
             </div>
         </div>
 
-        <div style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <!-- Boutons d'actions (visibles uniquement pour le secrétaire / accès total) -->
+        <div style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;" id="actionButtonsContainer">
             <button class="btn btn-gold" onclick="openAddForm()">+ Ajouter un employé</button>
             <button class="btn btn-gold" onclick="openTransactionForm()" style="background-color: #27ae60; color: white;">💸 Effectuer un Paiement / Dépense</button>
         </div>
@@ -186,13 +187,14 @@
                         <th>Date</th>
                         <th>Description</th>
                         <th>Statut</th>
-                        <th>Actions</th>
+                        <th class="secretaire-col">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="transactionsTableBody"></tbody>
             </table>
         </div>
 
+        <!-- Tableau de la Liste du Personnel -->
         <h3 style="color: #ffd700; margin-top: 30px; margin-bottom: 10px;">📋 Liste du Personnel</h3>
         <div class="table-responsive">
             <table>
@@ -214,7 +216,7 @@
                         <th>Année Acad.</th>
                         <th>Salaire Base</th>
                         <th>Dossier PDF</th>
-                        <th>Actions</th>
+                        <th class="secretaire-col">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="personnelTableBody"></tbody>
@@ -227,33 +229,72 @@
 </div>
 
 <script>
-    const ADMIN_PASSWORD = "jobecRH2026"; 
+    // Définition des mots de passe pour chaque rôle
+    const PASSWORD_PROMOTEUR = "jobecPromoteur2026"; 
+    const PASSWORD_SECRETAIRE = "jobecSecretaire2026";
+    
+    let currentRole = ""; // 'promoteur' (lecture seule) ou 'secretaire' (accès total)
     let allEmployees = []; 
     let allTransactions = [];
 
     function checkLogin() {
-        if (document.getElementById("adminPassword").value === ADMIN_PASSWORD) {
-            document.getElementById("loginSection").classList.remove("active");
-            document.getElementById("dashboardSection").classList.add("active");
-            document.getElementById("mainContainer").classList.add("dashboard-active");
-            loadPersonnelData();
-            loadFinanceTotals(); 
-            loadTransactions();
+        const inputVal = document.getElementById("adminPassword").value;
+        
+        if (inputVal === PASSWORD_PROMOTEUR) {
+            currentRole = "promoteur";
+            initDashboard();
+        } else if (inputVal === PASSWORD_SECRETAIRE) {
+            currentRole = "secretaire";
+            initDashboard();
         } else {
             document.getElementById("errorMsg").innerText = "Mot de passe incorrect !";
         }
     }
 
+    function initDashboard() {
+        document.getElementById("loginSection").classList.remove("active");
+        document.getElementById("dashboardSection").classList.add("active");
+        document.getElementById("mainContainer").classList.add("dashboard-active");
+
+        // Adaptation de l'interface selon le rôle
+        const actionButtons = document.getElementById("actionButtonsContainer");
+        const secretaireCols = document.querySelectorAll(".secretaire-col");
+        
+        if (currentRole === "promoteur") {
+            document.getElementById("dashboardTitle").innerText = "Espace Promoteur - Consultation";
+            document.getElementById("userRoleSubtitle").innerText = "Mode consultation : Suivi des informations globales et de l'historique financier.";
+            
+            // Cacher les boutons d'ajout/paiement pour le promoteur (lecture seule)
+            actionButtons.style.display = "none";
+            
+            // Cacher les colonnes "Actions" dans les tableaux
+            secretaireCols.forEach(col => col.style.display = "none");
+        } else {
+            document.getElementById("dashboardTitle").innerText = "Espace Secrétariat - Gestion Totale";
+            document.getElementById("userRoleSubtitle").innerText = "Gestion complète du personnel, des transactions et suivi global des recettes.";
+            
+            actionButtons.style.display = "flex";
+            secretaireCols.forEach(col => col.style.display = "table-cell");
+        }
+
+        loadPersonnelData();
+        loadFinanceTotals(); 
+        loadTransactions();
+    }
+
     function logout() {
+        currentRole = "";
         document.getElementById("dashboardSection").classList.remove("active");
         document.getElementById("loginSection").classList.add("active");
         document.getElementById("mainContainer").classList.remove("dashboard-active");
         document.getElementById("adminPassword").value = "";
+        document.getElementById("errorMsg").innerText = "";
         document.getElementById("addFormCard").classList.remove("active");
         document.getElementById("transactionFormCard").classList.remove("active");
     }
 
     function openAddForm() {
+        if (currentRole !== "secretaire") return;
         document.getElementById("employeeForm").reset();
         document.getElementById("employeeId").value = "";
         document.getElementById("formTitle").innerText = "Enregistrer un nouveau membre du personnel";
@@ -262,6 +303,7 @@
     }
 
     function openTransactionForm() {
+        if (currentRole !== "secretaire") return;
         document.getElementById("transactionForm").reset();
         document.getElementById("transactionId").value = "";
         document.getElementById("transFormTitle").innerText = "Effectuer un Paiement ou une Dépense";
@@ -270,36 +312,32 @@
     }
 
     async function loadFinanceTotals() {
-    try {
-        const response = await fetch('/api/finances/totaux'); 
-        if (response.ok) {
-            const fullResponse = await response.json(); 
-            const financeData = fullResponse.data;      
+        try {
+            const response = await fetch('/api/finances/totaux'); 
+            if (response.ok) {
+                const fullResponse = await response.json(); 
+                const financeData = fullResponse.data;      
 
-            const totalInscription = parseFloat(financeData.total_inscription || 0);
-            const totalT1 = parseFloat(financeData.total_t1 || 0);
-            const totalT2 = parseFloat(financeData.total_t2 || 0);
-            const totalT3 = parseFloat(financeData.total_t3 || 0);
-            
-            // Total des recettes brutes
-            const totalRecettesBrutes = totalInscription + totalT1 + totalT2 + totalT3;
-            
-            // On récupère le total des dépenses valides renvoyé par le backend
-            const totalDepenses = parseFloat(financeData.total_depenses || 0);
+                const totalInscription = parseFloat(financeData.total_inscription || 0);
+                const totalT1 = parseFloat(financeData.total_t1 || 0);
+                const totalT2 = parseFloat(financeData.total_t2 || 0);
+                const totalT3 = parseFloat(financeData.total_t3 || 0);
+                
+                const totalRecettesBrutes = totalInscription + totalT1 + totalT2 + totalT3;
+                const totalDepenses = parseFloat(financeData.total_depenses || 0);
+                const totalGeneral = totalRecettesBrutes - totalDepenses;
 
-            // Le solde réel (Recettes - Dépenses)
-            const totalGeneral = totalRecettesBrutes - totalDepenses;
-
-            document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
-            document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
-            document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
-            document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
-            document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
+                document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
+                document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
+                document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
+                document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
+                document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement des totaux financiers :", error);
         }
-    } catch (error) {
-        console.error("Erreur lors du chargement des totaux financiers :", error);
     }
-}
+
     async function loadPersonnelData() {
         try {
             const response = await fetch('/api/personnels');
@@ -309,7 +347,8 @@
             tbody.innerHTML = "";
 
             if(allEmployees.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; color:#888;">Aucun personnel enregistré.</td></tr>`;
+                let colSpan = currentRole === 'secretaire' ? 17 : 16;
+                tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center; color:#888;">Aucun personnel enregistré.</td></tr>`;
                 return;
             }
 
@@ -319,7 +358,7 @@
                 let dateNaissanceFormatee = p.date_naissance ? p.date_naissance.split('T')[0] : '';
 
                 const tr = document.createElement("tr");
-                tr.innerHTML = `
+                let rowHtml = `
                     <td>${photoHtml}</td>
                     <td>${p.nom || ''}</td>
                     <td>${p.prenom || ''}</td>
@@ -336,11 +375,19 @@
                     <td>${p.annee_titre_academique || ''}</td>
                     <td>${p.salaire_base ? p.salaire_base + ' $' : ''}</td>
                     <td>${pdfHtml}</td>
-                    <td>
-                        <button class="btn-action btn-edit" onclick="prepareEdit(${p.id})">Modifier</button>
-                        <button class="btn-action btn-del" onclick="deleteEmployee(${p.id})">Supprimer</button>
-                    </td>
                 `;
+
+                // Ajouter la cellule des actions uniquement pour le secrétaire (accès total)
+                if (currentRole === 'secretaire') {
+                    rowHtml += `
+                        <td>
+                            <button class="btn-action btn-edit" onclick="prepareEdit(${p.id})">Modifier</button>
+                            <button class="btn-action btn-del" onclick="deleteEmployee(${p.id})">Supprimer</button>
+                        </td>
+                    `;
+                }
+
+                tr.innerHTML = rowHtml;
                 tbody.appendChild(tr);
             });
         } catch (error) {
@@ -357,7 +404,8 @@
             tbody.innerHTML = "";
 
             if(allTransactions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">Aucune transaction enregistrée.</td></tr>`;
+                let colSpan = currentRole === 'secretaire' ? 7 : 6;
+                tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center; color:#888;">Aucune transaction enregistrée.</td></tr>`;
                 return;
             }
 
@@ -366,20 +414,27 @@
                 let badgeStatut = t.statut === 'ANNULE' ? '<span style="color:#ff4d4d; font-weight:bold;">ANNULÉ</span>' : '<span style="color:#2ecc71; font-weight:bold;">VALIDE</span>';
 
                 const tr = document.createElement("tr");
-                tr.innerHTML = `
+                let rowHtml = `
                     <td>${t.type_transaction}</td>
                     <td>${t.destinataire}</td>
                     <td>${parseFloat(t.montant).toFixed(2)} $</td>
                     <td>${dateFormatee}</td>
                     <td>${t.description || ''}</td>
                     <td>${badgeStatut}</td>
-                    <td>
-                        ${t.statut !== 'ANNULE' ? `
-                            <button class="btn-action btn-edit" onclick="prepareEditTransaction(${t.id})">Modifier</button>
-                            <button class="btn-action btn-del" onclick="cancelTransaction(${t.id})">Annuler</button>
-                        ` : '<span style="color: #888; font-size:11px;">Aucune action</span>'}
-                    </td>
                 `;
+
+                if (currentRole === 'secretaire') {
+                    rowHtml += `
+                        <td>
+                            ${t.statut !== 'ANNULE' ? `
+                                <button class="btn-action btn-edit" onclick="prepareEditTransaction(${t.id})">Modifier</button>
+                                <button class="btn-action btn-del" onclick="cancelTransaction(${t.id})">Annuler</button>
+                            ` : '<span style="color: #888; font-size:11px;">Aucune action</span>'}
+                        </td>
+                    `;
+                }
+
+                tr.innerHTML = rowHtml;
                 tbody.appendChild(tr);
             });
         } catch (error) {
@@ -388,6 +443,7 @@
     }
 
     async function saveTransaction(event) {
+        if (currentRole !== 'secretaire') return;
         event.preventDefault();
         const id = document.getElementById("transactionId").value;
         const data = {
@@ -411,6 +467,7 @@
                 document.getElementById("transactionForm").reset();
                 document.getElementById("transactionFormCard").classList.remove("active");
                 loadTransactions();
+                loadFinanceTotals();
             } else {
                 alert("Erreur lors de l'enregistrement de la transaction.");
             }
@@ -420,6 +477,7 @@
     }
 
     function prepareEditTransaction(id) {
+        if (currentRole !== 'secretaire') return;
         const trans = allTransactions.find(t => t.id === id);
         if (!trans) return;
 
@@ -435,12 +493,14 @@
     }
 
     async function cancelTransaction(id) {
+        if (currentRole !== 'secretaire') return;
         if (confirm("Voulez-vous vraiment annuler ce paiement ? Il sera exclu des calculs financiers.")) {
             try {
                 const response = await fetch(`/api/transactions/annuler/${id}`, { method: 'PUT' });
                 if (response.ok) {
                     alert("Transaction annulée.");
                     loadTransactions();
+                    loadFinanceTotals();
                 } else {
                     alert("Erreur lors de l'annulation.");
                 }
@@ -451,6 +511,7 @@
     }
 
     async function saveEmployee(event) {
+        if (currentRole !== 'secretaire') return;
         event.preventDefault();
         const id = document.getElementById("employeeId").value;
         const formData = new FormData();
@@ -497,6 +558,7 @@
     }
 
     function prepareEdit(id) {
+        if (currentRole !== 'secretaire') return;
         const emp = allEmployees.find(e => e.id === id);
         if (!emp) return;
 
@@ -525,6 +587,7 @@
     }
 
     async function deleteEmployee(id) {
+        if (currentRole !== 'secretaire') return;
         if (confirm("Voulez-vous vraiment supprimer cet employé de la base de données ?")) {
             try {
                 const response = await fetch(`/api/personnels/${id}`, { method: 'DELETE' });
