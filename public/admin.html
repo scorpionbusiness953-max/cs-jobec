@@ -57,12 +57,14 @@
         .finance-card h4 { font-size: 13px; color: #b0b0b0; margin-bottom: 8px; text-transform: uppercase; }
         .finance-card span { font-size: 20px; font-weight: bold; color: #ffd700; }
         .finance-card.total-card { border-color: #ffd700; background: rgba(255, 215, 0, 0.05); }
+        
+        .promoteur-only { display: none; }
     </style>
 </head>
 <body>
 
 <div class="card-container" id="mainContainer">
-    
+
     <!-- SECTION 1 : CONNEXION -->
     <div id="loginSection" class="section active">
         <img src="images/logo.png" alt="Logo CS Jobec" class="logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2270%22 height=%2270%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23ffd700%22 stroke-width=%222%22><circle cx=%2212%22 cy=%228%22 r=%224%22/><path d=%22M4 20c0-4 4-6 8-6s8 2 8 6%22/></svg>'">
@@ -79,32 +81,64 @@
 
     <!-- SECTION 2 : TABLEAU DE BORD -->
     <div id="dashboardSection" class="section">
-        
+
         <h1 id="dashboardTitle">Tableau de Bord - Personnel & Finances</h1>
         <p id="userRoleSubtitle">Suivi global des recettes scolaires et gestion du personnel.</p>
-        
-        <!-- AFFICHAGE DES TOTAUX FINANCIERS DEPUIS LA BDD -->
-        <h3 style="color: #ffd700; margin-bottom: 15px;">📊 Totaux des Recettes (Base de données)</h3>
-        <div class="finance-dashboard">
-            <div class="finance-card">
-                <h4>Total Inscriptions</h4>
-                <span id="sumInscription">0.00 $</span>
+
+        <!-- AFFICHAGE DES TOTAUX FINANCIERS DEPUIS LA BDD (Visible uniquement pour le Promoteur) -->
+        <div id="financeSectionContainer">
+            <h3 style="color: #ffd700; margin-bottom: 15px;">📊 Totaux des Recettes (Base de données)</h3>
+            <div class="finance-dashboard">
+                <div class="finance-card">
+                    <h4>Total Inscriptions</h4>
+                    <span id="sumInscription">0.00 $</span>
+                </div>
+                <div class="finance-card">
+                    <h4>Total Trimestre 1 (T1)</h4>
+                    <span id="sumT1">0.00 $</span>
+                </div>
+                <div class="finance-card">
+                    <h4>Total Trimestre 2 (T2)</h4>
+                    <span id="sumT2">0.00 $</span>
+                </div>
+                <div class="finance-card">
+                    <h4>Total Trimestre 3 (T3)</h4>
+                    <span id="sumT3">0.00 $</span>
+                </div>
+                <div class="finance-card total-card">
+                    <h4>Total Général Recettes</h4>
+                    <span id="sumGeneral">0.00 $</span>
+                </div>
             </div>
-            <div class="finance-card">
-                <h4>Total Trimestre 1 (T1)</h4>
-                <span id="sumT1">0.00 $</span>
+        </div>
+
+        <!-- SECTION ELEVES PAR CYCLE (Visible uniquement pour le Promoteur) -->
+        <div id="promoteurElevesSection" class="promoteur-only" style="margin-bottom: 35px; background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333;">
+            <h3 style="color: #ffd700; margin-bottom: 15px;">🎓 Consultation des Élèves par Cycle</h3>
+            <div class="input-group" style="max-width: 300px; margin-bottom: 15px;">
+                <label>Sélectionner le cycle</label>
+                <select id="cycleFilter" onchange="filterElevesByCycle()">
+                    <option value="TOUS">Tous les cycles</option>
+                    <option value="Maternelle">Maternelle</option>
+                    <option value="Primaire">Primaire</option>
+                    <option value="Secondaire">Secondaire</option>
+                </select>
             </div>
-            <div class="finance-card">
-                <h4>Total Trimestre 2 (T2)</h4>
-                <span id="sumT2">0.00 $</span>
-            </div>
-            <div class="finance-card">
-                <h4>Total Trimestre 3 (T3)</h4>
-                <span id="sumT3">0.00 $</span>
-            </div>
-            <div class="finance-card total-card">
-                <h4>Total Général Recettes</h4>
-                <span id="sumGeneral">0.00 $</span>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Postnom</th>
+                            <th>Prénom</th>
+                            <th>Classe / Cycle</th>
+                        </tr>
+                    </thead>
+                    <tbody id="elevesTableBody">
+                        <!-- Chargé dynamiquement -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -128,7 +162,7 @@
                     <div class="input-group"><label>Adresse</label><input type="text" id="adresse"></div>
                     <div class="input-group"><label>Date de Naissance</label><input type="date" id="date_naissance"></div>
                     <div class="input-group"><label>Salaire de Base ($)</label><input type="number" step="0.01" id="salaire_base"></div>
-                    
+
                     <div class="input-group">
                         <label>État civil</label>
                         <select id="etat_civil">
@@ -164,6 +198,9 @@
                         <label>Type de transaction</label>
                         <select id="type_transaction">
                             <option value="SALAIRE">Paiement Salaire</option>
+                            <option value="Transports">Transports</option>
+                            <option value="Carburant">Achat Carburant</option>
+                            <option value="forfait">Achat forfait</option>
                             <option value="DEPENSE">Autre Dépense</option>
                         </select>
                     </div>
@@ -229,17 +266,17 @@
 </div>
 
 <script>
-    // Définition des mots de passe pour chaque rôle
-    const PASSWORD_PROMOTEUR = "jobecPromoteur2026"; 
-    const PASSWORD_SECRETAIRE = "jobecSecretaire2026";
-    
-    let currentRole = ""; // 'promoteur' (lecture seule) ou 'secretaire' (accès total)
+    const PASSWORD_PROMOTEUR = "jobecProm"; 
+    const PASSWORD_SECRETAIRE = "secJobec";
+
+    let currentRole = ""; 
     let allEmployees = []; 
     let allTransactions = [];
+    let allEleves = [];
 
     function checkLogin() {
         const inputVal = document.getElementById("adminPassword").value;
-        
+
         if (inputVal === PASSWORD_PROMOTEUR) {
             currentRole = "promoteur";
             initDashboard();
@@ -256,25 +293,32 @@
         document.getElementById("dashboardSection").classList.add("active");
         document.getElementById("mainContainer").classList.add("dashboard-active");
 
-        // Adaptation de l'interface selon le rôle
         const actionButtons = document.getElementById("actionButtonsContainer");
         const secretaireCols = document.querySelectorAll(".secretaire-col");
-        
+        const financeSection = document.getElementById("financeSectionContainer");
+        const promoteurEleves = document.getElementById("promoteurElevesSection");
+
         if (currentRole === "promoteur") {
             document.getElementById("dashboardTitle").innerText = "Espace Promoteur - Consultation";
-            document.getElementById("userRoleSubtitle").innerText = "Mode consultation : Suivi des informations globales et de l'historique financier.";
-            
-            // Cacher les boutons d'ajout/paiement pour le promoteur (lecture seule)
+            document.getElementById("userRoleSubtitle").innerText = "Mode consultation : Suivi global des informations, élèves par cycle et finances.";
+
             actionButtons.style.display = "none";
-            
-            // Cacher les colonnes "Actions" dans les tableaux
             secretaireCols.forEach(col => col.style.display = "none");
+            
+            // Afficher les finances et les élèves par cycle pour le promoteur
+            financeSection.style.display = "block";
+            promoteurEleves.style.display = "block";
+            loadElevesData();
         } else {
             document.getElementById("dashboardTitle").innerText = "Espace Secrétariat - Gestion Totale";
-            document.getElementById("userRoleSubtitle").innerText = "Gestion complète du personnel, des transactions et suivi global des recettes.";
-            
+            document.getElementById("userRoleSubtitle").innerText = "Gestion complète du personnel et des transactions.";
+
             actionButtons.style.display = "flex";
             secretaireCols.forEach(col => col.style.display = "table-cell");
+            
+            // Masquer la situation financière et la vue des élèves pour la secrétaire
+            financeSection.style.display = "none";
+            promoteurEleves.style.display = "none";
         }
 
         loadPersonnelData();
@@ -312,6 +356,7 @@
     }
 
     async function loadFinanceTotals() {
+        if (currentRole !== "promoteur") return; // Chargé uniquement pour le promoteur
         try {
             const response = await fetch('/api/finances/totaux'); 
             if (response.ok) {
@@ -322,10 +367,12 @@
                 const totalT1 = parseFloat(financeData.total_t1 || 0);
                 const totalT2 = parseFloat(financeData.total_t2 || 0);
                 const totalT3 = parseFloat(financeData.total_t3 || 0);
-                
+
                 const totalRecettesBrutes = totalInscription + totalT1 + totalT2 + totalT3;
                 const totalDepenses = parseFloat(financeData.total_depenses || 0);
-                const totalGeneral = totalRecettesBrutes - totalDepenses;
+                
+                // Modification : Les dépenses n'impactent plus automatiquement ou ne réduisent plus le stock global de la caisse affichée côté promoteur de manière brute, ou affichage brut des recettes
+                const totalGeneral = totalRecettesBrutes; 
 
                 document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
                 document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
@@ -338,11 +385,53 @@
         }
     }
 
+    async function loadElevesData() {
+        try {
+            const response = await fetch('/api/eleves');
+            allEleves = await response.json();
+            renderElevesTable(allEleves);
+        } catch (error) {
+            console.error("Erreur chargement des élèves :", error);
+        }
+    }
+
+    function renderElevesTable(eleves) {
+        const tbody = document.getElementById("elevesTableBody");
+        tbody.innerHTML = "";
+
+        if(eleves.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">Aucun élève trouvé.</td></tr>`;
+            return;
+        }
+
+        eleves.forEach(e => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${e.id}</td>
+                <td>${e.nom || ''}</td>
+                <td>${e.postnom || ''}</td>
+                <td>${e.prenom || ''}</td>
+                <td>${e.classe || ''}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterElevesByCycle() {
+        const selectedCycle = document.getElementById("cycleFilter").value;
+        if (selectedCycle === "TOUS") {
+            renderElevesTable(allEleves);
+        } else {
+            const filtered = allEleves.filter(e => e.classe && e.classe.toLowerCase().includes(selectedCycle.toLowerCase()));
+            renderElevesTable(filtered);
+        }
+    }
+
     async function loadPersonnelData() {
         try {
             const response = await fetch('/api/personnels');
             allEmployees = await response.json();
-            
+
             const tbody = document.getElementById("personnelTableBody");
             tbody.innerHTML = "";
 
@@ -377,7 +466,6 @@
                     <td>${pdfHtml}</td>
                 `;
 
-                // Ajouter la cellule des actions uniquement pour le secrétaire (accès total)
                 if (currentRole === 'secretaire') {
                     rowHtml += `
                         <td>
@@ -399,7 +487,7 @@
         try {
             const response = await fetch('/api/transactions');
             allTransactions = await response.json();
-            
+
             const tbody = document.getElementById("transactionsTableBody");
             tbody.innerHTML = "";
 
@@ -467,7 +555,6 @@
                 document.getElementById("transactionForm").reset();
                 document.getElementById("transactionFormCard").classList.remove("active");
                 loadTransactions();
-                loadFinanceTotals();
             } else {
                 alert("Erreur lors de l'enregistrement de la transaction.");
             }
@@ -494,13 +581,12 @@
 
     async function cancelTransaction(id) {
         if (currentRole !== 'secretaire') return;
-        if (confirm("Voulez-vous vraiment annuler ce paiement ? Il sera exclu des calculs financiers.")) {
+        if (confirm("Voulez-vous vraiment annuler ce paiement ?")) {
             try {
                 const response = await fetch(`/api/transactions/annuler/${id}`, { method: 'PUT' });
                 if (response.ok) {
                     alert("Transaction annulée.");
                     loadTransactions();
-                    loadFinanceTotals();
                 } else {
                     alert("Erreur lors de l'annulation.");
                 }
@@ -515,7 +601,7 @@
         event.preventDefault();
         const id = document.getElementById("employeeId").value;
         const formData = new FormData();
-        
+
         formData.append("nom", document.getElementById("nom").value);
         formData.append("prenom", document.getElementById("prenom").value);
         formData.append("fonction", document.getElementById("fonction").value);
@@ -581,14 +667,14 @@
         document.getElementById("annee_titre_academique").value = emp.annee_titre_academique || '';
         document.getElementById("autres_formations").value = emp.autres_formations || '';
 
-        document.getElementById("formTitle").innerText = "Modifier les informations de l'employé";
-        document.getElementById("submitBtnText").innerText = "Mettre à jour";
+        document.getElementById("formTitle").innerText = "Modifier le membre du personnel";
+        document.getElementById("submitBtnText").innerText = "Mettre à jour l'employé";
         document.getElementById("addFormCard").classList.add("active");
     }
 
     async function deleteEmployee(id) {
         if (currentRole !== 'secretaire') return;
-        if (confirm("Voulez-vous vraiment supprimer cet employé de la base de données ?")) {
+        if (confirm("Voulez-vous vraiment supprimer cet employé ?")) {
             try {
                 const response = await fetch(`/api/personnels/${id}`, { method: 'DELETE' });
                 if (response.ok) {
