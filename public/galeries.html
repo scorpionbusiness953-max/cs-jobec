@@ -494,6 +494,13 @@
 
     <!-- SCRIPT DE FILTRAGE ET RECHERCHE -->
     <script>
+
+// Fonction pour ouvrir/fermer le menu sur smartphone
+        function toggleMenu() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+        }
+
         // Fonction de filtrage par catégorie
         function filterGallery(category) {
             const items = document.querySelectorAll('.gallery-item');
