@@ -76,6 +76,16 @@
             color: var(--primary-blue);
         }
 
+        /* Bouton Menu Burger pour Smartphone */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
         .whatsapp-btn {
             background: #25d366;
             color: #ffffff;
@@ -314,6 +324,15 @@
             font-size: 0.95rem;
         }
 
+        /* Styles spécifiques pour les images des cartes d'actualités */
+        .card-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
         /* ÉQUIPE & DIRECTION CARDS */
         .team-grid {
             display: grid;
@@ -463,9 +482,34 @@
             }
             header {
                 padding: 15px 20px;
+                position: relative;
+            }
+            /* Adaptation du menu mobile */
+            .menu-toggle {
+                display: block;
+            }
+            nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                border-bottom: 1px solid var(--border-color);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                display: none;
+            }
+            nav.active {
+                display: block;
             }
             nav ul {
-                display: none;
+                flex-direction: column;
+                gap: 0;
+                padding: 10px 0;
+            }
+            nav ul li {
+                text-align: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #f1f5f9;
             }
         }
     </style>
@@ -478,7 +522,8 @@
             <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
             <span>C.S JOBEC</span>
         </div>
-        <nav>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <nav id="mainNav">
             <ul>
                 <li><a href="#" class="active">Accueil</a></li>
                 <li><a href="historique.html">À Propos</a></li>
@@ -636,6 +681,10 @@
                 <p>Lancement officiel des programmes de renforcement et des ateliers culturels pour stimuler la créativité de nos apprenants.</p>
             </div>
         </div>
+        <!-- Ajout du lien vers tous les communiqués -->
+        <div style="text-align: center; margin-top: 35px;">
+            <a href="actualites.html" style="color: var(--primary-blue); font-weight: 600; text-decoration: none; font-size: 1.05rem;">Consulter tous nos communiqués officiels &rarr;</a>
+        </div>
     </section>
 
     <!-- SECTION NOS DIRECTIONS / CYCLES -->
@@ -691,6 +740,7 @@
         
         <div class="grid-3">
             <div class="card">
+                <img src="images/ban1.jpeg" alt="Portes Ouvertes" class="card-img">
                 <span class="badge" style="background-color: #e0f2fe; color: #0369a1;">Vie Scolaire</span>
                 <span class="annonce-date">📅 14 Août 2026</span>
                 <h3>Journée Portes Ouvertes</h3>
@@ -698,6 +748,7 @@
             </div>
 
             <div class="card">
+                <img src="images/ban2.jpeg" alt="Séminaire de Formation" class="card-img">
                 <span class="badge" style="background-color: #f3e8ff; color: #6b21a8;">Pédagogie</span>
                 <span class="annonce-date">📅 05 Août 2026</span>
                 <h3>Séminaire de Formation</h3>
@@ -705,6 +756,7 @@
             </div>
 
             <div class="card">
+                <img src="images/g3.jpeg" alt="Tournoi Inter-Classes" class="card-img">
                 <span class="badge" style="background-color: #fee2e2; color: #991b1b;">Sport & Culture</span>
                 <span class="annonce-date">📅 28 Juillet 2026</span>
                 <h3>Tournoi Inter-Classes</h3>
@@ -768,8 +820,14 @@
         </div>
     </footer>
 
-    <!-- SCRIPT JAVASCRIPT PROFESSIONNEL POUR LE SLIDER -->
+    <!-- SCRIPT JAVASCRIPT PROFESSIONNEL POUR LE SLIDER ET LE MENU MOBILE -->
     <script>
+        // Fonction pour ouvrir/fermer le menu sur smartphone
+        function toggleMenu() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+        }
+
         let currentSlide = 0;
         const slides = document.querySelectorAll('.hero-slide');
         const dots = document.querySelectorAll('.dot');
