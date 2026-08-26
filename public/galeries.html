@@ -91,6 +91,14 @@
             opacity: 0.9;
         }
 
+        /* Menu Hamburger pour Mobile */
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-main);
+        }
+
         /* HERO GALERIE */
         .hero-gallery {
             position: relative;
@@ -316,8 +324,24 @@
             header {
                 padding: 15px 20px;
             }
+            .menu-toggle {
+                display: block;
+            }
             nav ul {
                 display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 75px;
+                left: 0;
+                width: 100%;
+                background: var(--card-bg);
+                padding: 20px;
+                border-bottom: 1px solid var(--border-color);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                gap: 15px;
+            }
+            nav ul.active {
+                display: flex;
             }
         }
     </style>
@@ -330,12 +354,13 @@
             <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
             <span>C.S JOBEC</span>
         </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
         <nav>
-            <ul>
-                <li><a href="index.html" class="active">Accueil</a></li>
+            <ul id="mainNav">
+                <li><a href="index.html">Accueil</a></li>
                 <li><a href="historique.html">À Propos</a></li>
                 <li><a href="actualites.html">Actualités</a></li>
-                <li><a href="galeries.html">Galléries</a></li>   
+                <li><a href="galeries.html" class="active">Galeries</a></li>   
                 <li><a href="contact.html">Contact</a></li>
             </ul>
         </nav>
@@ -456,11 +481,11 @@
             <div class="footer-col">
                 <h4>Liens Rapides</h4>
                 <ul>
-                    <li><a href="#">Accueil</a></li>
-                    <li><a href="#apropos">À Propos</a></li>
-                    <li><a href="#equipe">Notre Équipe</a></li>
-                    <li><a href="#actualites">Actualités</a></li>
-                    <li><a href="#annonces">Communiqués</a></li>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="historique.html">À Propos</a></li>
+                    <li><a href="actualites.html">Actualités</a></li>
+                    <li><a href="galeries.html">Galeries</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                 </ul>
             </div>
 
@@ -492,10 +517,9 @@
         </div>
     </footer>
 
-    <!-- SCRIPT DE FILTRAGE ET RECHERCHE -->
+    <!-- SCRIPT DE FILTRAGE, RECHERCHE ET MENU MOBILE -->
     <script>
-
-// Fonction pour ouvrir/fermer le menu sur smartphone
+        // Fonction pour ouvrir/fermer le menu sur smartphone
         function toggleMenu() {
             const nav = document.getElementById('mainNav');
             nav.classList.toggle('active');

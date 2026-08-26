@@ -93,6 +93,14 @@
             opacity: 0.9;
         }
 
+        /* Menu Hamburger pour Mobile */
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+
         /* HERO SECTION À PROPOS */
         .hero-apropos {
             position: relative;
@@ -324,21 +332,38 @@
             font-size: 0.85rem;
         }
 
+        /* RESPONSIVE DESIGN */
         @media (max-width: 900px) {
             .footer-container {
                 grid-template-columns: 1fr 1fr;
+            }
+            header {
+                padding: 15px 20px;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 75px;
+                left: 0;
+                width: 100%;
+                background: var(--card-bg);
+                padding: 20px;
+                border-bottom: 1px solid var(--border-color);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                gap: 15px;
+            }
+            nav ul.active {
+                display: flex;
             }
         }
 
         @media (max-width: 600px) {
             .footer-container {
                 grid-template-columns: 1fr;
-            }
-            header {
-                padding: 15px 20px;
-            }
-            nav ul {
-                display: none;
             }
             .promoter-section, .history-section {
                 padding: 25px;
@@ -354,12 +379,13 @@
             <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
             <span>C.S JOBEC</span>
         </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
         <nav>
-            <ul>
-                <li><a href="index.html" class="active">Accueil</a></li>
-                <li><a href="historique.html">À Propos</a></li>
+            <ul id="mainNav">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="historique.html" class="active">À Propos</a></li>
                 <li><a href="actualites.html">Actualités</a></li>
-                <li><a href="galeries.html">Galléries</a></li>   
+                <li><a href="galeries.html">Galeries</a></li>   
                 <li><a href="contact.html">Contact</a></li>
             </ul>
         </nav>
@@ -380,9 +406,9 @@
             <div class="promoter-content">
                 <h2>Mot d'honneur</h2>
                 <blockquote>
-                    « Nous avons toujours eu à cœur de contribuer au développement et au rayonnement de notre pays. Nous sommes convaincus que cet objectif passe avant tout par la formation d’une élite compétente, responsable et porteuse de valeurs, grâce à une éducation de qualité. »
-                    « C’est dans cette vision que le Complexe Scolaire Jobec a vu le jour. Notre mission est d’offrir un enseignement d’excellence dans un environnement propice à l’épanouissement, afin de former les leaders et les bâtisseurs de demain. »
-                    « À travers une pédagogie moderne, un encadrement rigoureux et la transmission de solides valeurs humaines, nous aspirons à contribuer à une transformation durable de notre société en préparant une nouvelle génération de citoyens compétents, intègres et engagés. »
+                    « Nous avons toujours eu à cœur de contribuer au développement et au rayonnement de notre pays. Nous sommes convaincus que cet objectif passe avant tout par la formation d’une élite compétente, responsable et porteuse de valeurs, grâce à une éducation de qualité. »<br><br>
+                    « C’est dans cette vision que le Complexe Scolaire Jobec a vu le jour. Notre mission est d’offrir un enseignement d’excellence dans un environnement propice à l’épanouissement, afin de former les leaders et les bâtisseurs de demain. »<br><br>
+                    « À travers une pédagogie moderne, un encadrement rigoureux et la transmission de solides valeurs humaines, nous aspirons à contribuer à une transformation durable de notre société en préparant une nouvelle génération de citoyens compétents, intègres et engagés. »<br><br>
                     « Au Complexe Scolaire Jobec, nous croyons que chaque enfant possède un potentiel exceptionnel. Ensemble, donnons à nos enfants les moyens de construire un avenir meilleur pour eux-mêmes, pour leur communauté et pour notre nation. »
                 </blockquote>
                 <div class="promoter-name">Couple Jonathan Ngoy et Rebecca Omandjela</div>
@@ -432,12 +458,12 @@
         </div>
         <div class="feature-box">
             <h3>🤝 Nos Valeurs</h3>
-            <p>Respect, Discipline, Travail, </p>
+            <p>Respect, Discipline, Travail et Intégrité.</p>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer id="contact">
+    <footer>
         <div class="footer-container">
             <div class="footer-col">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
@@ -451,21 +477,21 @@
             <div class="footer-col">
                 <h4>Liens Rapides</h4>
                 <ul>
-                    <li><a href="#">Accueil</a></li>
-                    <li><a href="#apropos">À Propos</a></li>
-                    <li><a href="#equipe">Notre Équipe</a></li>
-                    <li><a href="#actualites">Actualités</a></li>
-                    <li><a href="#annonces">Communiqués</a></li>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="historique.html">À Propos</a></li>
+                    <li><a href="actualites.html">Actualités</a></li>
+                    <li><a href="galeries.html">Galeries</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
                 <h4>Applications</h4>
                 <ul>
-                    <li><a href="bibliotheque.html">Bibliothèque en Ligne</a></li>
-                    <li><a href="espace-parent.html">Espace Parent</a></li>
-                    <li><a href="admin.html">Espace RH</a></li>
-                    <li><a href="admin-bibliotheque.html">Espace Enseignant</a></li>
+                    <li><a href="#">Bibliothèque en Ligne</a></li>
+                    <li><a href="#">Espace Parent</a></li>
+                    <li><a href="#">Espace RH</a></li>
+                    <li><a href="#">Espace Enseignant</a></li>
                 </ul>
             </div>
 
@@ -486,12 +512,14 @@
             </div>
         </div>
     </footer>
-<script>
-// Fonction pour ouvrir/fermer le menu sur smartphone
+
+    <!-- SCRIPT MOBILE -->
+    <script>
+        // Fonction pour ouvrir/fermer le menu sur smartphone
         function toggleMenu() {
             const nav = document.getElementById('mainNav');
             nav.classList.toggle('active');
         }
-</script>
+    </script>
 </body>
 </html>
