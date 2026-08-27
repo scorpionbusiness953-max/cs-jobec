@@ -117,9 +117,38 @@
             font-size: 1.1rem;
         }
 
+        /* CONTENEUR ACTIONS (BOUTON IMPRIMER) */
+        .action-bar {
+            max-width: 1100px;
+            margin: 0 auto 10px auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .print-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .print-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
         .horaire-container {
             max-width: 1100px;
-            margin: 20px auto 60px auto;
+            margin: 0 auto 60px auto;
             padding: 0 20px;
             overflow-x: auto;
         }
@@ -158,9 +187,13 @@
             letter-spacing: 1px;
         }
 
-        .indices-section {
+        .indices-container {
             max-width: 1100px;
             margin: 0 auto 60px auto;
+            padding: 0 20px;
+        }
+
+        .indices-section {
             padding: 30px;
             background: var(--card-bg);
             border-radius: 12px;
@@ -259,6 +292,26 @@
             font-size: 0.85rem;
         }
 
+        /* STYLES SPÉCIFIQUES POUR L'IMPRESSION */
+        @media print {
+            header, footer, .whatsapp-btn, .action-bar {
+                display: none !important;
+            }
+            body {
+                background-color: white !important;
+                color: black !important;
+            }
+            .horaire-container, .indices-container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            table.horaire-table, .indices-section {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+        }
+
         @media (max-width: 900px) {
             .footer-container {
                 grid-template-columns: 1fr 1fr;
@@ -317,7 +370,7 @@
                 <li><a href="historique.html">À Propos</a></li>
                 <li><a href="actualites.html">Actualités</a></li>
                 <li><a href="galeries.html">Galléries</a></li>   
-                <li><a href="horaire.html">Horaire</a></li>
+                <li><a href="horaire.html" class="active">Horaire</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
         </nav>
@@ -328,6 +381,13 @@
     <div class="page-header">
         <h1>Horaire de Cours - Secondaire</h1>
         <p>Année Scolaire 2026-2027 | Consultation pour Élèves et Enseignants</p>
+    </div>
+
+    <!-- BARRE D'ACTION (BOUTON IMPRIMER) -->
+    <div class="action-bar">
+        <button class="print-btn" onclick="window.print()">
+            🖨️ Imprimer / Enregistrer en PDF
+        </button>
     </div>
 
     <!-- TABLEAU HORAIRE -->
