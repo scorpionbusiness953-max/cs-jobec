@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horaire des Cours - C.S JOBEC</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1a202c;
+            --text-muted: #4a5568;
+            --primary-blue: #0088cc;
+            --primary-dark: #005588;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* EN-TÊTE */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+        }
+
+        .logo-container img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary-blue);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* SECTION HORAIRE */
+        .page-header {
+            text-align: center;
+            padding: 50px 20px 20px 20px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .horaire-container {
+            max-width: 1100px;
+            margin: 20px auto 60px auto;
+            padding: 0 20px;
+            overflow-x: auto;
+        }
+
+        table.horaire-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+        }
+
+        .horaire-table th, .horaire-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        .horaire-table th {
+            background-color: var(--primary-blue);
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .horaire-table tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        .break-row {
+            background-color: #fffbeb !important;
+            color: #d97706;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .indices-section {
+            max-width: 1100px;
+            margin: 0 auto 60px auto;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .indices-section h3 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .indices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .indice-item {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .indice-item strong {
+            color: var(--text-main);
+        }
+
+        .direction-info {
+            text-align: right;
+            margin-top: 20px;
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #0f172a;
+            color: #cbd5e1;
+            padding: 60px 20px 20px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .footer-col p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-col ul li a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            header {
+                padding: 15px 20px;
+                position: relative;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                border-bottom: 1px solid var(--border-color);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                display: none;
+            }
+            nav.active {
+                display: block;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 0;
+                padding: 10px 0;
+            }
+            nav ul li {
+                text-align: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #f1f5f9;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
+            <span>C.S JOBEC</span>
+        </div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <nav id="mainNav">
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="historique.html">À Propos</a></li>
+                <li><a href="actualites.html">Actualités</a></li>
+                <li><a href="galeries.html">Galléries</a></li>   
+                <li><a href="horaire.html" class="active">Horaire</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/243818826384" class="whatsapp-btn">💬 WhatsApp</a>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <h1>Horaire de Cours - Secondaire</h1>
+        <p>Année Scolaire 2026-2027 | Consultation pour Élèves et Enseignants</p>
+    </div>
+
+    <!-- TABLEAU HORAIRE -->
+    <div class="horaire-container">
+        <table class="horaire-table">
+            <thead>
+                <tr>
+                    <th>Jour</th>
+                    <th>Heures</th>
+                    <th>7ème E.B.</th>
+                    <th>8ème E.B.</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- LUNDI -->
+                <tr>
+                    <td rowspan="8" style="font-weight: bold; background: #f8fafc;">LUNDI</td>
+                    <td>1ère H</td>
+                    <td>RELIGION (5)</td>
+                    <td>SVT (2)</td>
+                </tr>
+                <tr>
+                    <td>2ème H</td>
+                    <td>FRANÇAIS (4)</td>
+                    <td>MUSIQUE (1)</td>
+                </tr>
+                <tr>
+                    <td>3ème H</td>
+                    <td>MATH (3)</td>
+                    <td>FRANÇAIS (4)</td>
+                </tr>
+                <tr>
+                    <td>4ème H</td>
+                    <td>MATH (3)</td>
+                    <td>FRANÇAIS (4)</td>
+                </tr>
+                <tr class="break-row">
+                    <td colspan="3">☕ RÉCRÉATION</td>
+                </tr>
+                <tr>
+                    <td>5ème H</td>
+                    <td>ANGLAIS (1)</td>
+                    <td>MATH (3)</td>
+                </tr>
+                <tr>
+                    <td>6ème H</td>
+                    <td>SVT (2)</td>
+                    <td>MATH (3)</td>
+                </tr>
+                <tr>
+                    <td>7ème H</td>
+                    <td>ECM (5)</td>
+                    <td>ANGLAIS (1)</td>
+                </tr>
+
+                <!-- MARDI -->
+                <tr>
+                    <td rowspan="8" style="font-weight: bold; background: #f8fafc;">MARDI</td>
+                    <td>1ère H</td>
+                    <td>GEOGRAPHIE (2)</td>
+                    <td>MATH (3)</td>
+                </tr>
+                <tr>
+                    <td>2ème H</td>
+                    <td>FRANÇAIS (4)</td>
+                    <td>MATH (3)</td>
+                </tr>
+                <tr>
+                    <td>3ème H</td>
+                    <td>FRANÇAIS (4)</td>
+                    <td>GEOGRAPHIE (2)</td>
+                </tr>
+                <tr>
+                    <td>4ème H</td>
+                    <td>TIC (5)</td>
+                    <td>FRANÇAIS (4)</td>
+                </tr>
+                <tr class="break-row">
+                    <td colspan="3">☕ RÉCRÉATION</td>
+                </tr>
+                <tr>
+                    <td>5ème H</td>
+                    <td>SVT (2)</td>
+                    <td>FRANÇAIS (4)</td>
+                </tr>
+                <tr>
+                    <td>6ème H</td>
+                    <td>HISTOIRE (4)</td>
+                    <td>TIC (5)</td>
+                </tr>
+                <tr>
+                    <td>7ème H</td>
+                    <td>DESSIN (3)</td>
+                    <td>ECM (5)</td>
+                </tr>
+
+                <!-- MERCREDI -->
+                <tr>
+                    <td rowspan="8" style="font-weight: bold; background: #f8fafc;">MERCREDI</td>
+                    <td>1ère H</td>
+                    <td>MATH (3)</td>
+                    <td>FRANÇAIS (4)</td>
+                </tr>
+                <tr>
+                    <td>2ème H</td>
+                    <td>MATH (3)</td>
+                    <td>FRANÇAIS (4)</td>
+                </tr>
+                <tr>
+                    <td>3ème H</td>
+                    <td>ANGLAIS (1)</td>
+                    <td>SVT (2)</td>
+                </tr>
+                <tr>
+                    <td>4ème H</td>
+                    <td>HISTOIRE (4)</td>
+                    <td>RELIGION (5)</td>
+                </tr>
+                <tr class="break-row">
+                    <td colspan="3">☕ RÉCRÉATION</td>
+                </tr>
+                <tr>
+                    <td>5ème H</td>
+                    <td>ANGLAIS (1)</td>
+                    <td>GEOGRAPHIE (2)</td>
+                </tr>
+                <tr>
+                    <td>6ème H</td>
+                    <td>TECHNOLOGIE (2)</td>
+                    <td>ANGLAIS (1)</td>
+                </tr>
+                <tr>
+                    <td>7ème H</td>
+                    <td>GEOGRAPHIE (2)</td>
+                    <td>MATH (3)</td>
+                </tr>
+
+                <!-- JEUDI -->
+                <tr>
+                    <td rowspan="8" style="font-weight: bold; background: #f8fafc;">JEUDI</td>
+                    <td>1ère H</td>
+                    <td>FRANÇAIS (4)</td>
+                    <td>MATH (3)</td>
+                </tr>
+                <tr>
+                    <td>2ème H</td>
+                    <td>EV. (1)</td>
+                    <td>FRANÇAIS (4)</td>
+                </tr>
+                <tr>
+                    <td>3ème H</td>
+                    <td>TIC (5)</td>
+                    <td>EV. (1)</td>
+                </tr>
+                <tr>
+                    <td>4ème H</td>
+                    <td>MATH (3)</td>
+                    <td>FRANÇAIS (4)</td>
+                </tr>
+                <tr class="break-row">
+                    <td colspan="3">☕ RÉCRÉATION</td>
+                </tr>
+                <tr>
+                    <td>5ème H</td>
+                    <td>ANGLAIS (1)</td>
+                    <td>HISTOIRE (4)</td>
+                </tr>
+                <tr>
+                    <td>6ème H</td>
+                    <td>MUSIQUE (1)</td>
+                    <td>SC. PHYSIQUE (2)</td>
+                </tr>
+                <tr>
+                    <td>7ème H</td>
+                    <td>MATH (3)</td>
+                    <td>ANGLAIS (1)</td>
+                </tr>
+
+                <!-- VENDREDI -->
+                <tr>
+                    <td rowspan="8" style="font-weight: bold; background: #f8fafc;">VENDREDI</td>
+                    <td>1ère H</td>
+                    <td>SCIENCES PHYSIQUE (2)</td>
+                    <td>MATH (3)</td>
+                </tr>
+                <tr>
+                    <td>2ème H</td>
+                    <td>FRANÇAIS (4)</td>
+                    <td>MATH (3)</td>
+                </tr>
+                <tr>
+                    <td>3ème H</td>
+                    <td>FRANÇAIS (4)</td>
+                    <td>TECHNOLOGIE (2)</td>
+                </tr>
+                <tr>
+                    <td>4ème H</td>
+                    <td>MATH (3)</td>
+                    <td>HISTOIRE (4)</td>
+                </tr>
+                <tr class="break-row">
+                    <td colspan="3">☕ RÉCRÉATION</td>
+                </tr>
+                <tr>
+                    <td>5ème H</td>
+                    <td>MATH (3)</td>
+                    <td>SVT (2)</td>
+                </tr>
+                <tr>
+                    <td>6ème H</td>
+                    <td>SVT (2)</td>
+                    <td>DESSIN (3)</td>
+                </tr>
+                <tr>
+                    <td>7ème H</td>
+                    <td>ED. PHYSIQUE (3)</td>
+                    <td>ED. PHYSIQUE (3)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SECTION DES INDICES (PROFESSEURS) -->
+    <div class="indices-container">
+        <div class="indices-section">
+            <h3>Légende & Enseignants (Indices)</h3>
+            <div class="indices-grid">
+                <div class="indice-item"><strong>1.</strong> JOYCE KAMBEMBO</div>
+                <div class="indice-item"><strong>2.</strong> RUPHIN FAJI FAJI</div>
+                <div class="indice-item"><strong>3.</strong> BOB LUFUMA</div>
+                <div class="indice-item"><strong>4.</strong> LOUIS LUPAKA</div>
+                <div class="indice-item"><strong>5.</strong> SHAKO</div>
+            </div>
+            <div class="direction-info">
+                Fait à Kin, le 25/08/2026<br>
+                <strong>LA DIRECTION : BATUMANA KABUIKU (Chef d'Établissement)</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>C.S JOBEC</h4>
+                <p>Fondement de la transformation. De la maternelle au secondaire, nous formons les élites de demain avec rigueur, excellence et valeurs.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Liens Rapides</h4>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="historique.html">À Propos</a></li>
+                    <li><a href="actualites.html">Actualités</a></li>
+                    <li><a href="galeries.html">Galléries</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Espace Pédagogique</h4>
+                <ul>
+                    <li><a href="horaire.html">Horaire de Cours</a></li>
+                    <li><a href="inscription.html">Inscription En Ligne</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>📍 Kinshasa, RDC</p>
+                <p>📞 +243 818 826 384</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 C.S JOBEC. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

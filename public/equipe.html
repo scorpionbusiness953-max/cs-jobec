@@ -2,26 +2,107 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Notre Personnel - CS JOBEC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notre Personnel - C.S JOBEC</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-blue: #002147;
+            --primary-bright: #0088cc;
             --gold: #D4AF37;
             --bg-dark: #0b0b0b;
             --text-light: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: var(--bg-dark);
             color: var(--text-light);
             line-height: 1.7;
+            overflow-x: hidden;
         }
 
-        header {
+        /* EN-TÊTE (HEADER) */
+        header.site-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: #001529;
+            border-bottom: 2px solid var(--gold);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .logo-container img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--gold);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #ffffff;
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* SECTION HERO DE LA PAGE */
+        .page-hero {
             background: linear-gradient(135deg, #001529 0%, var(--primary-blue) 100%);
             color: white;
             padding: 3.5rem 2rem;
@@ -29,18 +110,19 @@
             border-bottom: 2px solid var(--gold);
         }
 
-        header h1 {
+        .page-hero h1 {
             margin: 0;
             font-size: 2.5rem;
             font-weight: 600;
         }
 
-        header p {
+        .page-hero p {
             margin: 10px 0 0;
             opacity: 0.8;
             font-weight: 300;
         }
 
+        /* CONTENEUR PRINCIPAL */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -67,13 +149,13 @@
             gap: 30px;
         }
 
-        /* Carte de profil (style sombre avec encadrement fin blanc) */
+        /* Carte de profil */
         .profile-card {
             background: #0b0b0b;
             border-radius: 20px;
             padding: 30px 20px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
@@ -110,7 +192,6 @@
             font-weight: 600;
         }
 
-        /* Fonction en majuscules (style recherché) */
         .profile-card .fonction {
             color: #ffffff;
             font-weight: 600;
@@ -130,14 +211,139 @@
             margin-top: auto;
             border: 1px solid rgba(212, 175, 55, 0.3);
         }
+
+        /* PIED DE PAGE (FOOTER) */
+        footer {
+            background-color: #050505;
+            color: #cbd5e1;
+            padding: 60px 20px 20px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .footer-col p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--gold);
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            header.site-header {
+                padding: 15px 20px;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #001529;
+                border-bottom: 1px solid var(--gold);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+                display: none;
+            }
+            nav.active {
+                display: block;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 0;
+                padding: 10px 0;
+            }
+            nav ul li {
+                text-align: center;
+                padding: 10px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Notre Personnel Qualifié</h1>
-        <p>L'excellence au service de vos enfants - CS JOBEC</p>
+
+    <!-- EN-TÊTE -->
+    <header class="site-header">
+        <a href="index.html" class="logo-container">
+            <img src="images/logo.jpeg" alt="Logo C.S JOBEC">
+            <span>C.S JOBEC</span>
+        </a>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <nav id="mainNav">
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="historique.html">À Propos</a></li>
+                <li><a href="actualites.html">Actualités</a></li>
+                <li><a href="galeries.html">Galléries</a></li>   
+                <li><a href="horaire.html">Horaire</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/243818826384" class="whatsapp-btn" target="_blank">💬 WhatsApp</a>
     </header>
 
+    <!-- BANNIÈRE DE LA PAGE -->
+    <div class="page-hero">
+        <h1>Notre Personnel Qualifié</h1>
+        <p>L'excellence au service de vos enfants - C.S JOBEC</p>
+    </div>
+
+    <!-- CONTENU PRINCIPAL -->
     <div class="container">
         <a href="index.html" class="back-link">← Retour à l'accueil</a>
         
@@ -161,7 +367,6 @@
                 <h3>SHAKO AMBEDI Mechack</h3>
                 <span class="fonction">Responsable Système & Digital</span>
                 <div class="cycle">Technique, Informatique & Administration</div>
-                
             </div>
 
             <!-- PROFIL 3 -->
@@ -174,68 +379,67 @@
                 <div class="cycle">Administration</div>
             </div>
 
-             <!-- PROFIL 3 -->
+            <!-- PROFIL 4 -->
             <div class="profile-card">
                 <div class="photo-container">
-                    <img src="images/jack.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                    <img src="images/jack.jpeg" alt="Mr BARUTI Jacques"> 
                 </div>
                 <h3>Mr BARUTI Jacques</h3>
                 <span class="fonction">Intendant</span>
                 <div class="cycle">Administration</div>
             </div>
 
-             <!-- PROFIL 3 -->
+            <!-- PROFIL 5 -->
             <div class="profile-card">
                 <div class="photo-container">
-                    <img src="images/esther.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                    <img src="images/esther.jpeg" alt="Mme MAKILA Esther"> 
                 </div>
                 <h3>Mme MAKILA Esther</h3>
                 <span class="fonction">Secrétaire Général Adjointe</span>
                 <div class="cycle">Administration</div>
             </div>
 
-             <!-- PROFIL 3 -->
+            <!-- PROFIL 6 -->
             <div class="profile-card">
                 <div class="photo-container">
-                    <img src="images/batiste.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                    <img src="images/batiste.jpeg" alt="Mr Sonbien"> 
                 </div>
                 <h3>Mr Sonbien</h3>
                 <span class="fonction">Chef d'Etablissement</span>
                 <div class="cycle">Administration</div>
             </div>
 
-            <!-- PROFIL 3 -->
+            <!-- PROFIL 7 -->
             <div class="profile-card">
                 <div class="photo-container">
-                    <img src="images/batiste.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                    <img src="images/batiste.jpeg" alt="Mr Sonbien Directeur des études"> 
                 </div>
                 <h3>Mr Sonbien</h3>
                 <span class="fonction">Directeur des études</span>
                 <div class="cycle">Administration</div>
             </div>
 
-        
-             <!-- PROFIL 3 -->
+            <!-- PROFIL 8 -->
             <div class="profile-card">
                 <div class="photo-container">
-                    <img src="images/benie.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                    <img src="images/benie.jpeg" alt="Mme Benie BILEPO BONGIA"> 
                 </div>
                 <h3>Mme Benie BILEPO BONGIA</h3>
                 <span class="fonction">Chargé de l'environnement</span>
                 <div class="cycle">Administration</div>
             </div>
 
-              <!-- PROFIL 3 -->
+            <!-- PROFIL 9 -->
             <div class="profile-card">
                 <div class="photo-container">
-                    <img src="images/Matondo.jpeg" alt="Mr OMBA OMANDJELA Batiste"> 
+                    <img src="images/Matondo.jpeg" alt="Mr MATONDO BAKENGA Enock"> 
                 </div>
                 <h3>Mr MATONDO BAKENGA Enock</h3>
                 <span class="fonction">Enseignant</span>
                 <div class="cycle">Primaire</div>
             </div>
 
-            <!-- PROFIL 4 -->
+            <!-- PROFIL 10 -->
             <div class="profile-card">
                 <div class="photo-container">
                     <img src="images/madidi.jpeg" alt="Mme MADIDI KIBADI Estimée"> 
@@ -245,7 +449,7 @@
                 <div class="cycle">Primaire</div>
             </div>
 
-            <!-- PROFIL 5 -->
+            <!-- PROFIL 11 -->
             <div class="profile-card">
                 <div class="photo-container">
                     <img src="images/mambimbo.jpeg" alt="Mme KAMBEMBO NZAU Joyce"> 
@@ -255,7 +459,7 @@
                 <div class="cycle">Primaire</div>
             </div>
 
-            <!-- PROFIL 6 -->
+            <!-- PROFIL 12 -->
             <div class="profile-card">
                 <div class="photo-container">
                     <img src="images/musenga.jpeg" alt="Mme MUSENGA KAMESA Christenvie"> 
@@ -267,5 +471,46 @@
 
         </div>
     </div>
+
+    <!-- PIED DE PAGE -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>C.S JOBEC</h4>
+                <p>Fondement de la transformation. De la maternelle au secondaire, nous formons les élites de demain avec rigueur, excellence et valeurs.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Liens Rapides</h4>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="historique.html">À Propos</a></li>
+                    <li><a href="actualites.html">Actualités</a></li>
+                    <li><a href="galeries.html">Galléries</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Espace Pédagogique</h4>
+                <ul>
+                    <li><a href="horaire.html">Horaire de Cours</a></li>
+                    <li><a href="personnel.html">Notre Personnel</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>📍 Kinshasa, RDC</p>
+                <p>📞 +243 818 826 384</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 C.S JOBEC. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
