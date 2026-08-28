@@ -123,7 +123,10 @@
                     <option value="Primaire">Primaire</option>
                     <option value="Maternel">Maternelle</option>
                 </select>
+                
+                <input type="text" id="searchInput" placeholder="Rechercher (ex: 5, Nom, Matricule)..." style="padding: 8px; width: 250px; margin-left: 10px;">
             </div>
+            
             <div class="table-responsive">
                 <div id="stats-cycle" style="margin-bottom: 15px; font-weight: bold; color: #fff;"></div>
                 <table>
@@ -289,7 +292,7 @@
     let allTransactions = [];
     let allEleves = [];
 
-    function checkLogin() {
+    function verifConnexion() {
         const inputVal = document.getElementById("adminPassword").value;
 
         if (inputVal === PASSWORD_PROMOTEUR) {
@@ -377,9 +380,9 @@
                 const financeData = fullResponse.data;      
 
                 const totalRecettes = parseFloat(financeData.total_inscription || 0) +
-                                      parseFloat(financeData.total_t1 || 0) +
-                                      parseFloat(financeData.total_t2 || 0) +
-                                      parseFloat(financeData.total_t3 || 0);
+                                    parseFloat(financeData.total_t1 || 0) +
+                                    parseFloat(financeData.total_t2 || 0) +
+                                    parseFloat(financeData.total_t3 || 0);
 
                 const totalSalaires = parseFloat(financeData.total_salaires || 0);
                 const totalDepenses = parseFloat(financeData.total_depenses || 0);
@@ -450,15 +453,35 @@
     }
 
     const filtreCycleEl = document.getElementById('filtreCycle');
+    const searchInputEl = document.getElementById('searchInput');
+
+    function appliquerFiltres() {
+        const cycleSelectionne = filtreCycleEl ? filtreCycleEl.value : "Tous";
+        const texteRecherche = searchInputEl ? searchInputEl.value.toLowerCase().trim() : "";
+
+        const resultatsFiltres = allEleves.filter(eleve => {
+            const correspondCycle = (cycleSelectionne === "Tous" || !cycleSelectionne) || 
+                (eleve.cycle && eleve.cycle.toLowerCase() === cycleSelectionne.toLowerCase());
+
+            const correspondRecherche = texteRecherche === "" || Object.values(eleve).some(val => 
+                val && val.toString().toLowerCase().includes(texteRecherche)
+            );
+
+            return correspondCycle && correspondRecherche;
+        });
+
+        afficherEleves(resultatsFiltres);
+    }
+
     if (filtreCycleEl) {
-        filtreCycleEl.addEventListener('change', (e) => {
-            const cycleSelectionne = e.target.value;
-            if (cycleSelectionne === "Tous" || !cycleSelectionne) {
-                afficherEleves(allEleves);
-            } else {
-                const filtres = allEleves.filter(el => el.cycle && el.cycle.toLowerCase() === cycleSelectionne.toLowerCase());
-                afficherEleves(filtres);
-            }
+        filtreCycleEl.addEventListener('change', () => {
+            appliquerFiltres();
+        });
+    }
+
+    if (searchInputEl) {
+        searchInputEl.addEventListener('input', () => {
+            appliquerFiltres();
         });
     }
 
@@ -543,6 +566,7 @@
             allTransactions = await response.json();
 
             const tbody = document.getElementById("transactionsTableBody");
+            if (!tbody) return;
             tbody.innerHTML = "";
 
             if(allTransactions.length === 0) {
@@ -674,7 +698,6 @@
         formData.append("annee_titre_academique", document.getElementById("annee_titre_academique").value);
         formData.append("autres_formations", document.getElementById("autres_formations").value);
         
-        // Ajout des nouveaux champs dans FormData
         formData.append("cours_dispenses", document.getElementById("cours_dispenses").value);
         formData.append("autres_roles", document.getElementById("autres_roles").value);
 
@@ -730,7 +753,6 @@
         document.getElementById("annee_titre_academique").value = emp.annee_titre_academique || '';
         document.getElementById("autres_formations").value = emp.autres_formations || '';
         
-        // Remplissage des nouveaux champs en mode modification
         document.getElementById("cours_dispenses").value = emp.cours_dispenses || '';
         document.getElementById("autres_roles").value = emp.autres_roles || '';
 
@@ -740,21 +762,21 @@
     }
 
     async function deleteEmployee(id) {
-    if (currentRole !== 'secretaire') return; // Ligne corrigée
-    if (confirm("Voulez-vous vraiment supprimer cet employé ?")) {
-        try {
-            const response = await fetch(`/api/personnels/${id}`, { method: 'DELETE' });
-            if (response.ok) {
-                alert("Employé supprimé.");
-                loadPersonnelData();
-            } else {
-                alert("Erreur lors de la suppression.");
+        if (currentRole !== 'secretaire') return;
+        if (confirm("Voulez-vous vraiment supprimer cet employé ?")) {
+            try {
+                const response = await fetch(`/api/personnels/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert("Employé supprimé.");
+                    loadPersonnelData();
+                } else {
+                    alert("Erreur lors de la suppression.");
+                }
+            } catch (error) {
+                console.error("Erreur réseau :", error);
             }
-        } catch (error) {
-            console.error("Erreur réseau :", error);
         }
     }
-}
 </script>
 </body>
 </html>
