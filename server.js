@@ -280,7 +280,7 @@ app.post('/api/personnels', uploadMemory.fields([
   const { 
     nom, prenom, fonction, telephone, email, adresse, date_naissance, salaire_base,
     etat_civil, nbr_enfant, titre_scolaire, option_scolaire, annee_titre_scolaire,
-    titre_academique, filiere_academique, annee_titre_academique, autres_formations 
+    titre_academique, filiere_academique, annee_titre_academique, autres_formations, cours_dispenses, autres_roles
   } = req.body;
   
   const photoBuffer = req.files && req.files['photo'] ? req.files['photo'][0].buffer : null;
@@ -292,15 +292,15 @@ app.post('/api/personnels', uploadMemory.fields([
         nom, prenom, fonction, telephone, email, adresse, date_naissance, salaire_base, 
         etat_civil, nbr_enfant, titre_scolaire, option_scolaire, annee_titre_scolaire, 
         titre_academique, filiere_academique, annee_titre_academique, autres_formations, 
-        photo, dossier_pdf
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19) 
+        photo, dossier_pdf, cours_dispenses, autres_roles
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21) 
       RETURNING *
     `;
     const values = [
       nom, prenom, fonction, telephone, email, adresse || null, date_naissance || null, salaire_base || null,
       etat_civil || null, nbr_enfant || 0, titre_scolaire || null, option_scolaire || null, annee_titre_scolaire || null,
       titre_academique || null, filiere_academique || null, annee_titre_academique || null, autres_formations || null,
-      photoBuffer, pdfBuffer
+      photoBuffer, pdfBuffer, cours_dispenses || null, autres_roles || null
     ];
     const result = await pool.query(query, values);
     res.status(201).json({ success: true, data: result.rows[0] });
@@ -317,7 +317,7 @@ app.put('/api/personnels/:id', uploadMemory.fields([
   const { 
     nom, prenom, fonction, telephone, email, adresse, date_naissance, salaire_base,
     etat_civil, nbr_enfant, titre_scolaire, option_scolaire, annee_titre_scolaire,
-    titre_academique, filiere_academique, annee_titre_academique, autres_formations 
+    titre_academique, filiere_academique, annee_titre_academique, autres_formations, cours_dispenses, autres_roles 
   } = req.body;
   
   const photoBuffer = req.files && req.files['photo'] ? req.files['photo'][0].buffer : null;
@@ -326,17 +326,17 @@ app.put('/api/personnels/:id', uploadMemory.fields([
   try {
     let query, values;
     if (photoBuffer && pdfBuffer) {
-      query = `UPDATE personnels SET nom=$1, prenom=$2, fonction=$3, telephone=$4, email=$5, adresse=$6, date_naissance=$7, salaire_base=$8, etat_civil=$9, nbr_enfant=$10, titre_scolaire=$11, option_scolaire=$12, annee_titre_scolaire=$13, titre_academique=$14, filiere_academique=$15, annee_titre_academique=$16, autres_formations=$17, photo=$18, dossier_pdf=$19 WHERE id=$20 RETURNING *`;
-      values = [nom, prenom, fonction, telephone, email, adresse || null, date_naissance || null, salaire_base || null, etat_civil || null, nbr_enfant || 0, titre_scolaire || null, option_scolaire || null, annee_titre_scolaire || null, titre_academique || null, filiere_academique || null, annee_titre_academique || null, autres_formations || null, photoBuffer, pdfBuffer, id];
+      query = `UPDATE personnels SET nom=$1, prenom=$2, fonction=$3, telephone=$4, email=$5, adresse=$6, date_naissance=$7, salaire_base=$8, etat_civil=$9, nbr_enfant=$10, titre_scolaire=$11, option_scolaire=$12, annee_titre_scolaire=$13, titre_academique=$14, filiere_academique=$15, annee_titre_academique=$16, autres_formations=$17, photo=$18, dossier_pdf=$19, cours_dispenses=$20, autres_roles=$21 WHERE id=$22 RETURNING *`;
+      values = [nom, prenom, fonction, telephone, email, adresse || null, date_naissance || null, salaire_base || null, etat_civil || null, nbr_enfant || 0, titre_scolaire || null, option_scolaire || null, annee_titre_scolaire || null, titre_academique || null, filiere_academique || null, annee_titre_academique || null, autres_formations || null, photoBuffer, pdfBuffer, cours_dispenses || null, autres_roles || null, id];
     } else if (photoBuffer) {
-      query = `UPDATE personnels SET nom=$1, prenom=$2, fonction=$3, telephone=$4, email=$5, adresse=$6, date_naissance=$7, salaire_base=$8, etat_civil=$9, nbr_enfant=$10, titre_scolaire=$11, option_scolaire=$12, annee_titre_scolaire=$13, titre_academique=$14, filiere_academique=$15, annee_titre_academique=$16, autres_formations=$17, photo=$18 WHERE id=$19 RETURNING *`;
-      values = [nom, prenom, fonction, telephone, email, adresse || null, date_naissance || null, salaire_base || null, etat_civil || null, nbr_enfant || 0, titre_scolaire || null, option_scolaire || null, annee_titre_scolaire || null, titre_academique || null, filiere_academique || null, annee_titre_academique || null, autres_formations || null, photoBuffer, id];
+      query = `UPDATE personnels SET nom=$1, prenom=$2, fonction=$3, telephone=$4, email=$5, adresse=$6, date_naissance=$7, salaire_base=$8, etat_civil=$9, nbr_enfant=$10, titre_scolaire=$11, option_scolaire=$12, annee_titre_scolaire=$13, titre_academique=$14, filiere_academique=$15, annee_titre_academique=$16, autres_formations=$17, photo=$18, cours_dispenses=$19, autres_roles=$20 WHERE id=$21 RETURNING *`;
+      values = [nom, prenom, fonction, telephone, email, adresse || null, date_naissance || null, salaire_base || null, etat_civil || null, nbr_enfant || 0, titre_scolaire || null, option_scolaire || null, annee_titre_scolaire || null, titre_academique || null, filiere_academique || null, annee_titre_academique || null, autres_formations || null, photoBuffer, cours_dispenses || null, autres_roles || null, id];
     } else if (pdfBuffer) {
-      query = `UPDATE personnels SET nom=$1, prenom=$2, fonction=$3, telephone=$4, email=$5, adresse=$6, date_naissance=$7, salaire_base=$8, etat_civil=$9, nbr_enfant=$10, titre_scolaire=$11, option_scolaire=$12, annee_titre_scolaire=$13, titre_academique=$14, filiere_academique=$15, annee_titre_academique=$16, autres_formations=$17, dossier_pdf=$18 WHERE id=$19 RETURNING *`;
-      values = [nom, prenom, fonction, telephone, email, adresse || null, date_naissance || null, salaire_base || null, etat_civil || null, nbr_enfant || 0, titre_scolaire || null, option_scolaire || null, annee_titre_scolaire || null, titre_academique || null, filiere_academique || null, annee_titre_academique || null, autres_formations || null, pdfBuffer, id];
+      query = `UPDATE personnels SET nom=$1, prenom=$2, fonction=$3, telephone=$4, email=$5, adresse=$6, date_naissance=$7, salaire_base=$8, etat_civil=$9, nbr_enfant=$10, titre_scolaire=$11, option_scolaire=$12, annee_titre_scolaire=$13, titre_academique=$14, filiere_academique=$15, annee_titre_academique=$16, autres_formations=$17, dossier_pdf=$18, cours_dispenses=$19, autres_roles=$20 WHERE id=$21 RETURNING *`;
+      values = [nom, prenom, fonction, telephone, email, adresse || null, date_naissance || null, salaire_base || null, etat_civil || null, nbr_enfant || 0, titre_scolaire || null, option_scolaire || null, annee_titre_scolaire || null, titre_academique || null, filiere_academique || null, annee_titre_academique || null, autres_formations || null, pdfBuffer, cours_dispenses || null, autres_roles || null, id];
     } else {
-      query = `UPDATE personnels SET nom=$1, prenom=$2, fonction=$3, telephone=$4, email=$5, adresse=$6, date_naissance=$7, salaire_base=$8, etat_civil=$9, nbr_enfant=$10, titre_scolaire=$11, option_scolaire=$12, annee_titre_scolaire=$13, titre_academique=$14, filiere_academique=$15, annee_titre_academique=$16, autres_formations=$17 WHERE id=$18 RETURNING *`;
-      values = [nom, prenom, fonction, telephone, email, adresse || null, date_naissance || null, salaire_base || null, etat_civil || null, nbr_enfant || 0, titre_scolaire || null, option_scolaire || null, annee_titre_scolaire || null, titre_academique || null, filiere_academique || null, annee_titre_academique || null, autres_formations || null, id];
+      query = `UPDATE personnels SET nom=$1, prenom=$2, fonction=$3, telephone=$4, email=$5, adresse=$6, date_naissance=$7, salaire_base=$8, etat_civil=$9, nbr_enfant=$10, titre_scolaire=$11, option_scolaire=$12, annee_titre_scolaire=$13, titre_academique=$14, filiere_academique=$15, annee_titre_academique=$16, autres_formations=$17, cours_dispenses=$18, autres_roles=$19 WHERE id=$20 RETURNING *`;
+      values = [nom, prenom, fonction, telephone, email, adresse || null, date_naissance || null, salaire_base || null, etat_civil || null, nbr_enfant || 0, titre_scolaire || null, option_scolaire || null, annee_titre_scolaire || null, titre_academique || null, filiere_academique || null, annee_titre_academique || null, autres_formations || null, cours_dispenses || null, autres_roles || null, id];
     }
     const result = await pool.query(query, values);
     res.json({ success: true, data: result.rows[0] });

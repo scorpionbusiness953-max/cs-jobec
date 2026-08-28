@@ -14,7 +14,7 @@
         p { color: #b0b0b0; font-size: 14px; margin-bottom: 25px; }
         .input-group { text-align: left; margin-bottom: 15px; }
         label { display: block; color: #ffffff; font-size: 13px; margin-bottom: 5px; font-weight: 600; }
-        input[type="password"], input[type="texte"], input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], input[type="file"], select, textarea {
+        input[type="password"], input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], input[type="file"], select, textarea {
             width: 100%; padding: 10px 12px; background-color: rgba(255, 255, 255, 0.05); border: 2px solid #555; border-radius: 8px; color: #ffffff; font-size: 14px; outline: none; transition: border-color 0.3s;
         }
         input:focus, select:focus, textarea:focus { border-color: #ffd700; }
@@ -122,30 +122,23 @@
                     <option value="Humanités">Humanités</option>
                     <option value="Primaire">Primaire</option>
                     <option value="Maternel">Maternelle</option>
-                    <!-- Ajoute tes autres cycles ici -->
                 </select>
             </div>
             <div class="table-responsive">
-                <!-- Petit bloc pour afficher les statistiques du cycle sélectionné -->
-            <div id="stats-cycle" style="margin-bottom: 15px; font-weight: bold; color: #fff;">
-                <!-- Exemple : Total élèves pour ce cycle : 15 -->
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>N°</th>
-                        <th>Matricule</th>
-                        <th>Nom</th>
-                        <th>Postnom</th>
-                        <th>Prénom</th>
-                        <th>Classe / Cycle</th>
-                    </tr>
-                </thead>
-                <tbody id="tableau-eleves">
-                    <!-- Les lignes s'ajouteront ici automatiquement -->
-                </tbody>
-            </table>
+                <div id="stats-cycle" style="margin-bottom: 15px; font-weight: bold; color: #fff;"></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Matricule</th>
+                            <th>Nom</th>
+                            <th>Postnom</th>
+                            <th>Prénom</th>
+                            <th>Classe / Cycle</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableau-eleves"></tbody>
+                </table>
             </div>
         </div>
 
@@ -188,6 +181,16 @@
                     <div class="input-group"><label>Année (Titre Académique)</label><input type="text" id="annee_titre_academique" placeholder="Ex: 2023"></div>
                     <div class="input-group" style="grid-column: 1 / -1;"><label>Autres formations</label><textarea id="autres_formations" rows="2" placeholder="Formations complémentaires..."></textarea></div>
 
+                    <!-- Nouveaux champs intégrés -->
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label>Cours dispensés</label>
+                        <textarea id="cours_dispenses" rows="2" placeholder="Ex: Mathématiques (3ème), Physique (4ème)..."></textarea>
+                    </div>
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label>Rôles dans l'établissement</label>
+                        <textarea id="autres_roles" rows="2" placeholder="Ex: Titulaire de classe, Surveillant..."></textarea>
+                    </div>
+
                     <div class="input-group"><label>Photo (Image)</label><input type="file" id="photo" accept="image/*"></div>
                     <div class="input-group"><label>Dossier PDF</label><input type="file" id="dossier_pdf" accept="application/pdf"></div>
                 </div>
@@ -222,8 +225,8 @@
         <!-- Tableau des Paiements et Dépenses -->
         <h3 style="color: #ffd700; margin-top: 30px; margin-bottom: 10px;">💸 Historique des Paiements & Sorties</h3>
         <div class="finance-card" style="border-color: #e74c3c;">
-    <h4>Total Dépenses / Sorties</h4>
-    <span id="sumDepenses" style="color: #e74c3c;">0.00 $</span>
+            <h4>Total Dépenses / Sorties</h4>
+            <span id="sumDepenses" style="color: #e74c3c;">0.00 $</span>
         </div>
        
         <div class="table-responsive">
@@ -243,7 +246,7 @@
             </table>
         </div>
 
-        <!-- Tableau de la Liste du Personnel -->
+        <!-- Tableau de la Liste du Personnel (Épuré comme demandé) -->
         <h3 style="color: #ffd700; margin-top: 30px; margin-bottom: 10px;">📋 Liste du Personnel</h3>
         <div class="table-responsive">
             <table>
@@ -253,18 +256,6 @@
                         <th>Nom</th>
                         <th>Prénom</th>
                         <th>Fonction</th>
-                        <th>Téléphone</th>
-                        <th>État civil</th>
-                        <th>Enfants</th>
-                        <th>Titre Scolaire</th>
-                        <th>Option</th>
-                        <th>Année Sc.</th>
-                        <th>Date de Naissance</th>
-                        <th>Titre Acad.</th>
-                        <th>Filière</th>
-                        <th>Année Acad.</th>
-                        <th>Salaire Base</th>
-                        <th>Dossier PDF</th>
                         <th class="secretaire-col">Actions</th>
                     </tr>
                 </thead>
@@ -275,6 +266,18 @@
         <button class="btn btn-danger" onclick="logout()">Se déconnecter</button>
     </div>
 
+</div>
+
+<!-- Fenêtre Modale pour afficher les détails complets -->
+<div id="modalDetails" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#222; padding:30px; border-radius:8px; width:500px; max-width:90%; color:#fff; position:relative; max-height: 90vh; overflow-y: auto;">
+        <button onclick="fermerDetails()" style="position:absolute; top:15px; right:15px; background:red; color:#fff; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">X</button>
+        
+        <h2 style="color:#ffd700; margin-bottom:20px;">Dossier Détaillé de l'Agent</h2>
+        <div id="contenuDetails">
+            <!-- Les infos s'injecteront ici dynamiquement -->
+        </div>
+    </div>
 </div>
 
 <script>
@@ -366,160 +369,172 @@
     }
 
     async function loadFinanceTotals() {
-    if (currentRole !== "promoteur") return;
-    try {
-        const response = await fetch('/api/finances/totaux'); 
-        if (response.ok) {
-            const fullResponse = await response.json(); 
-            const financeData = fullResponse.data;      
+        if (currentRole !== "promoteur") return;
+        try {
+            const response = await fetch('/api/finances/totaux'); 
+            if (response.ok) {
+                const fullResponse = await response.json(); 
+                const financeData = fullResponse.data;      
 
-            // Recettes
-            const totalRecettes = parseFloat(financeData.total_inscription || 0) +
-                                  parseFloat(financeData.total_t1 || 0) +
-                                  parseFloat(financeData.total_t2 || 0) +
-                                  parseFloat(financeData.total_t3 || 0);
+                const totalRecettes = parseFloat(financeData.total_inscription || 0) +
+                                      parseFloat(financeData.total_t1 || 0) +
+                                      parseFloat(financeData.total_t2 || 0) +
+                                      parseFloat(financeData.total_t3 || 0);
 
-            // Sorties : Salaires et Dépenses
-            const totalSalaires = parseFloat(financeData.total_salaires || 0);
-            const totalDepenses = parseFloat(financeData.total_depenses || 0);
-            const totalSortiesGlobales = totalSalaires + totalDepenses;
+                const totalSalaires = parseFloat(financeData.total_salaires || 0);
+                const totalDepenses = parseFloat(financeData.total_depenses || 0);
+                const totalSortiesGlobales = totalSalaires + totalDepenses;
 
-            // Solde Net
-            const soldeNet = totalRecettes - totalSortiesGlobales;
+                const soldeNet = totalRecettes - totalSortiesGlobales;
 
-            // Affichage dans le DOM (assurez-vous d'avoir les id correspondants)
-            document.getElementById("sumInscription").innerText = parseFloat(financeData.total_inscription || 0).toFixed(2) + " $";
-            document.getElementById("sumT1").innerText = parseFloat(financeData.total_t1 || 0).toFixed(2) + " $";
-            document.getElementById("sumT2").innerText = parseFloat(financeData.total_t2 || 0).toFixed(2) + " $";
-            document.getElementById("sumT3").innerText = parseFloat(financeData.total_t3 || 0).toFixed(2) + " $";
-            document.getElementById("sumGeneral").innerText = totalRecettes.toFixed(2) + " $";
+                document.getElementById("sumInscription").innerText = parseFloat(financeData.total_inscription || 0).toFixed(2) + " $";
+                document.getElementById("sumT1").innerText = parseFloat(financeData.total_t1 || 0).toFixed(2) + " $";
+                document.getElementById("sumT2").innerText = parseFloat(financeData.total_t2 || 0).toFixed(2) + " $";
+                document.getElementById("sumT3").innerText = parseFloat(financeData.total_t3 || 0).toFixed(2) + " $";
+                document.getElementById("sumGeneral").innerText = totalRecettes.toFixed(2) + " $";
 
-            // Affichage spécifique Salaires, Dépenses et Solde Net
-            if(document.getElementById("sumSalaires")) {
-                document.getElementById("sumSalaires").innerText = totalSalaires.toFixed(2) + " $";
+                if(document.getElementById("sumSalaires")) {
+                    document.getElementById("sumSalaires").innerText = totalSalaires.toFixed(2) + " $";
+                }
+                if(document.getElementById("sumDepenses")) {
+                    document.getElementById("sumDepenses").innerText = totalDepenses.toFixed(2) + " $";
+                }
+                if(document.getElementById("sumSoldeNet")) {
+                    document.getElementById("sumSoldeNet").innerText = soldeNet.toFixed(2) + " $";
+                }
             }
-            if(document.getElementById("sumDepenses")) {
-                document.getElementById("sumDepenses").innerText = totalDepenses.toFixed(2) + " $";
-            }
-            if(document.getElementById("sumSoldeNet")) {
-                document.getElementById("sumSoldeNet").innerText = soldeNet.toFixed(2) + " $";
-            }
+        } catch (error) {
+            console.error("Erreur chargement totaux financiers :", error);
         }
-    } catch (error) {
-        console.error("Erreur chargement totaux financiers :", error);
     }
-}
 
     async function loadElevesData() {
-    try {
-        const response = await fetch('/api/eleves');
-        allEleves = await response.json();
+        try {
+            const response = await fetch('/api/eleves');
+            allEleves = await response.json();
+            afficherEleves(allEleves);
+        } catch (error) {
+            console.error("Erreur chargement des élèves :", error);
+        }
+    }
+
+    function afficherEleves(listeEleves) {
+        const tbody = document.getElementById('tableau-eleves') || document.getElementById("elevesTableBody");
+        const statsDiv = document.getElementById('stats-cycle');
         
-        // On appelle directement la fonction d'affichage avec toute la liste au démarrage
-        afficherEleves(allEleves);
-    } catch (error) {
-        console.error("Erreur chargement des élèves :", error);
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (!listeEleves || listeEleves.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">Aucun élève trouvé.</td></tr>`;
+            if (statsDiv) statsDiv.textContent = `Total élèves affichés : 0`;
+            return;
+        }
+
+        if (statsDiv) {
+            statsDiv.textContent = `Total élèves affichés : ${listeEleves.length}`;
+        }
+
+        listeEleves.forEach((eleve, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${eleve.matricule || 'N/A'}</td>
+                <td>${eleve.nom || ''}</td>
+                <td>${eleve.postnom || ''}</td>
+                <td>${eleve.prenom || ''}</td>
+                <td>${eleve.classe || ''} ${eleve.cycle ? '(' + eleve.cycle + ')' : ''}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
-}
 
-// 1. Déclaration de la fonction d'affichage
-function afficherEleves(listeEleves) {
-    const tbody = document.getElementById('tableau-eleves') || document.getElementById("elevesTableBody");
-    const statsDiv = document.getElementById('stats-cycle');
-    
-    if (!tbody) return;
-    tbody.innerHTML = '';
-
-    if (!listeEleves || listeEleves.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">Aucun élève trouvé.</td></tr>`;
-        if (statsDiv) statsDiv.textContent = `Total élèves affichés : 0`;
-        return;
+    const filtreCycleEl = document.getElementById('filtreCycle');
+    if (filtreCycleEl) {
+        filtreCycleEl.addEventListener('change', (e) => {
+            const cycleSelectionne = e.target.value;
+            if (cycleSelectionne === "Tous" || !cycleSelectionne) {
+                afficherEleves(allEleves);
+            } else {
+                const filtres = allEleves.filter(el => el.cycle && el.cycle.toLowerCase() === cycleSelectionne.toLowerCase());
+                afficherEleves(filtres);
+            }
+        });
     }
 
-    if (statsDiv) {
-        statsDiv.textContent = `Total élèves affichés : ${listeEleves.length}`;
-    }
-
-    listeEleves.forEach((eleve, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${eleve.matricule || 'N/A'}</td>
-            <td>${eleve.nom || ''}</td>
-            <td>${eleve.postnom || ''}</td>
-            <td>${eleve.prenom || ''}</td>
-            <td>${eleve.classe || ''} ${eleve.cycle ? '(' + eleve.cycle + ')' : ''}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// 2. Écouteur d'événement du filtre placé APRES
-document.getElementById('filtreCycle').addEventListener('change', (e) => {
-    const cycleSelectionne = e.target.value;
-    if (cycleSelectionne === "Tous" || !cycleSelectionne) {
-        afficherEleves(allEleves);
-    } else {
-        const filtres = allEleves.filter(el => el.cycle && el.cycle.toLowerCase() === cycleSelectionne.toLowerCase());
-        afficherEleves(filtres);
-    }
-});  
-
-
-async function loadPersonnelData() {
+    async function loadPersonnelData() {
         try {
             const response = await fetch('/api/personnels');
             allEmployees = await response.json();
 
             const tbody = document.getElementById("personnelTableBody");
+            if (!tbody) return;
             tbody.innerHTML = "";
 
-            if(allEmployees.length === 0) {
-                let colSpan = currentRole === 'secretaire' ? 17 : 16;
-                tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center; color:#888;">Aucun personnel enregistré.</td></tr>`;
+            if (allEmployees.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">Aucun personnel enregistré.</td></tr>`;
                 return;
             }
 
             allEmployees.forEach(p => {
-                let photoHtml = p.photo ? `<img src="${p.photo}" class="table-img">` : 'Aucune';
-                let pdfHtml = p.dossier_pdf ? `<a href="${p.dossier_pdf}" target="_blank" style="color: #ffd700;">📄 Voir</a>` : 'Aucun';
-                let dateNaissanceFormatee = p.date_naissance ? p.date_naissance.split('T')[0] : '';
+                let photoHtml = p.photo ? `<img src="${p.photo}" class="table-img" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">` : 'Aucune';
 
-                const tr = document.createElement("tr");
+                const tr = document.createElement('tr');
                 let rowHtml = `
                     <td>${photoHtml}</td>
                     <td>${p.nom || ''}</td>
                     <td>${p.prenom || ''}</td>
                     <td>${p.fonction || ''}</td>
-                    <td>${p.telephone || ''}</td> 
-                    <td>${p.etat_civil || ''}</td>
-                    <td>${p.nbr_enfant ?? ''}</td>
-                    <td>${p.titre_scolaire || ''}</td>
-                    <td>${p.option_scolaire || ''}</td>
-                    <td>${p.annee_titre_scolaire || ''}</td>
-                    <td>${dateNaissanceFormatee}</td>
-                    <td>${p.titre_academique || ''}</td>
-                    <td>${p.filiere_academique || ''}</td>
-                    <td>${p.annee_titre_academique || ''}</td>
-                    <td>${p.salaire_base ? p.salaire_base + ' $' : ''}</td>
-                    <td>${pdfHtml}</td>
+                    <td>
+                        <button class="btn-action" onclick="ouvrirDetailsPersonnel(${p.id})" style="background:#007bff; color:#fff; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;">Détails</button>
                 `;
 
                 if (currentRole === 'secretaire') {
                     rowHtml += `
-                        <td>
-                            <button class="btn-action btn-edit" onclick="prepareEdit(${p.id})">Modifier</button>
-                            <button class="btn-action btn-del" onclick="deleteEmployee(${p.id})">Supprimer</button>
-                        </td>
+                            <button class="btn-action btn-edit" onclick="prepareEdit(${p.id})" style="background:#ffc107; color:#000; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">Modifier</button>
+                            <button class="btn-action btn-del" onclick="deleteEmployee(${p.id})" style="background:#dc3545; color:#fff; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">Supprimer</button>
                     `;
                 }
 
+                rowHtml += `</td>`;
                 tr.innerHTML = rowHtml;
                 tbody.appendChild(tr);
             });
         } catch (error) {
             console.error("Erreur chargement personnel :", error);
         }
+    }
+
+    function ouvrirDetailsPersonnel(id) {
+        const emp = allEmployees.find(p => p.id === id);
+        if (!emp) return;
+
+        let dateNaissanceFormatee = emp.date_naissance ? emp.date_naissance.split('T')[0] : 'N/A';
+        let pdfHtml = emp.dossier_pdf ? `<a href="${emp.dossier_pdf}" target="_blank" style="color: #ffd700;">📄 Voir le dossier PDF</a>` : 'Aucun document';
+
+        const contenu = document.getElementById('contenuDetails');
+        contenu.innerHTML = `
+            <p><strong>Nom :</strong> ${emp.nom || ''}</p>
+            <p><strong>Prénom :</strong> ${emp.prenom || ''}</p>
+            <p><strong>Fonction :</strong> ${emp.fonction || 'N/A'}</p>
+            <p><strong>Téléphone :</strong> ${emp.telephone || 'N/A'}</p>
+            <p><strong>État civil :</strong> ${emp.etat_civil || 'N/A'} (${emp.nbr_enfant || 0} enfants)</p>
+            <p><strong>Date de naissance :</strong> ${dateNaissanceFormatee}</p>
+            <hr style="border-color:#444; margin:10px 0;">
+            <p><strong>Titre Scolaire :</strong> ${emp.titre_scolaire || 'N/A'} (${emp.option_scolaire || ''} - ${emp.annee_titre_scolaire || ''})</p>
+            <p><strong>Titre Académique :</strong> ${emp.titre_academique || 'N/A'} (${emp.filiere_academique || ''} - ${emp.annee_titre_academique || ''})</p>
+            <hr style="border-color:#444; margin:10px 0;">
+            <p><strong>Cours dispensés :</strong> ${emp.cours_dispenses || 'Aucun cours assigné'}</p>
+            <p><strong>Rôles dans l'établissement :</strong> ${emp.autres_roles || 'Aucun rôle particulier'}</p>
+            <p><strong>Salaire de base :</strong> ${emp.salaire_base ? emp.salaire_base + ' $' : 'N/A'}</p>
+            <p><strong>Dossier PDF :</strong> ${pdfHtml}</p>
+        `;
+
+        document.getElementById('modalDetails').style.display = 'flex';
+    }
+
+    function fermerDetails() {
+        document.getElementById('modalDetails').style.display = 'none';
     }
 
     async function loadTransactions() {
@@ -658,6 +673,10 @@ async function loadPersonnelData() {
         formData.append("filiere_academique", document.getElementById("filiere_academique").value);
         formData.append("annee_titre_academique", document.getElementById("annee_titre_academique").value);
         formData.append("autres_formations", document.getElementById("autres_formations").value);
+        
+        // Ajout des nouveaux champs dans FormData
+        formData.append("cours_dispenses", document.getElementById("cours_dispenses").value);
+        formData.append("autres_roles", document.getElementById("autres_roles").value);
 
         const photoInput = document.getElementById("photo").files[0];
         if (photoInput) formData.append("photo", photoInput);
@@ -710,6 +729,10 @@ async function loadPersonnelData() {
         document.getElementById("filiere_academique").value = emp.filiere_academique || '';
         document.getElementById("annee_titre_academique").value = emp.annee_titre_academique || '';
         document.getElementById("autres_formations").value = emp.autres_formations || '';
+        
+        // Remplissage des nouveaux champs en mode modification
+        document.getElementById("cours_dispenses").value = emp.cours_dispenses || '';
+        document.getElementById("autres_roles").value = emp.autres_roles || '';
 
         document.getElementById("formTitle").innerText = "Modifier les informations de l'employé";
         document.getElementById("submitBtnText").innerText = "Mettre à jour";
@@ -717,21 +740,21 @@ async function loadPersonnelData() {
     }
 
     async function deleteEmployee(id) {
-        if (currentRole !== 'secretaire') return;
-        if (confirm("Voulez-vous vraiment supprimer cet employé ?")) {
-            try {
-                const response = await fetch(`/api/personnels/${id}`, { method: 'DELETE' });
-                if (response.ok) {
-                    alert("Employé supprimé.");
-                    loadPersonnelData();
-                } else {
-                    alert("Erreur lors de la suppression.");
-                }
-            } catch (error) {
-                console.error("Erreur réseau :", error);
+    if (currentRole !== 'secretaire') return; // Ligne corrigée
+    if (confirm("Voulez-vous vraiment supprimer cet employé ?")) {
+        try {
+            const response = await fetch(`/api/personnels/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                alert("Employé supprimé.");
+                loadPersonnelData();
+            } else {
+                alert("Erreur lors de la suppression.");
             }
+        } catch (error) {
+            console.error("Erreur réseau :", error);
         }
     }
+}
 </script>
 </body>
 </html>
