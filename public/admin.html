@@ -362,37 +362,49 @@
     }
 
     async function loadFinanceTotals() {
-        if (currentRole !== "promoteur") return;
-        try {
-            const response = await fetch('/api/finances/totaux'); 
-            if (response.ok) {
-                const fullResponse = await response.json(); 
-                const financeData = fullResponse.data;      
+    if (currentRole !== "promoteur") return;
+    try {
+        const response = await fetch('/api/finances/totaux'); 
+        if (response.ok) {
+            const fullResponse = await response.json(); 
+            const financeData = fullResponse.data;      
 
-                const totalInscription = parseFloat(financeData.total_inscription || 0);
-                const totalT1 = parseFloat(financeData.total_t1 || 0);
-                const totalT2 = parseFloat(financeData.total_t2 || 0);
-                const totalT3 = parseFloat(financeData.total_t3 || 0);
+            // Recettes
+            const totalRecettes = parseFloat(financeData.total_inscription || 0) +
+                                  parseFloat(financeData.total_t1 || 0) +
+                                  parseFloat(financeData.total_t2 || 0) +
+                                  parseFloat(financeData.total_t3 || 0);
 
-                const totalRecettesBrutes = totalInscription + totalT1 + totalT2 + totalT3;
-                const totalGeneral = totalRecettesBrutes; 
+            // Sorties : Salaires et Dépenses
+            const totalSalaires = parseFloat(financeData.total_salaires || 0);
+            const totalDepenses = parseFloat(financeData.total_depenses || 0);
+            const totalSortiesGlobales = totalSalaires + totalDepenses;
 
-                document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
-                document.getElementById("sumT1").innerText = totalT1.toFixed(2) + " $";
-                document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
-                document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
-                document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
+            // Solde Net
+            const soldeNet = totalRecettes - totalSortiesGlobales;
 
-                // Affichage des dépenses et du solde net
-                const depElement = document.getElementById("sumDepenses");
-                const netElement = document.getElementById("sumSoldeNet");
-                if(depElement) depElement.innerText = totalDepenses.toFixed(2) + " $";
-                if(netElement) netElement.innerText = soldeNet.toFixed(2) + " $";
+            // Affichage dans le DOM (assurez-vous d'avoir les id correspondants)
+            document.getElementById("sumInscription").innerText = parseFloat(financeData.total_inscription || 0).toFixed(2) + " $";
+            document.getElementById("sumT1").innerText = parseFloat(financeData.total_t1 || 0).toFixed(2) + " $";
+            document.getElementById("sumT2").innerText = parseFloat(financeData.total_t2 || 0).toFixed(2) + " $";
+            document.getElementById("sumT3").innerText = parseFloat(financeData.total_t3 || 0).toFixed(2) + " $";
+            document.getElementById("sumGeneral").innerText = totalRecettes.toFixed(2) + " $";
+
+            // Affichage spécifique Salaires, Dépenses et Solde Net
+            if(document.getElementById("sumSalaires")) {
+                document.getElementById("sumSalaires").innerText = totalSalaires.toFixed(2) + " $";
             }
-        } catch (error) {
-            console.error("Erreur lors du chargement des totaux financiers :", error);
+            if(document.getElementById("sumDepenses")) {
+                document.getElementById("sumDepenses").innerText = totalDepenses.toFixed(2) + " $";
+            }
+            if(document.getElementById("sumSoldeNet")) {
+                document.getElementById("sumSoldeNet").innerText = soldeNet.toFixed(2) + " $";
+            }
         }
+    } catch (error) {
+        console.error("Erreur chargement totaux financiers :", error);
     }
+}
 
     async function loadElevesData() {
         try {
