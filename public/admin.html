@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espace RH & Secrétariat - CS Jobec</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #0b1c3d; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .card-container { background-color: #000000; border-radius: 16px; padding: 40px 30px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); transition: all 0.3s ease; }
         .card-container.dashboard-active { max-width: 95vw; text-align: left; }
@@ -14,7 +14,7 @@
         p { color: #b0b0b0; font-size: 14px; margin-bottom: 25px; }
         .input-group { text-align: left; margin-bottom: 15px; }
         label { display: block; color: #ffffff; font-size: 13px; margin-bottom: 5px; font-weight: 600; }
-        input[type="password"], input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], input[type="file"], select, textarea {
+        input[type="password"], input[type="texte"], input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], input[type="file"], select, textarea {
             width: 100%; padding: 10px 12px; background-color: rgba(255, 255, 255, 0.05); border: 2px solid #555; border-radius: 8px; color: #ffffff; font-size: 14px; outline: none; transition: border-color 0.3s;
         }
         input:focus, select:focus, textarea:focus { border-color: #ffd700; }
@@ -85,7 +85,7 @@
         <h1 id="dashboardTitle">Tableau de Bord - Personnel & Finances</h1>
         <p id="userRoleSubtitle">Suivi global des recettes scolaires et gestion du personnel.</p>
 
-        <!-- AFFICHAGE DES TOTAUX FINANCIERS DEPUIS LA BDD (Visible uniquement pour le Promoteur) -->
+        <!-- AFFICHAGE DES TOTAUX FINANCIERS DEPUIS LA BDD -->
         <div id="financeSectionContainer">
             <h3 style="color: #ffd700; margin-bottom: 15px;">📊 Totaux des Recettes (Base de données)</h3>
             <div class="finance-dashboard">
@@ -112,7 +112,7 @@
             </div>
         </div>
 
-        <!-- SECTION ELEVES PAR CYCLE (Visible uniquement pour le Promoteur) -->
+        <!-- SECTION ELEVES PAR CYCLE -->
         <div id="promoteurElevesSection" class="promoteur-only" style="margin-bottom: 35px; background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333;">
             <h3 style="color: #ffd700; margin-bottom: 15px;">🎓 Consultation des Élèves par Cycle</h3>
             <div class="input-group" style="max-width: 300px; margin-bottom: 15px;">
@@ -124,7 +124,7 @@
                     <option value="Humanités">Humanités</option>
                 </select>
             </div>
-                <div class="table-responsive">
+            <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
@@ -142,7 +142,7 @@
             </div>
         </div>
 
-        <!-- Boutons d'actions (visibles uniquement pour le secrétaire / accès total) -->
+        <!-- Boutons d'actions -->
         <div style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;" id="actionButtonsContainer">
             <button class="btn btn-gold" onclick="openAddForm()">+ Ajouter un employé</button>
             <button class="btn btn-gold" onclick="openTransactionForm()" style="background-color: #27ae60; color: white;">💸 Effectuer un Paiement / Dépense</button>
@@ -305,7 +305,6 @@
             actionButtons.style.display = "none";
             secretaireCols.forEach(col => col.style.display = "none");
             
-            // Afficher les finances et les élèves par cycle pour le promoteur
             financeSection.style.display = "block";
             promoteurEleves.style.display = "block";
             loadElevesData();
@@ -316,7 +315,6 @@
             actionButtons.style.display = "flex";
             secretaireCols.forEach(col => col.style.display = "table-cell");
             
-            // Masquer la situation financière et la vue des élèves pour la secrétaire
             financeSection.style.display = "none";
             promoteurEleves.style.display = "none";
         }
@@ -356,7 +354,7 @@
     }
 
     async function loadFinanceTotals() {
-        if (currentRole !== "promoteur") return; // Chargé uniquement pour le promoteur
+        if (currentRole !== "promoteur") return;
         try {
             const response = await fetch('/api/finances/totaux'); 
             if (response.ok) {
@@ -369,9 +367,6 @@
                 const totalT3 = parseFloat(financeData.total_t3 || 0);
 
                 const totalRecettesBrutes = totalInscription + totalT1 + totalT2 + totalT3;
-                const totalDepenses = parseFloat(financeData.total_depenses || 0);
-                
-                // Modification : Les dépenses n'impactent plus automatiquement ou ne réduisent plus le stock global de la caisse affichée côté promoteur de manière brute, ou affichage brut des recettes
                 const totalGeneral = totalRecettesBrutes; 
 
                 document.getElementById("sumInscription").innerText = totalInscription.toFixed(2) + " $";
@@ -417,17 +412,15 @@
         });
     }
 
-   
-
     function filterElevesByCycle() {
-    const selectedCycle = document.getElementById("cycleFilter").value;
-    if (selectedCycle === "TOUS") {
-        renderElevesTable(allEleves);
-    } else {
-        const filtered = allEleves.filter(e => e.cycle && e.cycle.toLowerCase() === selectedCycle.toLowerCase());
-        renderElevesTable(filtered);
+        const selectedCycle = document.getElementById("cycleFilter").value;
+        if (selectedCycle === "TOUS") {
+            renderElevesTable(allEleves);
+        } else {
+            const filtered = allEleves.filter(e => e.cycle && e.cycle.toLowerCase() === selectedCycle.toLowerCase());
+            renderElevesTable(filtered);
+        }
     }
-}
 
     async function loadPersonnelData() {
         try {
@@ -622,23 +615,28 @@
         formData.append("annee_titre_academique", document.getElementById("annee_titre_academique").value);
         formData.append("autres_formations", document.getElementById("autres_formations").value);
 
-        const photoFile = document.getElementById("photo").files[0];
-        if (photoFile) formData.append("photo", photoFile);
-        const pdfFile = document.getElementById("dossier_pdf").files[0];
-        if (pdfFile) formData.append("dossier_pdf", pdfFile);
+        const photoInput = document.getElementById("photo").files[0];
+        if (photoInput) formData.append("photo", photoInput);
+
+        const pdfInput = document.getElementById("dossier_pdf").files[0];
+        if (pdfInput) formData.append("dossier_pdf", pdfInput);
 
         const url = id ? `/api/personnels/${id}` : '/api/personnels';
         const method = id ? 'PUT' : 'POST';
 
         try {
-            const response = await fetch(url, { method: method, body: formData });
+            const response = await fetch(url, {
+                method: method,
+                body: formData
+            });
+
             if (response.ok) {
                 alert(id ? "Employé modifié avec succès !" : "Employé enregistré avec succès !");
                 document.getElementById("employeeForm").reset();
                 document.getElementById("addFormCard").classList.remove("active");
                 loadPersonnelData();
             } else {
-                alert("Erreur lors de l'enregistrement.");
+                alert("Erreur lors de l'enregistrement de l'employé.");
             }
         } catch (error) {
             console.error("Erreur réseau :", error);
@@ -669,8 +667,8 @@
         document.getElementById("annee_titre_academique").value = emp.annee_titre_academique || '';
         document.getElementById("autres_formations").value = emp.autres_formations || '';
 
-        document.getElementById("formTitle").innerText = "Modifier le membre du personnel";
-        document.getElementById("submitBtnText").innerText = "Mettre à jour l'employé";
+        document.getElementById("formTitle").innerText = "Modifier les informations de l'employé";
+        document.getElementById("submitBtnText").innerText = "Mettre à jour";
         document.getElementById("addFormCard").classList.add("active");
     }
 
@@ -691,6 +689,5 @@
         }
     }
 </script>
-
 </body>
 </html>
