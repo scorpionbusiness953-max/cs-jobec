@@ -123,10 +123,13 @@
                     <option value="Primaire">Primaire</option>
                     <option value="Maternel">Maternelle</option>
                 </select>
-                
-                <input type="text" id="searchInput" placeholder="Rechercher (ex: 5, Nom, Matricule)..." style="padding: 8px; width: 250px; margin-left: 10px;">
+          
             </div>
-            
+            <!-- LA BARRE DE RECHERCHE À AJOUTER -->
+            <div style="flex-grow: 1;">
+                <label for="searchInput" style="display: block; margin-bottom: 5px;">Rechercher un élève</label>
+                <input type="text" id="searchInput" placeholder="Nom, postnom, matricule, classe..." style="width: 100%; padding: 8px; border-radius: 4px; background: #222; color: #fff; border: 1px solid #444;">
+            </div>
             <div class="table-responsive">
                 <div id="stats-cycle" style="margin-bottom: 15px; font-weight: bold; color: #fff;"></div>
                 <table>
