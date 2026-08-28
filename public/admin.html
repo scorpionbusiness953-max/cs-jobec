@@ -117,11 +117,11 @@
             <h3 style="color: #ffd700; margin-bottom: 15px;">🎓 Consultation des Élèves par Cycle</h3>
             <div class="input-group" style="max-width: 300px; margin-bottom: 15px;">
                 <label>Sélectionner le cycle</label>
-                <select id="cycleFilter" onchange="filterElevesByCycle()">
-                    <option value="TOUS">Tous les cycles</option>
-                    <option value="Maternel">Maternelle</option>
-                    <option value="Primaire">Primaire</option>
+                <select id="filtreCycle">
+                    <option value="Tous">Tous les cycles</option>
                     <option value="Humanités">Humanités</option>
+                    <option value="Primaire">Primaire</option>
+                    <!-- Ajoute tes autres cycles ici -->
                 </select>
             </div>
             <div class="table-responsive">
@@ -130,7 +130,7 @@
                 <!-- Exemple : Total élèves pour ce cycle : 15 -->
             </div>
 
-            <table class="table">
+            <table>
                 <thead>
                     <tr>
                         <th>N°</th>
@@ -142,7 +142,7 @@
                     </tr>
                 </thead>
                 <tbody id="tableau-eleves">
-                    <!-- Rempli dynamiquement par JS -->
+                    <!-- Les lignes s'ajouteront ici automatiquement -->
                 </tbody>
             </table>
             </div>
@@ -413,60 +413,62 @@
 }
 
     async function loadElevesData() {
-        try {
-            const response = await fetch('/api/eleves');
-            allEleves = await response.json();
-            renderElevesTable(allEleves);
-        } catch (error) {
-            console.error("Erreur chargement des élèves :", error);
-        }
+    try {
+        const response = await fetch('/api/eleves');
+        allEleves = await response.json();
+        
+        // On appelle directement la fonction d'affichage avec toute la liste au démarrage
+        afficherEleves(allEleves);
+    } catch (error) {
+        console.error("Erreur chargement des élèves :", error);
     }
+}
 
-    function renderElevesTable(eleves) {
-        const tbody = document.getElementById("elevesTableBody");
-        tbody.innerHTML = "";
-
-        if(eleves.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">Aucun élève trouvé.</td></tr>`;
-            return;
-        }
-
-        eleves.forEach(e => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${e.id}</td>
-                <td>${e.nom || ''}</td>
-                <td>${e.postnom || ''}</td>
-                <td>${e.prenom || ''}</td>
-                <td>${e.classe || ''}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function afficherEleves(listeEleves) {
-    const tbody = document.getElementById('tableau-eleves');
+// 1. Déclaration de la fonction d'affichage
+function afficherEleves(listeEleves) {
+    const tbody = document.getElementById('tableau-eleves') || document.getElementById("elevesTableBody");
     const statsDiv = document.getElementById('stats-cycle');
+    
+    if (!tbody) return;
     tbody.innerHTML = '';
 
-    // Calcul des statistiques selon le cycle filtré
-    const totalEleves = listeEleves.length;
-    statsDiv.textContent = `Total élèves affichés : ${totalEleves}`;
+    if (!listeEleves || listeEleves.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">Aucun élève trouvé.</td></tr>`;
+        if (statsDiv) statsDiv.textContent = `Total élèves affichés : 0`;
+        return;
+    }
+
+    if (statsDiv) {
+        statsDiv.textContent = `Total élèves affichés : ${listeEleves.length}`;
+    }
 
     listeEleves.forEach((eleve, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${index + 1}</td>
             <td>${eleve.matricule || 'N/A'}</td>
-            <td>${eleve.nom}</td>
-            <td>${eleve.postnom}</td>
-            <td>${eleve.prenom}</td>
-            <td>${eleve.classe} (${eleve.cycle || 'N/D'})</td>
+            <td>${eleve.nom || ''}</td>
+            <td>${eleve.postnom || ''}</td>
+            <td>${eleve.prenom || ''}</td>
+            <td>${eleve.classe || ''} ${eleve.cycle ? '(' + eleve.cycle + ')' : ''}</td>
         `;
         tbody.appendChild(tr);
     });
 }
-    async function loadPersonnelData() {
+
+// 2. Écouteur d'événement du filtre placé APRES
+document.getElementById('filtreCycle').addEventListener('change', (e) => {
+    const cycleSelectionne = e.target.value;
+    if (cycleSelectionne === "Tous" || !cycleSelectionne) {
+        afficherEleves(allEleves);
+    } else {
+        const filtres = allEleves.filter(el => el.cycle && el.cycle.toLowerCase() === cycleSelectionne.toLowerCase());
+        afficherEleves(filtres);
+    }
+});  
+
+
+async function loadPersonnelData() {
         try {
             const response = await fetch('/api/personnels');
             allEmployees = await response.json();
