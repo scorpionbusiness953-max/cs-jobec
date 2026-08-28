@@ -214,6 +214,14 @@
 
         <!-- Tableau des Paiements et Dépenses -->
         <h3 style="color: #ffd700; margin-top: 30px; margin-bottom: 10px;">💸 Historique des Paiements & Sorties</h3>
+        <div class="finance-card" style="border-color: #e74c3c;">
+    <h4>Total Dépenses / Sorties</h4>
+    <span id="sumDepenses" style="color: #e74c3c;">0.00 $</span>
+        </div>
+        <div class="finance-card total-card" style="border-color: #3498db; background: rgba(52, 152, 219, 0.05);">
+            <h4>Solde Net (Recettes - Dépenses)</h4>
+            <span id="sumSoldeNet" style="color: #3498db;">0.00 $</span>
+        </div>
         <div class="table-responsive">
             <table>
                 <thead>
@@ -374,6 +382,12 @@
                 document.getElementById("sumT2").innerText = totalT2.toFixed(2) + " $";
                 document.getElementById("sumT3").innerText = totalT3.toFixed(2) + " $";
                 document.getElementById("sumGeneral").innerText = totalGeneral.toFixed(2) + " $";
+
+                // Affichage des dépenses et du solde net
+                const depElement = document.getElementById("sumDepenses");
+                const netElement = document.getElementById("sumSoldeNet");
+                if(depElement) depElement.innerText = totalDepenses.toFixed(2) + " $";
+                if(netElement) netElement.innerText = soldeNet.toFixed(2) + " $";
             }
         } catch (error) {
             console.error("Erreur lors du chargement des totaux financiers :", error);
