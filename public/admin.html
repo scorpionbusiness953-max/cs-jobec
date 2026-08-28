@@ -125,20 +125,26 @@
                 </select>
             </div>
             <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Postnom</th>
-                            <th>Prénom</th>
-                            <th>Classe / Cycle</th>
-                        </tr>
-                    </thead>
-                    <tbody id="elevesTableBody">
-                        <!-- Chargé dynamiquement -->
-                    </tbody>
-                </table>
+                <!-- Petit bloc pour afficher les statistiques du cycle sélectionné -->
+            <div id="stats-cycle" style="margin-bottom: 15px; font-weight: bold; color: #fff;">
+                <!-- Exemple : Total élèves pour ce cycle : 15 -->
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Matricule</th>
+                        <th>Nom</th>
+                        <th>Postnom</th>
+                        <th>Prénom</th>
+                        <th>Classe / Cycle</th>
+                    </tr>
+                </thead>
+                <tbody id="tableau-eleves">
+                    <!-- Rempli dynamiquement par JS -->
+                </tbody>
+            </table>
             </div>
         </div>
 
@@ -438,16 +444,28 @@
         });
     }
 
-    function filterElevesByCycle() {
-        const selectedCycle = document.getElementById("cycleFilter").value;
-        if (selectedCycle === "TOUS") {
-            renderElevesTable(allEleves);
-        } else {
-            const filtered = allEleves.filter(e => e.cycle && e.cycle.toLowerCase() === selectedCycle.toLowerCase());
-            renderElevesTable(filtered);
-        }
-    }
+    function afficherEleves(listeEleves) {
+    const tbody = document.getElementById('tableau-eleves');
+    const statsDiv = document.getElementById('stats-cycle');
+    tbody.innerHTML = '';
 
+    // Calcul des statistiques selon le cycle filtré
+    const totalEleves = listeEleves.length;
+    statsDiv.textContent = `Total élèves affichés : ${totalEleves}`;
+
+    listeEleves.forEach((eleve, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${eleve.matricule || 'N/A'}</td>
+            <td>${eleve.nom}</td>
+            <td>${eleve.postnom}</td>
+            <td>${eleve.prenom}</td>
+            <td>${eleve.classe} (${eleve.cycle || 'N/D'})</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
     async function loadPersonnelData() {
         try {
             const response = await fetch('/api/personnels');

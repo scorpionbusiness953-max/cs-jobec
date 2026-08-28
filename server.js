@@ -236,7 +236,8 @@ app.get('/api/transactions', async (req, res) => {
 
 app.get('/api/eleves', async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, nom, postnom, prenom, classe, cycle FROM eleves ORDER BY id DESC');
+        // Ajout de 'matricule' dans la sélection
+        const result = await pool.query('SELECT id, matricule, nom, postnom, prenom, classe, cycle FROM eleves ORDER BY id DESC');
         res.json(result.rows);
     } catch (err) {
         console.error("Erreur lors de la récupération des élèves :", err);
