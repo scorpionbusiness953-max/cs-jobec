@@ -152,7 +152,7 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
-// --- ROUTE FINANCES : TOTAUX (Recettes, Salaires et Dépenses Valides) ---
+// --- ROUTE FINANCES : TOTAUX (Toutes les dépenses/sorties valides confondues) ---
 app.get('/api/finances/totaux', async (req, res) => {
     try {
         // 1. Récupérer les totaux des recettes (élèves)
@@ -166,27 +166,17 @@ app.get('/api/finances/totaux', async (req, res) => {
         `;
         const resEntrees = await pool.query(queryEntrees);
 
-        // 2. Récupérer le total des salaires dont le statut est VALIDE uniquement
-        const querySalaires = `
-            SELECT SUM(montant) AS total_salaires 
-            FROM transactions_sorties 
-            WHERE type_transaction = 'SALAIRE' AND statut = 'VALIDE';
-        `;
-        const resSalaires = await pool.query(querySalaires);
-
-        // 3. Récupérer le total des autres dépenses dont le statut est VALIDE uniquement
-        const queryDepenses = `
+        // 2. Récupérer le total global de TOUTES les sorties valides (Salaires + Dépenses + Transports, etc.)
+        const querySorties = `
             SELECT SUM(montant) AS total_depenses 
             FROM transactions_sorties 
-            WHERE type_transaction != 'SALAIRE' AND statut = 'VALIDE';
+            WHERE statut = 'VALIDE';
         `;
-        const resDepenses = await pool.query(queryDepenses);
+        const resSorties = await pool.query(querySorties);
 
         const dataEntrees = resEntrees.rows[0] || {};
-        const dataSalaires = resSalaires.rows[0] || {};
-        const dataDepenses = resDepenses.rows[0] || {};
+        const dataSorties = resSorties.rows[0] || {};
 
-        // On renvoie un objet structuré contenant toutes les informations séparées
         res.json({ 
             success: true, 
             data: {
@@ -194,8 +184,7 @@ app.get('/api/finances/totaux', async (req, res) => {
                 total_t1: parseFloat(dataEntrees.total_t1 || 0),
                 total_t2: parseFloat(dataEntrees.total_t2 || 0),
                 total_t3: parseFloat(dataEntrees.total_t3 || 0),
-                total_salaires: parseFloat(dataSalaires.total_salaires || 0),
-                total_depenses: parseFloat(dataDepenses.total_depenses || 0)
+                total_depenses: parseFloat(dataSorties.total_depenses || 0)
             }
         });
     } catch (err) {
