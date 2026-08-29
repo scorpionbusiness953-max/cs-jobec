@@ -425,35 +425,104 @@
     }
 
     function afficherEleves(listeEleves) {
-        const tbody = document.getElementById('tableau-eleves') || document.getElementById("elevesTableBody");
-        const statsDiv = document.getElementById('stats-cycle');
-        
-        if (!tbody) return;
-        tbody.innerHTML = '';
+    const tbody = document.getElementById('tableau-eleves') || document.getElementById("elevesTableBody");
+    const statsDiv = document.getElementById('stats-cycle');
+    
+    if (!tbody) return;
+    tbody.innerHTML = '';
 
-        if (!listeEleves || listeEleves.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">Aucun élève trouvé.</td></tr>`;
-            if (statsDiv) statsDiv.textContent = `Total élèves affichés : 0`;
-            return;
-        }
-
-        if (statsDiv) {
-            statsDiv.textContent = `Total élèves affichés : ${listeEleves.length}`;
-        }
-
-        listeEleves.forEach((eleve, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${eleve.matricule || 'N/A'}</td>
-                <td>${eleve.nom || ''}</td>
-                <td>${eleve.postnom || ''}</td>
-                <td>${eleve.prenom || ''}</td>
-                <td>${eleve.classe || ''} ${eleve.cycle ? '(' + eleve.cycle + ')' : ''}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+    if (!listeEleves || listeEleves.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">Aucun élève trouvé.</td></tr>`;
+        if (statsDiv) statsDiv.textContent = `Total élèves affichés : 0`;
+        return;
     }
+
+    if (statsDiv) {
+        statsDiv.textContent = `Total élèves affichés : ${listeEleves.length}`;
+    }
+
+    listeEleves.forEach((eleve, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${eleve.matricule || 'N/A'}</td>
+            <td>${eleve.nom || ''}</td>
+            <td>${eleve.postnom || ''}</td>
+            <td>${eleve.prenom || ''}</td>
+            <td>${eleve.classe || ''} ${eleve.cycle ? '(' + eleve.cycle + ')' : ''}</td>
+            <td>
+                <button class="btn-action" onclick="ouvrirDetailsElevePromoteur(${eleve.id})" style="background:#007bff; color:#fff; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;">Détails</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function ouvrirDetailsElevePromoteur(id) {
+    const eleve = allEleves.find(e => e.id === id);
+    if (!eleve) return;
+
+    // Récupération des données de l'élève (adapte les noms des champs selon ta base de données)
+    const nomComplet = `${eleve.nom || ''} ${eleve.postnom || ''} ${eleve.prenom || ''}`;
+    const matricule = eleve.matricule || 'N/A';
+    const classe = eleve.classe || 'Non spécifiée';
+    
+    // Supposons que tu stockes les paiements dans l'objet élève (ou 0 par défaut)
+    const payeInscription = Number(eleve.frais_inscription) || 0;
+    const datePaiement = eleve.date_paiement || '-';
+    const t1Versé = Number(eleve.montant_t1) || 0;
+    const t2Versé = Number(eleve.montant_t2) || 0;
+    const t3Versé = Number(eleve.montant_t3) || 0;
+
+    // Calcul du total annuel selon le cycle
+    let totalAnnuel = 150; 
+    let coutT1 = 70, coutT2 = 60, coutT3 = 20;
+
+    const classeUpper = classe.toUpperCase();
+    if (classeUpper.includes('MATE') || classeUpper.includes('MATERNELLE')) {
+        totalAnnuel = 160;
+        coutT1 = 80; coutT2 = 60; coutT3 = 20;
+    } else if (classeUpper.includes('SECO') || classeUpper.includes('HUMA') || classeUpper.includes('7E') || classeUpper.includes('8E') || classeUpper.includes('3EME')) {
+        totalAnnuel = 180;
+        coutT1 = 100; coutT2 = 60; coutT3 = 20;
+    }
+
+    let totalVerseGlobal = t1Versé + t2Versé + t3Versé;
+    let resteGlobal = Math.max(0, totalAnnuel - totalVerseGlobal);
+
+    // Injection dans la modale de détails (tu peux utiliser la même modale que pour le personnel ou en créer une spécifique)
+    const contenu = document.getElementById('contenuDetails');
+    contenu.innerHTML = `
+        <p><strong>Nom complet :</strong> ${nomComplet}</p>
+        <p><strong>Matricule :</strong> ${matricule}</p>
+        <p><strong>Classe / Cycle :</strong> ${classe}</p>
+        <hr style="border-color:#444; margin:10px 0;">
+        <table style="width:100%; color:#fff; font-size:13px; border-collapse:collapse;">
+            <tr>
+                <td><strong>Inscription :</strong></td>
+                <td>${payeInscription} USD (${datePaiement})</td>
+            </tr>
+            <tr>
+                <td><strong>1ère Tranche (T1) :</strong></td>
+                <td>Versé : <b>${t1Versé} $</b> / Attendu : ${coutT1} $</td>
+            </tr>
+            <tr>
+                <td><strong>2ème Tranche (T2) :</strong></td>
+                <td>Versé : <b>${t2Versé} $</b> / Attendu : ${coutT2} $</td>
+            </tr>
+            <tr>
+                <td><strong>3ème Tranche (T3) :</strong></td>
+                <td>Versé : <b>${t3Versé} $</b> / Attendu : ${coutT3} $</td>
+            </tr>
+        </table>
+        <hr style="border-color:#444; margin:10px 0;">
+        <p><strong>Total payé :</strong> ${totalVerseGlobal} $ / ${totalAnnuel} $</p>
+        <p style="color: #ff4d4d;"><strong>Reste à payer :</strong> ${resteGlobal}.00 $</p>
+    `;
+
+    // Afficher la modale (en reprenant l'ID de ta modale existante)
+    document.getElementById('modalDetails').style.display = 'flex';
+}
 
     const filtreCycleEl = document.getElementById('filtreCycle');
     const searchInputEl = document.getElementById('searchInput');
