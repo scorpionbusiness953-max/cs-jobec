@@ -212,27 +212,18 @@ app.get('/api/paiements/:id', async (req, res) => {
     try {
         const { id } = req.params;
         
-        // 1. On récupère d'abord le matricule de l'élève concerné
-        const eleveRes = await pool.query('SELECT matricule FROM eleves WHERE id = $1', [id]);
-        const matricule = eleveRes.rows.length > 0 ? eleveRes.rows[0].matricule : null;
-
-        // 2. On cherche les paiements soit par eleve_id, soit par matricule
+        // On additionne tous les paiements enregistrés pour cet élève (qu'ils soient sur une ou plusieurs lignes)
         const query = `
-            SELECT frais_inscription, montant_t1, montant_t2, montant_t3, date_paiement 
+            SELECT 
+                COALESCE(SUM(frais_inscription), 0) AS frais_inscription, 
+                COALESCE(SUM(montant_t1), 0) AS montant_t1, 
+                COALESCE(SUM(montant_t2), 0) AS montant_t2, 
+                COALESCE(SUM(montant_t3), 0) AS montant_t3,
+                MAX(date_paiement) AS date_paiement
             FROM paiements 
-            WHERE eleve_id = $1 OR matricule = $2
+            WHERE eleve_id = $1
         `;
-        const result = await pool.query(query, [id, matricule || '']);
-        
-        if (result.rows.length === 0) {
-            return res.json({
-                frais_inscription: 0,
-                montant_t1: 0,
-                montant_t2: 0,
-                montant_t3: 0,
-                date_paiement: '-'
-            });
-        }
+        const result = await pool.query(query, [id]);
         
         res.json(result.rows[0]);
     } catch (err) {
