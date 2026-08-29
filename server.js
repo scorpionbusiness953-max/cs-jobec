@@ -208,6 +208,35 @@ app.post('/api/transactions', async (req, res) => {
     }
 });
 
+// --- ROUTE PAIEMENTS : Récupérer les paiements d'un élève spécifique ---
+app.get('/api/paiements/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const query = `
+            SELECT frais_inscription, montant_t1, montant_t2, montant_t3, date_paiement 
+            FROM paiements 
+            WHERE eleve_id = $1
+        `;
+        const result = await pool.query(query, [id]);
+        
+        if (result.rows.length === 0) {
+            // Si l'élève n'a pas encore de paiements enregistrés, on renvoie des zéros au lieu d'une erreur 404
+            return res.json({
+                frais_inscription: 0,
+                montant_t1: 0,
+                montant_t2: 0,
+                montant_t3: 0,
+                date_paiement: '-'
+            });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error("Erreur lors de la récupération des paiements de l'élève :", err);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+});
+
 // Modifier un paiement / dépense existant
 app.put('/api/transactions/:id', async (req, res) => {
     try {
