@@ -157,14 +157,12 @@ app.get('/api/finances/totaux', async (req, res) => {
     try {
         // 1. Récupérer les totaux des recettes (élèves)
         const queryEntrees = `
-            SELECT e.*, 
-                p.frais_inscription, 
-                p.montant_t1, 
-                p.montant_t2, 
-                p.montant_t3, 
-                p.date_paiement
-          FROM eleves e
-          LEFT JOIN paiements p ON e.id = p.eleve_id;
+            SELECT 
+                SUM(frais_inscription) AS total_inscription, 
+                SUM(montant_t1) AS total_t1, 
+                SUM(montant_t2) AS total_t2, 
+                SUM(montant_t3) AS total_t3 
+            FROM paiements;
         `;
         const resEntrees = await pool.query(queryEntrees);
 
