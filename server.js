@@ -208,19 +208,23 @@ app.post('/api/transactions', async (req, res) => {
     }
 });
 
-// --- ROUTE PAIEMENTS : Récupérer les paiements d'un élève spécifique ---
 app.get('/api/paiements/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        
+        // 1. On récupère d'abord le matricule de l'élève concerné
+        const eleveRes = await pool.query('SELECT matricule FROM eleves WHERE id = $1', [id]);
+        const matricule = eleveRes.rows.length > 0 ? eleveRes.rows[0].matricule : null;
+
+        // 2. On cherche les paiements soit par eleve_id, soit par matricule
         const query = `
             SELECT frais_inscription, montant_t1, montant_t2, montant_t3, date_paiement 
             FROM paiements 
-            WHERE eleve_id = $1
+            WHERE eleve_id = $1 OR matricule = $2
         `;
-        const result = await pool.query(query, [id]);
+        const result = await pool.query(query, [id, matricule || '']);
         
         if (result.rows.length === 0) {
-            // Si l'élève n'a pas encore de paiements enregistrés, on renvoie des zéros au lieu d'une erreur 404
             return res.json({
                 frais_inscription: 0,
                 montant_t1: 0,
