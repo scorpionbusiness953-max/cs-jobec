@@ -424,10 +424,31 @@ app.get('/api/eleve/:matricule', async (req, res) => {
 
   try {
     const query = `
-      SELECT e.matricule, e.nom, e.postnom, e.prenom, e.classe, 
-             p.frais_inscription, p.montant_t1, p.montant_t2, p.montant_t3, p.date_paiement, p.detail
+      SELECT 
+          e.matricule, 
+          e.nom, 
+          e.postnom, 
+          e.prenom, 
+          e.classe, 
+          COALESCE(p.frais_inscription, 0) AS frais_inscription, 
+          COALESCE(p.montant_t1, 0) AS montant_t1, 
+          COALESCE(p.montant_t2, 0) AS montant_t2, 
+          COALESCE(p.montant_t3, 0) AS montant_t3, 
+          p.date_paiement, 
+          p.detail
       FROM eleves e
-      LEFT JOIN paiements p ON e.id = p.eleve_id
+      LEFT JOIN (
+          SELECT 
+              eleve_id,
+              SUM(frais_inscription) AS frais_inscription,
+              SUM(montant_t1) AS montant_t1,
+              SUM(montant_t2) AS montant_t2,
+              SUM(montant_t3) AS montant_t3,
+              MAX(date_paiement) AS date_paiement,
+              MAX(detail) AS detail
+          FROM paiements
+          GROUP BY eleve_id
+      ) p ON e.id = p.eleve_id
       WHERE e.matricule = $1
     `;
     

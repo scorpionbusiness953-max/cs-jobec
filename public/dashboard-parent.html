@@ -159,16 +159,11 @@
 </div>
 
 <script>
-    // 1. Récupération sécurisée des données depuis le localStorage
+    // 1. Récupération des informations de base de l'élève depuis le localStorage
     const nom = localStorage.getItem('nomEleve') || "Inconnu";
     const matricule = localStorage.getItem('matriculeEleve') || "-";
     const classe = localStorage.getItem('classeEleve') || "Non spécifiée";
-    
-    const payeInscription = Number(localStorage.getItem('fraisPayesEleve')) || 0;
-    const datePaiement = localStorage.getItem('datePaiement') || "-";
-    const t1Versé = Number(localStorage.getItem('montantT1')) || 0;
-    const t2Versé = Number(localStorage.getItem('montantT2')) || 0;
-    const t3Versé = Number(localStorage.getItem('montantT3')) || 0;
+    const eleveId = localStorage.getItem('eleveId'); // Assurez-vous d'avoir stocké l'ID de l'élève lors de la connexion
 
     // 2. Définition du total annuel selon le cycle de l'élève
     let totalAnnuel = 150; 
@@ -183,49 +178,78 @@
         coutT1 = 100; coutT2 = 60; coutT3 = 20;
     }
 
-    // 3. Calcul des totaux et des restes
-    let totalVerseGlobal = t1Versé + t2Versé + t3Versé;
-    let resteGlobal = Math.max(0, totalAnnuel - totalVerseGlobal);
+    // Fonction asynchrone pour charger et afficher les paiements cumulés depuis le serveur
+    async function chargerPaiementsEtAfficher() {
+        let payeInscription = 0;
+        let t1Versé = 0;
+        let t2Versé = 0;
+        let t3Versé = 0;
+        let datePaiement = "-";
 
-    // 4. Affichage dans les cartes du haut
-    document.getElementById('nomEleveAffiche').innerText = nom;
-    document.getElementById('matriculeEleveAffiche').innerText = matricule;
-    document.getElementById('classeEleveAffiche').innerText = classe;
-    document.getElementById('fraisEleveAffiche').innerText = totalVerseGlobal + " USD";
+        try {
+            if (eleveId) {
+                const response = await fetch(`/api/paiements/${eleveId}`);
+                const data = await response.json();
+                
+                payeInscription = Number(data.frais_inscription) || 0;
+                t1Versé = Number(data.montant_t1) || 0;
+                t2Versé = Number(data.montant_t2) || 0;
+                t3Versé = Number(data.montant_t3) || 0;
+                if (data.date_paiement) {
+                    datePaiement = new Date(data.date_paiement).toLocaleDateString('fr-FR');
+                }
+            }
+        } catch (e) {
+            console.error("Erreur lors de la récupération des paiements:", e);
+        }
 
-    // 5. Construction dynamique du tableau complet
-    const tbody = document.getElementById('historiqueTableBody');
-    tbody.innerHTML = `
-        <tr>
-            <td>${datePaiement}</td>
-            <td>Frais d'inscription</td>
-            <td>${payeInscription} USD versés</td>
-            <td><span style="color: green; font-weight: bold;">Validé</span></td>
-        </tr>
-        <tr>
-            <td>1ère Tranche (Juin - Oct.)</td>
-            <td>Frais de scolarité (T1)</td>
-            <td>Versé : <b>${t1Versé} USD</b> (Attendu : ${coutT1} $)</td>
-            <td><span style="color: ${t1Versé >= coutT1 ? 'green' : 'orange'}; font-weight: bold;">${t1Versé >= coutT1 ? 'Soldé' : 'Partiel / En attente'}</span></td>
-        </tr>
-        <tr>
-            <td>2ème Tranche (Nov. - Janv.)</td>
-            <td>Frais de scolarité (T2)</td>
-            <td>Versé : <b>${t2Versé} USD</b> (Attendu : ${coutT2} $)</td>
-            <td><span style="color: ${t2Versé >= coutT2 ? 'green' : 'orange'}; font-weight: bold;">${t2Versé >= coutT2 ? 'Soldé' : 'Partiel / En attente'}</span></td>
-        </tr>
-        <tr>
-            <td>3ème Tranche (Fév. - Avr.)</td>
-            <td>Frais de scolarité (T3)</td>
-            <td>Versé : <b>${t3Versé} USD</b> (Attendu : ${coutT3} $)</td>
-            <td><span style="color: ${t3Versé >= coutT3 ? 'green' : 'orange'}; font-weight: bold;">${t3Versé >= coutT3 ? 'Soldé' : 'Partiel / En attente'}</span></td>
-        </tr>
-        <tr style="background: #fdfefe; font-weight: bold;">
-            <td colspan="2" style="text-align: right;">BILAN ANNUEL (${classe}) :</td>
-            <td style="color: var(--primary-blue);">Total payé : ${totalVerseGlobal} $ / ${totalAnnuel} $</td>
-            <td><span style="color: red;">Reste : ${resteGlobal}.00 $</span></td>
-        </tr>
-    `;
+        // 3. Calcul des totaux et des restes
+        let totalVerseGlobal = payeInscription + t1Versé + t2Versé + t3Versé;
+        let resteGlobal = Math.max(0, totalAnnuel - totalVerseGlobal);
+
+        // 4. Affichage dans les cartes du haut
+        document.getElementById('nomEleveAffiche').innerText = nom;
+        document.getElementById('matriculeEleveAffiche').innerText = matricule;
+        document.getElementById('classeEleveAffiche').innerText = classe;
+        document.getElementById('fraisEleveAffiche').innerText = totalVerseGlobal + " USD";
+
+        // 5. Construction dynamique du tableau complet
+        const tbody = document.getElementById('historiqueTableBody');
+        tbody.innerHTML = `
+            <tr>
+                <td>${datePaiement}</td>
+                <td>Frais d'inscription</td>
+                <td>${payeInscription} USD versés</td>
+                <td><span style="color: ${payeInscription > 0 ? 'green' : 'orange'}; font-weight: bold;">${payeInscription > 0 ? 'Validé' : 'En attente'}</span></td>
+            </tr>
+            <tr>
+                <td>1ère Tranche (Juin - Oct.)</td>
+                <td>Frais de scolarité (T1)</td>
+                <td>Versé : <b>${t1Versé} USD</b> (Attendu : ${coutT1} $)</td>
+                <td><span style="color: ${t1Versé >= coutT1 ? 'green' : 'orange'}; font-weight: bold;">${t1Versé >= coutT1 ? 'Soldé' : 'Partiel / En attente'}</span></td>
+            </tr>
+            <tr>
+                <td>2ème Tranche (Nov. - Janv.)</td>
+                <td>Frais de scolarité (T2)</td>
+                <td>Versé : <b>${t2Versé} USD</b> (Attendu : ${coutT2} $)</td>
+                <td><span style="color: ${t2Versé >= coutT2 ? 'green' : 'orange'}; font-weight: bold;">${t2Versé >= coutT2 ? 'Soldé' : 'Partiel / En attente'}</span></td>
+            </tr>
+            <tr>
+                <td>3ème Tranche (Fév. - Avr.)</td>
+                <td>Frais de scolarité (T3)</td>
+                <td>Versé : <b>${t3Versé} USD</b> (Attendu : ${coutT3} $)</td>
+                <td><span style="color: ${t3Versé >= coutT3 ? 'green' : 'orange'}; font-weight: bold;">${t3Versé >= coutT3 ? 'Soldé' : 'Partiel / En attente'}</span></td>
+            </tr>
+            <tr style="background: #fdfefe; font-weight: bold;">
+                <td colspan="2" style="text-align: right;">BILAN ANNUEL (${classe}) :</td>
+                <td style="color: var(--primary-blue);">Total payé : ${totalVerseGlobal} $ / ${totalAnnuel} $</td>
+                <td><span style="color: red;">Reste : ${resteGlobal}.00 $</span></td>
+            </tr>
+        `;
+    }
+
+    // Lancer le chargement des paiements au démarrage
+    chargerPaiementsEtAfficher();
 
     // 6. Fonction pour charger dynamiquement les notes depuis l'API backend
     async function chargerNotes(trimestre) {
