@@ -502,7 +502,7 @@ async function ouvrirDetailsElevePromoteur(id) {
         coutT1 = 100; coutT2 = 60; coutT3 = 20;
     }
 
-    let totalVerseGlobal = t1Versé + t2Versé + t3Versé + payeInscription; // Ajuste si l'inscription est comptée à part
+    let totalVerseGlobal = t1Versé + t2Versé + t3Versé; // Ajuste si l'inscription est comptée à part
     let resteGlobal = Math.max(0, totalAnnuel - totalVerseGlobal);
 
     const contenu = document.getElementById('contenuDetails');
