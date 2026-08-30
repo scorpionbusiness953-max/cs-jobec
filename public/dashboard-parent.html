@@ -178,7 +178,6 @@
         coutT1 = 100; coutT2 = 60; coutT3 = 20;
     }
 
-    // Fonction asynchrone pour charger et afficher les paiements cumulés depuis le serveur
     async function chargerPaiementsEtAfficher() {
         let payeInscription = 0;
         let t1Versé = 0;
@@ -187,16 +186,19 @@
         let datePaiement = "-";
 
         try {
-            if (eleveId) {
-                const response = await fetch(`/api/paiements/${eleveId}`);
-                const data = await response.json();
-                
-                payeInscription = Number(data.frais_inscription) || 0;
-                t1Versé = Number(data.montant_t1) || 0;
-                t2Versé = Number(data.montant_t2) || 0;
-                t3Versé = Number(data.montant_t3) || 0;
-                if (data.date_paiement) {
-                    datePaiement = new Date(data.date_paiement).toLocaleDateString('fr-FR');
+            // On utilise le matricule pour récupérer les vraies données cumulées de la base de données
+            if (matricule && matricule !== "-") {
+                const response = await fetch(`/api/eleve/${matricule}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    payeInscription = Number(data.frais_inscription) || 0;
+                    t1Versé = Number(data.montant_t1) || 0;
+                    t2Versé = Number(data.montant_t2) || 0;
+                    t3Versé = Number(data.montant_t3) || 0;
+                    if (data.date_paiement) {
+                        datePaiement = new Date(data.date_paiement).toLocaleDateString('fr-FR');
+                    }
                 }
             }
         } catch (e) {
@@ -247,7 +249,6 @@
             </tr>
         `;
     }
-
     // Lancer le chargement des paiements au démarrage
     chargerPaiementsEtAfficher();
 
