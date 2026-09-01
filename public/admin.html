@@ -494,8 +494,8 @@ async function ouvrirDetailsElevePromoteur(id) {
     let coutT1 = 70, coutT2 = 60, coutT3 = 20;
 
     const classeUpper = classe ? classe.toUpperCase() : "";
-    // Si tu récupères aussi le cycle depuis ton API (ex: data.cycle), utilise-le :
-    const cycleUpper = (typeof cycle !== 'undefined' && cycle) ? cycle.toUpperCase() : "";
+    // On extrait le cycle directement de l'objet élève
+    const cycleUpper = eleve.cycle ? eleve.cycle.toUpperCase() : "";
 
     // On vérifie d'abord si c'est la Maternelle (par le cycle ou le mot MATER)
     if (cycleUpper.includes('MATER') || classeUpper.includes('MATER')) {
