@@ -489,17 +489,25 @@ async function ouvrirDetailsElevePromoteur(id) {
         console.log("Impossible de charger les paiements spécifiques, utilisation des valeurs par défaut.");
     }
 
-    // Calcul du total annuel selon le cycle
+    // Calcul du total annuel selon le cycle ou la classe
     let totalAnnuel = 150; 
     let coutT1 = 70, coutT2 = 60, coutT3 = 20;
 
-    const classeUpper = classe.toUpperCase();
-    if (classeUpper.includes('MATE') || classeUpper.includes('MATERNELLE')) {
+    const classeUpper = classe ? classe.toUpperCase() : "";
+    // Si tu récupères aussi le cycle depuis ton API (ex: data.cycle), utilise-le :
+    const cycleUpper = (typeof cycle !== 'undefined' && cycle) ? cycle.toUpperCase() : "";
+
+    // On vérifie d'abord si c'est la Maternelle (par le cycle ou le mot MATER)
+    if (cycleUpper.includes('MATER') || classeUpper.includes('MATER')) {
         totalAnnuel = 160;
         coutT1 = 80; coutT2 = 60; coutT3 = 20;
-    } else if (classeUpper.includes('SECO') || classeUpper.includes('HUMA') || classeUpper.includes('7E') || classeUpper.includes('8E') || classeUpper.includes('3EME')) {
+    } else if (classeUpper.includes('SECO') || classeUpper.includes('HUMA') || classeUpper.includes('7E') || classeUpper.includes('8E') || (classeUpper.includes('3EME') && !classeUpper.includes('MATER'))) {
         totalAnnuel = 180;
         coutT1 = 100; coutT2 = 60; coutT3 = 20;
+    } else {
+        // Par défaut Primaire
+        totalAnnuel = 150;
+        coutT1 = 70; coutT2 = 60; coutT3 = 20;
     }
 
     let totalVerseGlobal = t1Versé + t2Versé + t3Versé; // Ajuste si l'inscription est comptée à part
