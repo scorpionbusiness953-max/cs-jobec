@@ -21,7 +21,7 @@
     <p>Veuillez entrer le mot de passe administrateur :</p>
     <input type="password" id="passwordInput" placeholder="Mot de passe...">
     <br>
-    <button onclick="verifierMotDe passe()">Se connecter</button>
+    <button onclick="verifierMotDePasse()">Se connecter</button>
     <p id="errorMsg" style="color: red; font-size: 0.9em;"></p>
 </div>
 
@@ -39,7 +39,7 @@
     // Mot de passe modifiable ici
     const MDP_ADMIN = "admin123";
 
-    function verifierMotDe passe() {
+    function verifierMotDePasse() {
         const saisi = document.getElementById('passwordInput').value;
         if (saisi === MDP_ADMIN) {
             document.getElementById('loginSection').classList.add('hidden');
@@ -50,9 +50,8 @@
     }
 
     // Planning basé sur votre image
-    // type: 'simple' (1 coup) ou 'multiple' (3 coups en boucle)
     const planning = [
-        { time: "07:37", label: "Début 1ère Heure", type: "simple" },
+        { time: "07:48", label: "Début 1ère Heure", type: "simple" },
         { time: "08:10", label: "Fin 1ère / Début 2e Heure", type: "simple" },
         { time: "08:50", label: "Fin 2e / Début 3e Heure", type: "simple" },
         { time: "09:30", label: "Fin 3e / Début 4e Heure", type: "simple" },
@@ -92,7 +91,7 @@
                     audio.currentTime = 0;
                     audio.play().catch(err => console.log(err));
                 } else {
-                    audio.onended = null; // Réinitialise l'écouteur
+                    audio.onended = null;
                 }
             };
         } else {
