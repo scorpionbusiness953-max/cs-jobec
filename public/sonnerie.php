@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionnaire de Sonnerie Scolaire Sécurisé</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; max-width: 450px; margin: 20px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        .status-box { font-size: 1.1em; font-weight: bold; margin: 15px 0; padding: 10px; border-radius: 5px; background: #e0f2fe; color: #0369a1; }
+        input, button { padding: 10px; font-size: 1em; border-radius: 5px; border: 1px solid #ccc; margin: 5px 0; width: 80%; }
+        button { background: #2563eb; color: white; border: none; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<!-- ESPACE DE CONNEXION SÉCURISÉ -->
+<div id="loginSection" class="card">
+    <h2>🔒 Espace Sécurisé</h2>
+    <p>Veuillez entrer le mot de passe administrateur :</p>
+    <input type="password" id="passwordInput" placeholder="Mot de passe...">
+    <br>
+    <button onclick="verifierMotDe passe()">Se connecter</button>
+    <p id="errorMsg" style="color: red; font-size: 0.9em;"></p>
+</div>
+
+<!-- ESPACE DE GESTION DE LA CLOCHE (Caché par défaut) -->
+<div id="bellSection" class="card hidden">
+    <h2>Gestionnaire de Cloche</h2>
+    <p>Heure actuelle : <span id="clock">--:--:--</span></p>
+    <div class="status-box" id="status">Chargement du planning...</div>
+    <button id="activateAudio">Activer le son automatique</button>
+</div>
+
+<audio id="schoolBell" src="cloche.mp3" preload="auto"></audio>
+
+<script>
+    // Mot de passe modifiable ici
+    const MDP_ADMIN = "admin123";
+
+    function verifierMotDe passe() {
+        const saisi = document.getElementById('passwordInput').value;
+        if (saisi === MDP_ADMIN) {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('bellSection').classList.remove('hidden');
+        } else {
+            document.getElementById('errorMsg').innerText = "Mot de passe incorrect.";
+        }
+    }
+
+    // Planning basé sur votre image
+    // type: 'simple' (1 coup) ou 'multiple' (3 coups en boucle)
+    const planning = [
+        { time: "07:37", label: "Début 1ère Heure", type: "simple" },
+        { time: "08:10", label: "Fin 1ère / Début 2e Heure", type: "simple" },
+        { time: "08:50", label: "Fin 2e / Début 3e Heure", type: "simple" },
+        { time: "09:30", label: "Fin 3e / Début 4e Heure", type: "simple" },
+        { time: "10:10", label: "Début Récréation", type: "multiple" }, // 3 coups
+        { time: "10:30", label: "Fin Récréation / Début 5e Heure", type: "simple" },
+        { time: "11:10", label: "Fin 5e / Début 6e Heure", type: "simple" },
+        { time: "11:50", label: "Fin 6e / Début 7e Heure", type: "simple" },
+        { time: "12:30", label: "Fin des cours (Sortie)", type: "multiple" } // 3 coups
+    ];
+
+    let audioAuthorized = false;
+    let derniereSonnerieMinuteur = "";
+
+    document.getElementById('activateAudio').addEventListener('click', () => {
+        const audio = document.getElementById('schoolBell');
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audioAuthorized = true;
+            document.getElementById('activateAudio').style.background = '#16a34a';
+            document.getElementById('activateAudio').innerText = 'Son activé avec succès';
+        }).catch(() => {
+            alert("Erreur d'activation audio.");
+        });
+    });
+
+    function jouerSon(type) {
+        const audio = document.getElementById('schoolBell');
+        if (type === "multiple") {
+            let repetition = 0;
+            audio.currentTime = 0;
+            audio.play().catch(err => console.log(err));
+            
+            audio.onended = function() {
+                repetition++;
+                if (repetition < 3) {
+                    audio.currentTime = 0;
+                    audio.play().catch(err => console.log(err));
+                } else {
+                    audio.onended = null; // Réinitialise l'écouteur
+                }
+            };
+        } else {
+            audio.currentTime = 0;
+            audio.play().catch(err => console.log(err));
+        }
+    }
+
+    function verifierCloche() {
+        const now = new Date();
+        const heures = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const timeString = `${heures}:${minutes}`;
+        
+        document.getElementById('clock').innerText = now.toLocaleTimeString();
+
+        let currentStatus = "Hors horaires / Cours en cours";
+        for (let i = 0; i < planning.length; i++) {
+            if (timeString === planning[i].time) {
+                currentStatus = `Événement : ${planning[i].label}`;
+                if (audioAuthorized && timeString !== derniereSonnerieMinuteur) {
+                    jouerSon(planning[i].type);
+                    derniereSonnerieMinuteur = timeString;
+                }
+                break;
+            }
+        }
+        document.getElementById('status').innerText = currentStatus;
+    }
+
+    setInterval(verifierCloche, 1000);
+</script>
+
+</body>
+</html>
