@@ -66,7 +66,7 @@
         { time: "10:30", label: "Fin Récréation / Début 5e Heure", type: "simple" },
         { time: "11:10", label: "Fin 5e / Début 6e Heure", type: "simple" },
         { time: "11:50", label: "Fin 6e / Début 7e Heure", type: "simple" },
-        { time: "13:08", label: "Fin des cours (Sortie)", type: "multiple" } // 3 coups
+        { time: "13:12", label: "Fin des cours (Sortie)", type: "multiple" } // 3 coups
     ];
 
     let audioAuthorized = false;
@@ -86,27 +86,27 @@
     });
 
     function jouerSon(type) {
-        function declencherUnCoup() {
-            const sound = new Audio('cloche.mp3');
-            sound.currentTime = 0;
-            sound.play().catch(err => console.log(err));
-        }
-
+        const audio = document.getElementById('schoolBell');
+        
         if (type === "multiple") {
             // 1er coup immédiat
-            declencherUnCoup();
+            audio.currentTime = 0;
+            audio.play().catch(err => console.log(err));
             
-            // 2e coup après 1 seconde (1000 ms)
+            // 2e coup après 1.5 seconde
             setTimeout(() => {
-                declencherUnCoup();
-            }, 1000);
+                audio.currentTime = 0;
+                audio.play().catch(err => console.log(err));
+            }, 1500);
             
-            // 3e coup après 2 secondes (2000 ms)
+            // 3e coup après 3 secondes
             setTimeout(() => {
-                declencherUnCoup();
-            }, 2000);
+                audio.currentTime = 0;
+                audio.play().catch(err => console.log(err));
+            }, 3000);
         } else {
-            declencherUnCoup();
+            audio.currentTime = 0;
+            audio.play().catch(err => console.log(err));
         }
     }
 
