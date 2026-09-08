@@ -87,23 +87,27 @@
 
     function jouerSon(type) {
         const audio = document.getElementById('schoolBell');
+        
+        function declencherUnCoup() {
+            audio.currentTime = 0;
+            audio.play().catch(err => console.log(err));
+        }
+
         if (type === "multiple") {
-            let repetition = 0;
-            audio.currentTime = 0;
-            audio.play().catch(err => console.log(err));
+            // 1er coup immédiat
+            declencherUnCoup();
             
-            audio.onended = function() {
-                repetition++;
-                if (repetition < 3) {
-                    audio.currentTime = 0;
-                    audio.play().catch(err => console.log(err));
-                } else {
-                    audio.onended = null;
-                }
-            };
+            // 2e coup après 1 seconde (1000 millisecondes)
+            setTimeout(() => {
+                declencherUnCoup();
+            }, 1000);
+            
+            // 3e coup après 2 secondes
+            setTimeout(() => {
+                declencherUnCoup();
+            }, 2000);
         } else {
-            audio.currentTime = 0;
-            audio.play().catch(err => console.log(err));
+            declencherUnCoup();
         }
     }
 
@@ -131,6 +135,5 @@
 
     setInterval(verifierCloche, 1000);
 </script>
-
 </body>
 </html>
