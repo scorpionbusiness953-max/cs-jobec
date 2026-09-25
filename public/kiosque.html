@@ -130,8 +130,8 @@
     <!-- ÉTAPE 2 : Saisie du matricule / identifiant -->
     <div id="stepInput" class="input-section hidden">
         <h3 id="inputTitle" style="color: #334155; margin-bottom: 15px;"></h3>
-        <input type="text" id="idInput" placeholder="Entrez votre matricule..." autocomplete="off">
-        <button class="btn-valider" onclick="validerPointage()">Valider ma présence</button>
+        <input type="text" id="idInput" placeholder="Entrez votre identifiant..." autocomplete="off">
+        <button class="btn-valider" onclick="validerPointage()">Valider</button>
         <br>
         <button class="btn-retour" onclick="revenirAccueil()">← Retour</button>
     </div>
@@ -141,54 +141,91 @@
 </div>
 
 <script>
-   async function validerPointage() {
-    const valeurSaisie = document.getElementById('idInput').value.trim();
-    const msgBox = document.getElementById('messageBox');
+    let profilActif = '';
 
-    if (!valeurSaisie) {
-        msgBox.className = "message-box error";
-        msgBox.innerText = "Veuillez entrer un identifiant valide.";
-        msgBox.classList.remove('hidden');
-        return;
-    }
+    // Horloge en direct
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClock').innerText = now.toLocaleTimeString('fr-FR');
+    }, 1000);
 
-    try {
-        // Envoi vers votre API backend (qui gère Neon)
-        const response = await fetch('/api/pointage', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                type: profilActif, // 'eleve' ou 'personnel'
-                identifiant: valeurSaisie
-            })
-        });
+    // Fonction pour choisir le profil et changer d'écran
+    function choisirProfil(profil) {
+        profilActif = profil;
+        document.getElementById('stepSelection').classList.add('hidden');
+        document.getElementById('stepInput').classList.remove('hidden');
+        document.getElementById('messageBox').classList.add('hidden');
+        document.getElementById('idInput').value = '';
 
-        const result = await response.json();
+        const titreInput = document.getElementById('inputTitle');
+        const champInput = document.getElementById('idInput');
 
-        if (response.ok) {
-            msgBox.className = "message-box success";
-            
-            // Message personnalisé selon le profil
-            if (profilActif === 'personnel') {
-                msgBox.innerText = `✅ ${result.action} enregistrée avec succès ! (${result.heure})`;
-            } else {
-                msgBox.innerText = `✅ Présence élève enregistrée avec succès !`;
-            }
-            
-            msgBox.classList.remove('hidden');
-
-            setTimeout(() => {
-                revenirAccueil();
-            }, 3000);
+        if (profil === 'eleve') {
+            titreInput.innerText = "Pointage Élève";
+            champInput.placeholder = "Entrez votre matricule...";
         } else {
-            throw new Error(result.message || "Erreur lors de l'enregistrement");
+            titreInput.innerText = "Pointage Personnel (Arrivée / Départ)";
+            champInput.placeholder = "Entrez votre identifiant (ID)...";
         }
-    } catch (error) {
-        msgBox.className = "message-box error";
-        msgBox.innerText = "❌ " + (error.message || "Erreur de connexion avec la base de données.");
-        msgBox.classList.remove('hidden');
+        champInput.focus();
     }
-}
+
+    // Revenir à l'écran de sélection
+    function revenirAccueil() {
+        profilActif = '';
+        document.getElementById('stepInput').classList.add('hidden');
+        document.getElementById('stepSelection').classList.remove('hidden');
+        document.getElementById('messageBox').classList.add('hidden');
+        document.getElementById('idInput').value = '';
+    }
+
+    // Validation du pointage et appel vers le serveur
+    async function validerPointage() {
+        const valeurSaisie = document.getElementById('idInput').value.trim();
+        const msgBox = document.getElementById('messageBox');
+
+        if (!valeurSaisie) {
+            msgBox.className = "message-box error";
+            msgBox.innerText = "Veuillez entrer un identifiant valide.";
+            msgBox.classList.remove('hidden');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/pointage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: profilActif, // 'eleve' ou 'personnel'
+                    identifiant: valeurSaisie
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                msgBox.className = "message-box success";
+                
+                if (profilActif === 'personnel') {
+                    msgBox.innerText = `✅ ${result.action} enregistrée ! (${result.heure})`;
+                } else {
+                    msgBox.innerText = `✅ Présence élève enregistrée avec succès !`;
+                }
+                
+                msgBox.classList.remove('hidden');
+
+                setTimeout(() => {
+                    revenirAccueil();
+                }, 3000);
+            } else {
+                throw new Error(result.message || "Erreur lors de l'enregistrement");
+            }
+        } catch (error) {
+            msgBox.className = "message-box error";
+            msgBox.innerText = "❌ " + (error.message || "Erreur de connexion avec la base de données.");
+            msgBox.classList.remove('hidden');
+        }
+    }
 </script>
 
 </body>
