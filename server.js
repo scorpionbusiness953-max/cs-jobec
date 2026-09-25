@@ -610,35 +610,37 @@ app.post('/api/pointage', async (req, res) => {
     try {
         if (type === 'eleve') {
             // 1. Chercher l'élève correspondant au matricule donné
-            const eleveResult = await db.query(
+            const eleveResult = await pool.query(
                 'SELECT id, postnom, prenom FROM eleves WHERE matricule = $1', 
                 [identifiant]
             );
 
             if (eleveResult.rows.length === 0) {
                 return res.status(404).json({ 
+                    success: false,
                     message: "Matricule introuvable. Veuillez vérifier votre numéro." 
                 });
             }
 
             const eleve = eleveResult.rows[0];
-            const nomComplet = `${eleve.postnom} ${eleve.prenom}`;
+            const nomComplet = `${eleve.postnom || ''} ${eleve.prenom || ''}`.trim();
 
             // 2. Vérifier s'il a déjà pointé aujourd'hui pour éviter le double pointage
-            const checkPresence = await db.query(
+            const checkPresence = await pool.query(
                 'SELECT id FROM presences_eleves WHERE eleve_id = $1 AND date_jour = $2',
                 [eleve.id, dateAujourdhui]
             );
 
             if (checkPresence.rows.length > 0) {
                 return res.status(400).json({ 
+                    success: false,
                     message: `⚠️ ${nomComplet}, vous avez déjà pointé aujourd'hui !` 
                 });
             }
 
             // 3. Enregistrer la présence si pas encore pointé
             const heureActuelle = new Date().toLocaleTimeString('fr-FR');
-            await db.query(
+            await pool.query(
                 'INSERT INTO presences_eleves (eleve_id, date_jour, heure_arrivee, eleve) VALUES ($1, $2, $3, $4)',
                 [eleve.id, dateAujourdhui, heureActuelle, 'eleve']
             );
@@ -654,8 +656,8 @@ app.post('/api/pointage', async (req, res) => {
         }
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur serveur lors du pointage." });
+        console.error("ERREUR SQL:", error); // Visible dans votre terminal
+        res.status(500).json({ success: false, message: "Erreur serveur lors du pointage." });
     }
 });
 
