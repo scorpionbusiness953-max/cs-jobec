@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport des Présences - Élèves</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h2 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+        .btn-imprimer {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .btn-imprimer:hover {
+            background-color: #059669;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📋 Rapport des Présences des Élèves</h2>
+    <button class="btn-imprimer" onclick="window.print()">🖨️ Imprimer la liste</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Matricule</th>
+                <th>Nom & Postnom</th>
+                <th>Classe</th>
+                <th>Date</th>
+                <th>Heure d'Arrivée</th>
+            </tr>
+        <thead id="tableBody">
+            <!-- Les données seront injectées ici par JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    async function chargerPresences() {
+        try {
+            const response = await fetch('/api/presences/eleves');
+            const data = await response.json();
+
+            if (data.success) {
+                const tbody = document.getElementById('tableBody');
+                tbody.innerHTML = '';
+
+                data.presences.forEach(p => {
+                    const row = `
+                        <tr>
+                            <td>${p.matricule}</td>
+                            <td>${p.postnom} ${p.prenom}</td>
+                            <td>${p.classe || '-'}</td>
+                            <td>${p.date_jour}</td>
+                            <td><strong>${p.heure_arrivee}</strong></td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                alert("Erreur lors du chargement des présences.");
+            }
+        } catch (error) {
+            console.error("Erreur réseau :", error);
+        }
+    }
+
+    // Charger les présences dès l'ouverture de la page
+    chargerPresences();
+</script>
+
+</body>
+</html>

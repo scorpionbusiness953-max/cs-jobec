@@ -651,7 +651,7 @@ app.post('/api/pointage', async (req, res) => {
                 nomEleve: nomComplet,
                 heure: heureActuelle
             });
-            
+
         } else if (type === 'personnel') {
             // Traitement pour le personnel...
         }
@@ -660,6 +660,31 @@ app.post('/api/pointage', async (req, res) => {
         console.error("ERREUR SQL:", error); 
         // Renvoie l'erreur exacte directement sur l'écran pour qu'on sache quoi corriger
         res.status(500).json({ success: false, message: "Erreur: " + error.message });
+    }
+});
+
+// --- ROUTE POUR VOIR LA LISTE DES PRÉSENCES ÉLÈVES ---
+app.get('/api/presences/eleves', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                p.id, 
+                e.matricule, 
+                e.postnom, 
+                e.prenom, 
+                e.classe, 
+                p.date_jour, 
+                p.heure_arrivee
+            FROM presences_eleves p
+            JOIN eleves e ON p.eleve_id = e.id
+            ORDER BY p.date_jour DESC, p.heure_arrivee DESC;
+        `;
+        
+        const result = await pool.query(query);
+        res.json({ success: true, presences: result.rows });
+    } catch (err) {
+        console.error("Erreur lors de la récupération des présences :", err);
+        res.status(500).json({ success: false, message: "Erreur serveur." });
     }
 });
 
