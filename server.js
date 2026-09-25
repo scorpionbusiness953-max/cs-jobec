@@ -603,6 +603,98 @@ app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res)
     }
 });
 
+// --- ROUTE POINTAGE (Kiosque Élèves & Personnel) ---
+app.post('/api/pointage', async (req, res) => {
+    const { type, identifiant } = req.body; // type: 'eleve' ou 'personnel'
+
+    if (!type || !identifiant) {
+        return res.status(400).json({ success: false, message: "Type ou identifiant manquant." });
+    }
+
+    try {
+        const aujourdhui = new Date().toISOString().split('T')[0]; // Format 'YYYY-MM-DD'
+        const heureActuelle = new Date().toTimeString().split(' ')[0]; // Format 'HH:MM:SS'
+
+        if (type === 'eleve') {
+            // Pour les élèves : on vérifie d'abord si l'élève existe (par son id ou matricule)
+            const eleveCheck = await pool.query('SELECT * FROM eleves WHERE id = $1 OR matricule = $2', [identifiant, identifiant]);
+            
+            if (eleveCheck.rows.length === 0) {
+                return res.status(404).json({ success: false, message: "Élève introuvable avec cet identifiant." });
+            }
+            const eleveId = eleveCheck.rows[0].id;
+
+            // Enregistrement de la présence du jour (on évite les doublons pour la même journée)
+            await pool.query(`
+                INSERT INTO presences_eleves (eleve_id, date_jour, heure_arrivee)
+                VALUES ($1, $2, $3)
+                ON CONFLICT (eleve_id, date_jour) DO NOTHING;
+            `, [eleveId, aujourdhui, heureActuelle]);
+
+            return res.json({ success: false /* (ou true) */, success: true, action: "Présence", heure: heureActuelle });
+
+        } else if (type === 'personnel') {
+            // Pour le personnel : recherche par ID ou téléphone/matricule selon votre table
+            const persCheck = await pool.query('SELECT * FROM personnels WHERE id = $1', [identifiant]);
+
+            if (persCheck.rows.length === 0) {
+                return res.status(404).json({ success: false, message: "Personnel introuvable." });
+            }
+            const personnelId = persCheck.rows[0].id;
+
+            // Vérifier s'il existe déjà un pointage pour aujourd'hui
+            const pointageExistant = await pool.query(`
+                SELECT * FROM presences_personnel 
+                WHERE personnel_id = $1 AND date_jour = $2;
+            `, [personnelId, aujourdhui]);
+
+            if (pointageExistant.rows.length === 0) {
+                // 1er scan du jour : Enregistrement de l'Arrivée
+                await pool.query(`
+                    INSERT INTO presences_personnel (personnel_id, date_jour, heure_arrivee)
+                    VALUES ($1, $2, $3);
+                `, [personnelId, aujourdhui, heureActuelle]);
+
+                return res.json({ 
+                    success: true, 
+                    action: "Heure d'Arrivée", 
+                    heure: heureActuelle 
+                });
+            } else {
+                // Un pointage existe déjà, on vérifie si l'heure de départ est déjà remplie
+                const ligne = pointageExistant.rows[0];
+
+                if (!ligne.heure_depart) {
+                    // 2e scan du jour : Enregistrement du Départ (Heure de retour/fin)
+                    await pool.query(`
+                        UPDATE presences_personnel 
+                        SET heure_depart = $1 
+                        WHERE id = $2;
+                    `, [heureActuelle, ligne.id]);
+
+                    return res.json({ 
+                        success: true, 
+                        action: "Heure de Départ", 
+                        heure: heureActuelle 
+                    });
+                } else {
+                    // Il a déjà pointé son arrivée ET son départ aujourd'hui
+                    return res.status(400).json({ 
+                        success: false, 
+                        message: "Vous avez déjà effectué vos deux pointages (Arrivée et Départ) pour aujourd'hui." 
+                    });
+                }
+            }
+        } else {
+            return res.status(400).json({ success: false, message: "Type de profil inconnu." });
+        }
+
+    } catch (err) {
+        console.error("Erreur lors du pointage :", err);
+        res.status(500).json({ success: false, error: "Erreur serveur lors du pointage." });
+    }
+});
+
 // --- LANCEMENT DU SERVEUR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

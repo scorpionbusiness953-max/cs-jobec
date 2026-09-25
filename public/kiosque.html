@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiosque de Pointage - École</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .kiosque-container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h1 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        .clock {
+            font-size: 1.2em;
+            color: #64748b;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+        .btn-profile {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: transform 0.1s, background 0.2s;
+        }
+        .btn-profile:active {
+            transform: scale(0.98);
+        }
+        .btn-eleve {
+            background-color: #10b981;
+            color: white;
+        }
+        .btn-eleve:hover { background-color: #059669; }
+        
+        .btn-personnel {
+            background-color: #6366f1;
+            color: white;
+        }
+        .btn-personnel:hover { background-color: #4f46e5; }
+
+        .input-section {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        input[type="text"]:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+        .btn-valider {
+            background-color: #2563eb;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-valider:hover { background-color: #1d4ed8; }
+        
+        .btn-retour {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1em;
+            text-decoration: underline;
+        }
+        .hidden { display: none; }
+        
+        .message-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .success { background-color: #d1fae5; color: #065f46; }
+        .error { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+
+<div class="kiosque-container">
+    <h1>🏫 Pointage École</h1>
+    <div class="clock" id="liveClock">--:--:--</div>
+
+    <!-- ÉTAPE 1 : Choix du profil -->
+    <div id="stepSelection">
+        <p style="margin-bottom: 20px; color: #475569;">Veuillez sélectionner votre profil :</p>
+        <button class="btn-profile btn-eleve" onclick="choisirProfil('eleve')">👨‍🎓 Je suis un Élève</button>
+        <button class="btn-profile btn-personnel" onclick="choisirProfil('personnel')">👩‍🏫 Je suis un Membre du Personnel</button>
+    </div>
+
+    <!-- ÉTAPE 2 : Saisie du matricule / identifiant -->
+    <div id="stepInput" class="input-section hidden">
+        <h3 id="inputTitle" style="color: #334155; margin-bottom: 15px;"></h3>
+        <input type="text" id="idInput" placeholder="Entrez votre matricule..." autocomplete="off">
+        <button class="btn-valider" onclick="validerPointage()">Valider ma présence</button>
+        <br>
+        <button class="btn-retour" onclick="revenirAccueil()">← Retour</button>
+    </div>
+
+    <!-- Message de retour -->
+    <div id="messageBox" class="message-box hidden"></div>
+</div>
+
+<script>
+   async function validerPointage() {
+    const valeurSaisie = document.getElementById('idInput').value.trim();
+    const msgBox = document.getElementById('messageBox');
+
+    if (!valeurSaisie) {
+        msgBox.className = "message-box error";
+        msgBox.innerText = "Veuillez entrer un identifiant valide.";
+        msgBox.classList.remove('hidden');
+        return;
+    }
+
+    try {
+        // Envoi vers votre API backend (qui gère Neon)
+        const response = await fetch('/api/pointage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: profilActif, // 'eleve' ou 'personnel'
+                identifiant: valeurSaisie
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            msgBox.className = "message-box success";
+            
+            // Message personnalisé selon le profil
+            if (profilActif === 'personnel') {
+                msgBox.innerText = `✅ ${result.action} enregistrée avec succès ! (${result.heure})`;
+            } else {
+                msgBox.innerText = `✅ Présence élève enregistrée avec succès !`;
+            }
+            
+            msgBox.classList.remove('hidden');
+
+            setTimeout(() => {
+                revenirAccueil();
+            }, 3000);
+        } else {
+            throw new Error(result.message || "Erreur lors de l'enregistrement");
+        }
+    } catch (error) {
+        msgBox.className = "message-box error";
+        msgBox.innerText = "❌ " + (error.message || "Erreur de connexion avec la base de données.");
+        msgBox.classList.remove('hidden');
+    }
+}
+</script>
+
+</body>
+</html>
