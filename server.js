@@ -639,10 +639,11 @@ app.post('/api/pointage', async (req, res) => {
             }
 
             // 3. Enregistrer la présence si pas encore pointé
+            // 3. Enregistrer la présence si pas encore pointé (CORRIGÉ)
             const heureActuelle = new Date().toLocaleTimeString('fr-FR');
             await pool.query(
-                'INSERT INTO presences_eleves (eleve_id, date_jour, heure_arrivee, eleve) VALUES ($1, $2, $3, $4)',
-                [eleve.id, dateAujourdhui, heureActuelle, 'eleve']
+                'INSERT INTO presences_eleves (eleve_id, date_jour, heure_arrivee) VALUES ($1, $2, $3)',
+                [eleve.id, dateAujourdhui, heureActuelle]
             );
 
             return res.json({ 
@@ -650,7 +651,7 @@ app.post('/api/pointage', async (req, res) => {
                 nomEleve: nomComplet,
                 heure: heureActuelle
             });
-
+            
         } else if (type === 'personnel') {
             // Traitement pour le personnel...
         }
