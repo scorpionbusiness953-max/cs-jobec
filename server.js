@@ -656,8 +656,9 @@ app.post('/api/pointage', async (req, res) => {
         }
 
     } catch (error) {
-        console.error("ERREUR SQL:", error); // Visible dans votre terminal
-        res.status(500).json({ success: false, message: "Erreur serveur lors du pointage." });
+        console.error("ERREUR SQL:", error); 
+        // Renvoie l'erreur exacte directement sur l'écran pour qu'on sache quoi corriger
+        res.status(500).json({ success: false, message: "Erreur: " + error.message });
     }
 });
 
