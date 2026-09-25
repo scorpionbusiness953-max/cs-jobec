@@ -181,51 +181,53 @@
 
     // Validation du pointage et appel vers le serveur
     async function validerPointage() {
-        const valeurSaisie = document.getElementById('idInput').value.trim();
-        const msgBox = document.getElementById('messageBox');
+    const valeurSaisie = document.getElementById('idInput').value.trim();
+    const msgBox = document.getElementById('messageBox');
 
-        if (!valeurSaisie) {
-            msgBox.className = "message-box error";
-            msgBox.innerText = "Veuillez entrer un identifiant valide.";
-            msgBox.classList.remove('hidden');
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/pointage', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: profilActif, // 'eleve' ou 'personnel'
-                    identifiant: valeurSaisie
-                })
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                msgBox.className = "message-box success";
-                
-                if (profilActif === 'personnel') {
-                    msgBox.innerText = `✅ ${result.action} enregistrée ! (${result.heure})`;
-                } else {
-                    msgBox.innerText = `✅ Présence élève enregistrée avec succès !`;
-                }
-                
-                msgBox.classList.remove('hidden');
-
-                setTimeout(() => {
-                    revenirAccueil();
-                }, 3000);
-            } else {
-                throw new Error(result.message || "Erreur lors de l'enregistrement");
-            }
-        } catch (error) {
-            msgBox.className = "message-box error";
-            msgBox.innerText = "❌ " + (error.message || "Erreur de connexion avec la base de données.");
-            msgBox.classList.remove('hidden');
-        }
+    if (!valeurSaisie) {
+        msgBox.className = "message-box error";
+        msgBox.innerText = "Veuillez entrer un identifiant valide.";
+        msgBox.classList.remove('hidden');
+        return;
     }
+
+    try {
+        const response = await fetch('/api/pointage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: profilActif,
+                identifiant: valeurSaisie
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            msgBox.className = "message-box success";
+            
+            if (profilActif === 'personnel') {
+                msgBox.innerText = `✅ ${result.action} enregistrée ! (${result.heure})`;
+            } else {
+                // Affichage du nom complet de l'élève
+                msgBox.innerText = `✅ Bienvenue ${result.nomEleve} ! Présence enregistrée à ${result.heure}.`;
+            }
+            
+            msgBox.classList.remove('hidden');
+
+            setTimeout(() => {
+                revenirAccueil();
+            }, 3500);
+        } else {
+            // Affiche l'erreur (ex: Déjà pointé aujourd'hui ou Matricule introuvable)
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        msgBox.className = "message-box error";
+        msgBox.innerText = "❌ " + (error.message || "Erreur lors du pointage.");
+        msgBox.classList.remove('hidden');
+    }
+}
 </script>
 
 </body>
