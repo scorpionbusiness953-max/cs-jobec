@@ -689,6 +689,55 @@ app.get('/api/presences/eleves', async (req, res) => {
     }
 });
 
+// --- ROUTE POUR LE TABLEAU DE BORD PARENT (Vérification du jour) ---
+app.get('/api/parent/statut/:matricule', async (req, res) => {
+    const { matricule } = req.params;
+    try {
+        // 1. Récupérer d'abord l'élève par son matricule
+        const eleveQuery = 'SELECT * FROM eleves WHERE matricule = $1';
+        const eleveResult = await pool.query(eleveQuery, [matricule]);
+
+        if (eleveResult.rows.length === 0) {
+            return res.json({ success: false, message: "Matricule introuvable." });
+        }
+
+        const eleve = eleveResult.rows[0];
+
+        // 2. Vérifier s'il a pointé aujourd'hui (comparaison avec la date du jour)
+        const presenceQuery = `
+            SELECT heure_arrivee, date_jour 
+            FROM presences_eleves 
+            WHERE eleve_id = $1 AND date_jour::date = CURRENT_DATE
+        `;
+        const presenceResult = await pool.query(presenceQuery, [eleve.id]);
+
+        if (presenceResult.rows.length > 0) {
+            // L'enfant est présent
+            res.json({
+                success: true,
+                present: true,
+                nom: `${eleve.postnom} ${eleve.prenom}`,
+                classe: eleve.classe,
+                cycle: eleve.cycle,
+                heure: presenceResult.rows[0].heure_arrivee
+            });
+        } else {
+            // L'enfant n'a pas encore pointé aujourd'hui
+            res.json({
+                success: true,
+                present: false,
+                nom: `${eleve.postnom} ${eleve.prenom}`,
+                classe: eleve.classe,
+                cycle: eleve.cycle
+            });
+        }
+
+    } catch (err) {
+        console.error("Erreur tableau de bord parent :", err);
+        res.status(500).json({ success: false, message: "Erreur serveur." });
+    }
+});
+
 // --- LANCEMENT DU SERVEUR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -101,9 +101,16 @@
         <div class="card gold">
             <h3>Frais Scolaires Payés</h3>
             <div class="value" id="fraisEleveAffiche" style="color: var(--success);">- USD</div>
+            
+        </div>
+        <div class="card" id="cardPresence" style="border-left-color: #6c757d;">
+            <h3>Présence du Jour</h3>
+            <div class="value" id="presenceEleveAffiche" style="font-size: 1.1rem; margin-top: 12px;">
+                Vérification...
+            </div>
         </div>
     </div>
-
+    
     <div class="evolution-section">
         <h3>Évolution et Historique de l'élève</h3>
         <p style="color: #666; font-size: 0.9rem;">Consultez ici les derniers paiements et notes enregistrés pour votre enfant.</p>
@@ -251,6 +258,41 @@
     }
     // Lancer le chargement des paiements au démarrage
     chargerPaiementsEtAfficher();
+
+    // Fonction pour vérifier si l'élève a pointé aujourd'hui
+    async function verifierPresenceJour() {
+        const presenceDiv = document.getElementById('presenceEleveAffiche');
+        const cardPresence = document.getElementById('cardPresence');
+
+        if (!matricule || matricule === "-") {
+            presenceDiv.innerText = "Matricule non disponible";
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/parent/statut/${matricule}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    if (data.present) {
+                        cardPresence.style.borderLeftColor = "#28a745"; // Vert
+                        presenceDiv.innerHTML = `<span style="color: #28a745; font-weight: bold;">🟢 Présent(e)</span><br><span style="font-size: 0.85rem; font-weight: normal;">Arrivé(e) à ${data.heure}</span>`;
+                    } else {
+                        cardPresence.style.borderLeftColor = "#dc3545"; // Rouge
+                        presenceDiv.innerHTML = `<span style="color: #dc3545; font-weight: bold;">🔴 Non pointé(e)</span><br><span style="font-size: 0.85rem; font-weight: normal;">Pas encore enregistré(e) aujourd'hui</span>`;
+                    }
+                } else {
+                    presenceDiv.innerText = "Statut introuvable";
+                }
+            }
+        } catch (e) {
+            console.error("Erreur lors de la vérification de la présence :", e);
+            presenceDiv.innerText = "Erreur de connexion";
+        }
+    }
+
+    // Lancer la vérification en même temps que les paiements
+    verifierPresenceJour();
 
     // 6. Fonction pour charger dynamiquement les notes depuis l'API backend
     async function chargerNotes(trimestre) {
