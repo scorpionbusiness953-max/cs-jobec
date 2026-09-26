@@ -13,33 +13,24 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             color: #333;
         }
         .kiosque-container {
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             text-align: center;
         }
-        h1 {
-            color: #1e3a8a;
-            margin-bottom: 10px;
-            font-size: 1.8em;
-        }
-        .clock {
-            font-size: 1.2em;
-            color: #64748b;
-            margin-bottom: 25px;
-            font-weight: bold;
-        }
+        h1 { color: #1e3a8a; margin-bottom: 5px; font-size: 1.6em; }
+        .clock { font-size: 1.1em; color: #64748b; margin-bottom: 20px; font-weight: bold; }
         .btn-profile {
             width: 100%;
-            padding: 18px;
-            font-size: 1.2em;
+            padding: 16px;
+            font-size: 1.1em;
             font-weight: bold;
             border: none;
             border-radius: 10px;
@@ -47,43 +38,44 @@
             margin: 10px 0;
             transition: transform 0.1s, background 0.2s;
         }
-        .btn-profile:active {
-            transform: scale(0.98);
-        }
-        .btn-eleve {
-            background-color: #10b981;
-            color: white;
-        }
+        .btn-profile:active { transform: scale(0.98); }
+        .btn-eleve { background-color: #10b981; color: white; }
         .btn-eleve:hover { background-color: #059669; }
-        
-        .btn-personnel {
-            background-color: #6366f1;
-            color: white;
-        }
+        .btn-personnel { background-color: #6366f1; color: white; }
         .btn-personnel:hover { background-color: #4f46e5; }
 
-        .input-section {
-            margin-top: 20px;
+        .input-section { margin-top: 15px; }
+        
+        /* Style pour la webcam */
+        .webcam-box {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            display: none;
+            position: relative;
         }
+        video { width: 100%; height: 100%; object-fit: cover; }
+
         input[type="text"] {
             width: 100%;
-            padding: 15px;
-            font-size: 1.2em;
+            padding: 14px;
+            font-size: 1.1em;
             border: 2px solid #cbd5e1;
             border-radius: 8px;
             box-sizing: border-box;
             text-align: center;
             margin-bottom: 15px;
         }
-        input[type="text"]:focus {
-            border-color: #3b82f6;
-            outline: none;
-        }
+        input[type="text"]:focus { border-color: #3b82f6; outline: none; }
+        
         .btn-valider {
             background-color: #2563eb;
             color: white;
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             font-size: 1.1em;
             border: none;
             border-radius: 8px;
@@ -97,17 +89,17 @@
             border: none;
             color: #64748b;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 15px;
             font-size: 1em;
             text-decoration: underline;
         }
         .hidden { display: none; }
         
         .message-box {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 15px;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 1.1em;
+            font-size: 1em;
             font-weight: bold;
         }
         .success { background-color: #d1fae5; color: #065f46; }
@@ -122,14 +114,21 @@
 
     <!-- ÉTAPE 1 : Choix du profil -->
     <div id="stepSelection">
-        <p style="margin-bottom: 20px; color: #475569;">Veuillez sélectionner votre profil :</p>
+        <p style="margin-bottom: 15px; color: #475569;">Veuillez sélectionner votre profil :</p>
         <button class="btn-profile btn-eleve" onclick="choisirProfil('eleve')">👨‍🎓 Je suis un Élève</button>
         <button class="btn-profile btn-personnel" onclick="choisirProfil('personnel')">👩‍🏫 Je suis un Membre du Personnel</button>
     </div>
 
-    <!-- ÉTAPE 2 : Saisie du matricule ou du téléphone -->
+    <!-- ÉTAPE 2 : Saisie -->
     <div id="stepInput" class="input-section hidden">
-        <h3 id="inputTitle" style="color: #334155; margin-bottom: 15px;"></h3>
+        <h3 id="inputTitle" style="color: #334155; margin-bottom: 10px;"></h3>
+        
+        <!-- Boîte vidéo pour la webcam (visible uniquement pour le personnel) -->
+        <div id="webcamContainer" class="webcam-box hidden">
+            <video id="videoElement" autoplay playsinline></video>
+        </div>
+        <canvas id="canvasElement" class="hidden"></canvas>
+
         <input type="text" id="idInput" placeholder="" autocomplete="off">
         <button class="btn-valider" onclick="validerPointage()">Valider</button>
         <br>
@@ -142,6 +141,7 @@
 
 <script>
     let profilActif = '';
+    let mediaStream = null;
 
     // Horloge en direct
     setInterval(() => {
@@ -149,8 +149,8 @@
         document.getElementById('liveClock').innerText = now.toLocaleTimeString('fr-FR');
     }, 1000);
 
-    // Fonction pour choisir le profil et changer d'écran
-    function choisirProfil(profil) {
+    // Choisir le profil
+    async function choisirProfil(profil) {
         profilActif = profil;
         document.getElementById('stepSelection').classList.add('hidden');
         document.getElementById('stepInput').classList.remove('hidden');
@@ -159,19 +159,44 @@
 
         const titreInput = document.getElementById('inputTitle');
         const champInput = document.getElementById('idInput');
+        const webcamContainer = document.getElementById('webcamContainer');
 
         if (profil === 'eleve') {
             titreInput.innerText = "Pointage Élève";
             champInput.placeholder = "Entrez votre matricule...";
+            webcamContainer.classList.add('hidden');
+            arreterWebcam();
         } else {
-            titreInput.innerText = "Pointage Personnel";
+            titreInput.innerText = "Pointage Personnel (Arrivée / Départ)";
             champInput.placeholder = "Entrez votre numéro de téléphone...";
+            webcamContainer.classList.remove('hidden');
+            await demarrerWebcam();
         }
         champInput.focus();
     }
 
-    // Revenir à l'écran de sélection
+    // Activer la webcam
+    async function demarrerWebcam() {
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            document.getElementById('videoElement').srcObject = mediaStream;
+        } catch (err) {
+            console.error("Erreur d'accès à la webcam :", err);
+            alert("Impossible d'activer la webcam. Vérifiez les permissions.");
+        }
+    }
+
+    // Arrêter la webcam pour libérer la caméra
+    function arreterWebcam() {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            mediaStream = null;
+        }
+    }
+
+    // Revenir à l'accueil
     function revenirAccueil() {
+        arreterWebcam();
         profilActif = '';
         document.getElementById('stepInput').classList.add('hidden');
         document.getElementById('stepSelection').classList.remove('hidden');
@@ -179,7 +204,7 @@
         document.getElementById('idInput').value = '';
     }
 
-    // Validation du pointage et routage intelligent (Élève vs Personnel)
+    // Validation du pointage
     async function validerPointage() {
         const valeurSaisie = document.getElementById('idInput').value.trim();
         const msgBox = document.getElementById('messageBox');
@@ -191,18 +216,23 @@
             return;
         }
 
-        try {
-            let endpoint = '';
-            let payload = {};
+        let photoData = null;
+        if (profilActif === 'personnel') {
+            // Capturer l'image de la webcam sur un canvas
+            const video = document.getElementById('videoElement');
+            const canvas = document.getElementById('canvasElement');
+            canvas.width = video.videoWidth || 320;
+            canvas.height = video.videoHeight || 240;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            photoData = canvas.toDataURL('image/jpeg'); // Format Base64 de la photo
+        }
 
-            // Adaptation de la route selon le profil actif
-            if (profilActif === 'eleve') {
-                endpoint = '/api/pointage'; // Votre route élève existante
-                payload = { type: 'eleve', identifiant: valeurSaisie };
-            } else {
-                endpoint = '/api/pointer/personnel'; // La route dédiée au téléphone du personnel
-                payload = { telephone: valeurSaisie };
-            }
+        try {
+            let endpoint = profilActif === 'eleve' ? '/api/pointage' : '/api/pointer/personnel';
+            let payload = profilActif === 'eleve' 
+                ? { type: 'eleve', identifiant: valeurSaisie }
+                : { telephone: valeurSaisie, photo: photoData };
 
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -216,7 +246,7 @@
                 msgBox.className = "message-box success";
                 
                 if (profilActif === 'personnel') {
-                    msgBox.innerText = `✅ Pointage réussi pour ${result.nom} (${result.fonction}) à ${result.heure}`;
+                    msgBox.innerText = `✅ ${result.action} enregistrée pour ${result.nom} (${result.fonction}) à ${result.heure}`;
                 } else {
                     msgBox.innerText = `✅ Bienvenue ${result.nomEleve} ! Présence enregistrée à ${result.heure}.`;
                 }
@@ -225,7 +255,7 @@
 
                 setTimeout(() => {
                     revenirAccueil();
-                }, 3500);
+                }, 4000);
             } else {
                 throw new Error(result.message || "Erreur lors du traitement.");
             }
