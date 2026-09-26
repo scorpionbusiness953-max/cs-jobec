@@ -738,47 +738,36 @@ app.get('/api/parent/statut/:matricule', async (req, res) => {
     }
 });
 
-// --- ROUTE POUR LE TABLEAU DE BORD PERSONNEL (Par Téléphone) ---
-app.get('/api/personnel/statut/:telephone', async (req, res) => {
-    const { telephone } = req.params;
+app.post('/api/pointer/personnel', async (req, res) => {
+    const { telephone } = req.body;
     try {
-        // 1. Rechercher le personnel par son numéro de téléphone
-        const personnelQuery = 'SELECT * FROM personnels WHERE telephone = $1';
-        const personnelResult = await pool.query(personnelQuery, [telephone]);
+        // 1. Recherche par numéro de téléphone dans la table personnels
+        const persQuery = 'SELECT * FROM personnels WHERE telephone = $1';
+        const persResult = await pool.query(persQuery, [telephone]);
 
-        if (personnelResult.rows.length === 0) {
+        if (persResult.rows.length === 0) {
             return res.json({ success: false, message: "Numéro de téléphone introuvable." });
         }
 
-        const pers = personnelResult.rows[0];
+        const personnel = persResult.rows[0];
 
-        // 2. Vérifier s'il a pointé aujourd'hui dans la table des présences du personnel
-        const presenceQuery = `
-            SELECT heure_arrivee, date_jour 
-            FROM presences_personnel 
-            WHERE personnel_id = $1 AND date_jour::date = CURRENT_DATE
+        // 2. Enregistrement dans presences_personnel
+        const insertQuery = `
+            INSERT INTO presences_personnel (personnel_id, date_jour, heure_arrivee)
+            VALUES ($1, CURRENT_DATE, CURRENT_TIME)
+            RETURNING heure_arrivee;
         `;
-        const presenceResult = await pool.query(presenceQuery, [pers.id]);
+        const insertResult = await pool.query(insertQuery, [personnel.id]);
 
-        if (presenceResult.rows.length > 0) {
-            res.json({
-                success: true,
-                present: true,
-                nom: `${pers.nom} ${pers.prenom}`,
-                fonction: pers.fonction,
-                heure: presenceResult.rows[0].heure_arrivee
-            });
-        } else {
-            res.json({
-                success: true,
-                present: false,
-                nom: `${pers.nom} ${pers.prenom}`,
-                fonction: pers.fonction
-            });
-        }
+        res.json({
+            success: true,
+            nom: `${personnel.nom} ${personnel.prenom}`,
+            fonction: personnel.fonction,
+            heure: insertResult.rows[0].heure_arrivee
+        });
 
     } catch (err) {
-        console.error("Erreur tableau de bord personnel :", err);
+        console.error("Erreur pointage personnel :", err);
         res.status(500).json({ success: false, message: "Erreur serveur." });
     }
 });

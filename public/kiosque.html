@@ -127,10 +127,10 @@
         <button class="btn-profile btn-personnel" onclick="choisirProfil('personnel')">👩‍🏫 Je suis un Membre du Personnel</button>
     </div>
 
-    <!-- ÉTAPE 2 : Saisie du matricule / identifiant -->
+    <!-- ÉTAPE 2 : Saisie du matricule ou du téléphone -->
     <div id="stepInput" class="input-section hidden">
         <h3 id="inputTitle" style="color: #334155; margin-bottom: 15px;"></h3>
-        <input type="text" id="idInput" placeholder="Entrez votre identifiant..." autocomplete="off">
+        <input type="text" id="idInput" placeholder="" autocomplete="off">
         <button class="btn-valider" onclick="validerPointage()">Valider</button>
         <br>
         <button class="btn-retour" onclick="revenirAccueil()">← Retour</button>
@@ -164,8 +164,8 @@
             titreInput.innerText = "Pointage Élève";
             champInput.placeholder = "Entrez votre matricule...";
         } else {
-            titreInput.innerText = "Pointage Personnel (Arrivée / Départ)";
-            champInput.placeholder = "Entrez votre identifiant (ID)...";
+            titreInput.innerText = "Pointage Personnel";
+            champInput.placeholder = "Entrez votre numéro de téléphone...";
         }
         champInput.focus();
     }
@@ -179,55 +179,62 @@
         document.getElementById('idInput').value = '';
     }
 
-    // Validation du pointage et appel vers le serveur
+    // Validation du pointage et routage intelligent (Élève vs Personnel)
     async function validerPointage() {
-    const valeurSaisie = document.getElementById('idInput').value.trim();
-    const msgBox = document.getElementById('messageBox');
+        const valeurSaisie = document.getElementById('idInput').value.trim();
+        const msgBox = document.getElementById('messageBox');
 
-    if (!valeurSaisie) {
-        msgBox.className = "message-box error";
-        msgBox.innerText = "Veuillez entrer un identifiant valide.";
-        msgBox.classList.remove('hidden');
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/pointage', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                type: profilActif,
-                identifiant: valeurSaisie
-            })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            msgBox.className = "message-box success";
-            
-            if (profilActif === 'personnel') {
-                msgBox.innerText = `✅ ${result.action} enregistrée ! (${result.heure})`;
-            } else {
-                // Affichage du nom complet de l'élève
-                msgBox.innerText = `✅ Bienvenue ${result.nomEleve} ! Présence enregistrée à ${result.heure}.`;
-            }
-            
+        if (!valeurSaisie) {
+            msgBox.className = "message-box error";
+            msgBox.innerText = "Veuillez remplir le champ requis.";
             msgBox.classList.remove('hidden');
-
-            setTimeout(() => {
-                revenirAccueil();
-            }, 3500);
-        } else {
-            // Affiche l'erreur (ex: Déjà pointé aujourd'hui ou Matricule introuvable)
-            throw new Error(result.message);
+            return;
         }
-    } catch (error) {
-        msgBox.className = "message-box error";
-        msgBox.innerText = "❌ " + (error.message || "Erreur lors du pointage.");
-        msgBox.classList.remove('hidden');
+
+        try {
+            let endpoint = '';
+            let payload = {};
+
+            // Adaptation de la route selon le profil actif
+            if (profilActif === 'eleve') {
+                endpoint = '/api/pointage'; // Votre route élève existante
+                payload = { type: 'eleve', identifiant: valeurSaisie };
+            } else {
+                endpoint = '/api/pointer/personnel'; // La route dédiée au téléphone du personnel
+                payload = { telephone: valeurSaisie };
+            }
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                msgBox.className = "message-box success";
+                
+                if (profilActif === 'personnel') {
+                    msgBox.innerText = `✅ Pointage réussi pour ${result.nom} (${result.fonction}) à ${result.heure}`;
+                } else {
+                    msgBox.innerText = `✅ Bienvenue ${result.nomEleve} ! Présence enregistrée à ${result.heure}.`;
+                }
+                
+                msgBox.classList.remove('hidden');
+
+                setTimeout(() => {
+                    revenirAccueil();
+                }, 3500);
+            } else {
+                throw new Error(result.message || "Erreur lors du traitement.");
+            }
+        } catch (error) {
+            msgBox.className = "message-box error";
+            msgBox.innerText = "❌ " + (error.message || "Erreur de connexion au serveur.");
+            msgBox.classList.remove('hidden');
+        }
     }
-}
 </script>
 
 </body>
