@@ -13,7 +13,7 @@
             color: #333;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
             padding: 30px;
@@ -23,6 +23,42 @@
         h2 {
             color: #1e3a8a;
             margin-bottom: 20px;
+        }
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            align-items: center;
+        }
+        .filters label {
+            font-weight: bold;
+            color: #475569;
+            font-size: 0.9em;
+        }
+        .filters input, .filters select {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1em;
+            outline: none;
+        }
+        .btn-imprimer {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: auto;
+        }
+        .btn-imprimer:hover {
+            background-color: #059669;
         }
         table {
             width: 100%;
@@ -40,21 +76,13 @@
             font-weight: 600;
         }
         tr:hover {
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
         }
-        .btn-imprimer {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        .btn-imprimer:hover {
-            background-color: #059669;
+        .no-result {
+            text-align: center;
+            color: #64748b;
+            padding: 20px;
+            font-style: italic;
         }
     </style>
 </head>
@@ -62,7 +90,30 @@
 
 <div class="container">
     <h2>📋 Rapport des Présences des Élèves</h2>
-    <button class="btn-imprimer" onclick="window.print()">🖨️ Imprimer la liste</button>
+
+    <!-- Zone des filtres de recherche -->
+    <div class="filters">
+        <div>
+            <label for="filtreDate">Date :</label><br>
+            <input type="date" id="filtreDate" onchange="filtrerPresences()">
+        </div>
+        <div>
+            <label for="filtreClasse">Classe :</label><br>
+            <select id="filtreClasse" onchange="filtrerPresences()">
+                <option value="">Toutes les classes</option>
+                <!-- Les classes seront ajoutées dynamiquement ou vous pouvez les lister -->
+                <option value="1ERE">1ERE</option>
+                <option value="3EME">3EME</option>
+                <option value="8EME">8EME</option>
+                <!-- Ajoutez d'autres classes si nécessaire -->
+            </select>
+        </div>
+        <div>
+            <button style="background:none; border:none; color:#2563eb; cursor:pointer; text-decoration:underline; margin-top:15px;" onclick="réinitialiserFiltres()">Réinitialiser</button>
+        </div>
+        
+        <button class="btn-imprimer" onclick="window.print()">🖨️ Imprimer</button>
+    </div>
 
     <table>
         <thead>
@@ -73,34 +124,24 @@
                 <th>Date</th>
                 <th>Heure d'Arrivée</th>
             </tr>
-        <thead id="tableBody">
-            <!-- Les données seront injectées ici par JavaScript -->
+        </thead>
+        <tbody id="tableBody">
+            <!-- Les données injectées par JS -->
         </tbody>
     </table>
 </div>
 
 <script>
+    let toutesLesPresences = [];
+
     async function chargerPresences() {
         try {
             const response = await fetch('/api/presences/eleves');
             const data = await response.json();
 
             if (data.success) {
-                const tbody = document.getElementById('tableBody');
-                tbody.innerHTML = '';
-
-                data.presences.forEach(p => {
-                    const row = `
-                        <tr>
-                            <td>${p.matricule}</td>
-                            <td>${p.postnom} ${p.prenom}</td>
-                            <td>${p.classe || '-'}</td>
-                            <td>${p.date_jour}</td>
-                            <td><strong>${p.heure_arrivee}</strong></td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
+                toutesLesPresences = data.presences;
+                afficherTableau(toutesLesPresences);
             } else {
                 alert("Erreur lors du chargement des présences.");
             }
@@ -109,7 +150,58 @@
         }
     }
 
-    // Charger les présences dès l'ouverture de la page
+    function afficherTableau(donnees) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        if (donnees.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="no-result">Aucun enregistrement trouvé pour ces critères.</td></tr>`;
+            return;
+        }
+
+        donnees.forEach(p => {
+            // Nettoyage de la date (pour garder uniquement YYYY-MM-DD)
+            const datePropre = p.date_jour ? p.date_jour.split('T')[0] : '';
+            
+            const row = `
+                <tr>
+                    <td>${p.matricule || ''}</td>
+                    <td>${p.postnom || ''} ${p.prenom || ''}</td>
+                    <td>${p.classe || '-'}</td>
+                    <td>${datePropre}</td>
+                    <td><strong>${p.heure_arrivee || ''}</strong></td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function filtrerPresences() {
+        const dateFiltre = document.getElementById('filtreDate').value;
+        const classeFiltre = document.getElementById('filtreClasse').value.trim().toUpperCase();
+
+        const resultatsFiltres = toutesLesPresences.filter(p => {
+            const datePropre = p.date_jour ? p.date_jour.split('T')[0] : '';
+            const classeEleve = p.classe ? p.classe.trim().toUpperCase() : '';
+
+            // Condition Date
+            const matchDate = dateFiltre ? (datePropre === dateFiltre) : true;
+            // Condition Classe
+            const matchClasse = classeFiltre ? (classeEleve === classeFiltre) : true;
+
+            return matchDate && matchClasse;
+        });
+
+        afficherTableau(resultatsFiltres);
+    }
+
+    function réinitialiserFiltres() {
+        document.getElementById('filtreDate').value = '';
+        document.getElementById('filtreClasse').value = '';
+        afficherTableau(toutesLesPresences);
+    }
+
+    // Charger les données au démarrage
     chargerPresences();
 </script>
 
