@@ -672,6 +672,7 @@ app.get('/api/presences/eleves', async (req, res) => {
                 e.matricule, 
                 e.postnom, 
                 e.prenom, 
+                e.cycle,  /* <-- Ajouté ici */
                 e.classe, 
                 p.date_jour, 
                 p.heure_arrivee
