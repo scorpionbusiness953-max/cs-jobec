@@ -95,21 +95,23 @@
     <div class="filters">
         <div>
             <label for="filtreDate">Date :</label><br>
-            <input type="date" id="filtreDate" onchange="filtrerPresences()">
+            <input type="date" id="filtreDate" oninput="filtrerPresences()">
         </div>
         <div>
-            <label for="filtreClasse">Classe :</label><br>
-            <select id="filtreClasse" onchange="filtrerPresences()">
-                <option value="">Toutes les classes</option>
-                <!-- Les classes seront ajoutées dynamiquement ou vous pouvez les lister -->
-                <option value="1ERE">1ERE</option>
-                <option value="3EME">3EME</option>
-                <option value="8EME">8EME</option>
-                <!-- Ajoutez d'autres classes si nécessaire -->
+            <label for="filtreCycle">Cycle :</label><br>
+            <select id="filtreCycle" onchange="filtrerPresences()">
+                <option value="">Tous les cycles</option>
+                <option value="Maternelle">Maternelle</option>
+                <option value="Primaire">Primaire</option>
+                <option value="Humanités">Humanités</option>
             </select>
         </div>
         <div>
-            <button style="background:none; border:none; color:#2563eb; cursor:pointer; text-decoration:underline; margin-top:15px;" onclick="réinitialiserFiltres()">Réinitialiser</button>
+            <label for="filtreClasse">Classe (ex: 8ème) :</label><br>
+            <input type="text" id="filtreClasse" placeholder="Tapez la classe..." oninput="filtrerPresences()">
+        </div>
+        <div>
+            <button style="background:none; border:none; color:#2563eb; cursor:pointer; text-decoration:underline; margin-top:15px;" onclick="reinitialiserFiltres()">Réinitialiser</button>
         </div>
         
         <button class="btn-imprimer" onclick="window.print()">🖨️ Imprimer</button>
@@ -120,6 +122,7 @@
             <tr>
                 <th>Matricule</th>
                 <th>Nom & Postnom</th>
+                <th>Cycle</th>
                 <th>Classe</th>
                 <th>Date</th>
                 <th>Heure d'Arrivée</th>
@@ -155,18 +158,18 @@
         tbody.innerHTML = '';
 
         if (donnees.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="no-result">Aucun enregistrement trouvé pour ces critères.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="no-result">Aucun enregistrement trouvé pour ces critères.</td></tr>`;
             return;
         }
 
         donnees.forEach(p => {
-            // Nettoyage de la date (pour garder uniquement YYYY-MM-DD)
             const datePropre = p.date_jour ? p.date_jour.split('T')[0] : '';
             
             const row = `
                 <tr>
                     <td>${p.matricule || ''}</td>
                     <td>${p.postnom || ''} ${p.prenom || ''}</td>
+                    <td>${p.cycle || '-'}</td>
                     <td>${p.classe || '-'}</td>
                     <td>${datePropre}</td>
                     <td><strong>${p.heure_arrivee || ''}</strong></td>
@@ -178,25 +181,32 @@
 
     function filtrerPresences() {
         const dateFiltre = document.getElementById('filtreDate').value;
-        const classeFiltre = document.getElementById('filtreClasse').value.trim().toUpperCase();
+        const cycleFiltre = document.getElementById('filtreCycle').value.trim().toLowerCase();
+        const classeFiltre = document.getElementById('filtreClasse').value.trim().toLowerCase();
 
         const resultatsFiltres = toutesLesPresences.filter(p => {
             const datePropre = p.date_jour ? p.date_jour.split('T')[0] : '';
-            const classeEleve = p.classe ? p.classe.trim().toUpperCase() : '';
+            const cycleEleve = p.cycle ? p.cycle.trim().toLowerCase() : '';
+            const classeEleve = p.classe ? p.classe.trim().toLowerCase() : '';
 
-            // Condition Date
+            // Filtrage par date si renseigné
             const matchDate = dateFiltre ? (datePropre === dateFiltre) : true;
-            // Condition Classe
-            const matchClasse = classeFiltre ? (classeEleve === classeFiltre) : true;
+            
+            // Filtrage par cycle si sélectionné
+            const matchCycle = cycleFiltre ? (cycleEleve === cycleFiltre) : true;
+            
+            // Filtrage par texte de classe (recherche partielle, ex: "8" trouvera "8eme" ou "8e")
+            const matchClasse = classeFiltre ? classeEleve.includes(classeFiltre) : true;
 
-            return matchDate && matchClasse;
+            return matchDate && matchCycle && matchClasse;
         });
 
         afficherTableau(resultatsFiltres);
     }
 
-    function réinitialiserFiltres() {
+    function reinitialiserFiltres() {
         document.getElementById('filtreDate').value = '';
+        document.getElementById('filtreCycle').value = '';
         document.getElementById('filtreClasse').value = '';
         afficherTableau(toutesLesPresences);
     }
