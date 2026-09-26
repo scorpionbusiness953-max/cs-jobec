@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Personnel - CS JOBEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-blue: #002147; --gold: #D4AF37; --dark: #1a1a1a; --success: #28a745; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #f4f4f9; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+        }
+        .container { max-width: 450px; width: 100%; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: center; }
+        h2 { color: var(--primary-blue); margin-bottom: 5px; }
+        p.subtitle { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; }
+        button { background: var(--primary-blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #001530; }
+        .card-result { margin-top: 20px; padding: 20px; border-radius: 8px; text-align: left; display: none; }
+        .present { background: #d1fae5; border: 1px solid #10b981; color: #065f46; }
+        .absent { background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>👨‍🏫 Espace Personnel</h2>
+    <p class="subtitle">Entrez votre numéro de téléphone pour vérifier votre présence.</p>
+
+    <div class="input-group">
+        <input type="text" id="telephoneInput" placeholder="Ex: 0836088372">
+        <button onclick="verifierPresencePersonnel()">Vérifier</button>
+    </div>
+
+    <div id="resultatCard" class="card-result">
+        <!-- Les informations s'afficheront ici -->
+    </div>
+</div>
+
+<script>
+    async function verifierPresencePersonnel() {
+        const telephone = document.getElementById('telephoneInput').value.trim();
+        const resultatCard = document.getElementById('resultatCard');
+
+        if (!telephone) {
+            alert("Veuillez entrer votre numéro de téléphone.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/personnel/statut/${telephone}`);
+            const data = await response.json();
+
+            resultatCard.style.display = 'block';
+
+            if (data.success) {
+                if (data.present) {
+                    resultatCard.className = 'card-result present';
+                    resultatCard.innerHTML = `
+                        <h3 style="margin-top:0;">🟢 Présence Validée</h3>
+                        <p><strong>Nom :</strong> ${data.nom}</p>
+                        <p><strong>Fonction :</strong> ${data.fonction}</p>
+                        <p><strong>Heure d'arrivée :</strong> ${data.heure}</p>
+                    `;
+                } else {
+                    resultatCard.className = 'card-result absent';
+                    resultatCard.innerHTML = `
+                        <h3 style="margin-top:0;">🔴 Non pointé(e)</h3>
+                        <p><strong>Nom :</strong> ${data.nom}</p>
+                        <p><strong>Fonction :</strong> ${data.fonction}</p>
+                        <p>Aucun pointage enregistré pour aujourd'hui.</p>
+                    `;
+                }
+            } else {
+                resultatCard.className = 'card-result absent';
+                resultatCard.innerHTML = `<h3 style="margin-top:0;">❌ Erreur</h3><p>${data.message}</p>`;
+            }
+        } catch (error) {
+            console.error("Erreur réseau :", error);
+            alert("Erreur de connexion au serveur.");
+        }
+    }
+</script>
+
+</body>
+</html>

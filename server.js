@@ -738,6 +738,51 @@ app.get('/api/parent/statut/:matricule', async (req, res) => {
     }
 });
 
+// --- ROUTE POUR LE TABLEAU DE BORD PERSONNEL (Par Téléphone) ---
+app.get('/api/personnel/statut/:telephone', async (req, res) => {
+    const { telephone } = req.params;
+    try {
+        // 1. Rechercher le personnel par son numéro de téléphone
+        const personnelQuery = 'SELECT * FROM personnels WHERE telephone = $1';
+        const personnelResult = await pool.query(personnelQuery, [telephone]);
+
+        if (personnelResult.rows.length === 0) {
+            return res.json({ success: false, message: "Numéro de téléphone introuvable." });
+        }
+
+        const pers = personnelResult.rows[0];
+
+        // 2. Vérifier s'il a pointé aujourd'hui dans la table des présences du personnel
+        const presenceQuery = `
+            SELECT heure_arrivee, date_jour 
+            FROM presences_personnel 
+            WHERE personnel_id = $1 AND date_jour::date = CURRENT_DATE
+        `;
+        const presenceResult = await pool.query(presenceQuery, [pers.id]);
+
+        if (presenceResult.rows.length > 0) {
+            res.json({
+                success: true,
+                present: true,
+                nom: `${pers.nom} ${pers.prenom}`,
+                fonction: pers.fonction,
+                heure: presenceResult.rows[0].heure_arrivee
+            });
+        } else {
+            res.json({
+                success: true,
+                present: false,
+                nom: `${pers.nom} ${pers.prenom}`,
+                fonction: pers.fonction
+            });
+        }
+
+    } catch (err) {
+        console.error("Erreur tableau de bord personnel :", err);
+        res.status(500).json({ success: false, message: "Erreur serveur." });
+    }
+});
+
 // --- LANCEMENT DU SERVEUR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
