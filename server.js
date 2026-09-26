@@ -739,14 +739,14 @@ app.get('/api/parent/statut/:matricule', async (req, res) => {
 });
 
 app.post('/api/pointer/personnel', async (req, res) => {
-    const { telephone, photo } = req.body; // 'photo' contient l'image en base64 si vous souhaitez l'exploiter ou la stocker
+    const { telephone, photo } = req.body;
     try {
         // 1. Trouver le personnel par son numéro de téléphone
         const persQuery = 'SELECT * FROM personnels WHERE telephone = $1';
         const persResult = await pool.query(persQuery, [telephone]);
 
         if (persResult.rows.length === 0) {
-            return.json({ success: false, message: "Numéro de téléphone introuvable." });
+            return res.json({ success: false, message: "Numéro de téléphone introuvable." });
         }
 
         const personnel = persResult.rows[0];
@@ -760,7 +760,7 @@ app.post('/api/pointer/personnel', async (req, res) => {
         const checkResult = await pool.query(checkQuery, [personnel.id]);
 
         if (checkResult.rows.length === 0) {
-            // --- AUCun POINTAGE : Enregistrer l'ARRIVÉE ---
+            // --- ENREGISTRER L'ARRIVÉE ---
             const insertQuery = `
                 INSERT INTO presences_personnel (personnel_id, date_jour, heure_arrivee)
                 VALUES ($1, CURRENT_DATE, CURRENT_TIME)
@@ -780,7 +780,7 @@ app.post('/api/pointer/personnel', async (req, res) => {
             const record = checkResult.rows[0];
 
             if (!record.heure_depart) {
-                // --- ARRIVÉE DÉJÀ FAITE : Enregistrer le DÉPART ---
+                // --- ENREGISTRER LE DÉPART ---
                 const updateQuery = `
                     UPDATE presences_personnel 
                     SET heure_depart = CURRENT_TIME 
@@ -797,7 +797,6 @@ app.post('/api/pointer/personnel', async (req, res) => {
                     heure: updateResult.rows[0].heure_depart
                 });
             } else {
-                // --- DÉJÀ ARRIVÉ ET PARTI ---
                 return res.json({
                     success: false,
                     message: "Vous avez déjà pointé votre arrivée et votre départ aujourd'hui."
