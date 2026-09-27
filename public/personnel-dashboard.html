@@ -31,63 +31,54 @@
 </head>
 <body>
 
-<div class="container">
-    <h2>👨‍🏫 Espace Personnel</h2>
-    <p class="subtitle">Entrez votre numéro de téléphone pour vérifier votre présence.</p>
-
-    <div class="input-group">
-        <input type="text" id="telephoneInput" placeholder="Ex: 0836088372">
-        <button onclick="verifierPresencePersonnel()">Vérifier</button>
-    </div>
-
-    <div id="resultatCard" class="card-result">
-        <!-- Les informations s'afficheront ici -->
-    </div>
+<div class="card">
+    <h2>👥 Suivi des Présences du Personnel</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom & Prénom</th>
+                <th>Fonction</th>
+                <th>Téléphone</th>
+                <th>Date</th>
+                <th>Arrivée</th>
+                <th>Départ</th>
+            </tr>
+        <th id="tableauPersonnel">
+            <!-- Les données s'afficheront ici automatiquement -->
+        </th>
+    </table>
 </div>
 
 <script>
-    async function verifierPresencePersonnel() {
-        const telephone = document.getElementById('telephoneInput').value.trim();
-        const resultatCard = document.getElementById('resultatCard');
-
-        if (!telephone) {
-            alert("Veuillez entrer votre numéro de téléphone.");
-            return;
-        }
-
+    async function chargerPresencesPersonnel() {
         try {
-            const response = await fetch(`/api/personnel/statut/${telephone}`);
-            const data = await response.json();
-
-            resultatCard.style.display = 'block';
-
-            if (data.success) {
-                if (data.present) {
-                    resultatCard.className = 'card-result present';
-                    resultatCard.innerHTML = `
-                        <h3 style="margin-top:0;">🟢 Présence Validée</h3>
-                        <p><strong>Nom :</strong> ${data.nom}</p>
-                        <p><strong>Fonction :</strong> ${data.fonction}</p>
-                        <p><strong>Heure d'arrivée :</strong> ${data.heure}</p>
+            const response = await fetch('/api/admin/presences-personnel');
+            const result = await response.json();
+            
+            if (result.success) {
+                const tbody = document.getElementById('tableauPersonnel');
+                tbody.innerHTML = '';
+                
+                result.data.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${p.nom} ${p.prenom}</td>
+                        <td>${p.fonction}</td>
+                        <td>${p.telephone}</td>
+                        <td>${new Date(p.date_jour).toLocaleDateString('fr-FR')}</td>
+                        <td><span style="color: green; font-weight: bold;">${p.heure_arrivee || '--:--'}</span></td>
+                        <td><span style="color: red; font-weight: bold;">${p.heure_depart || 'En service'}</span></td>
                     `;
-                } else {
-                    resultatCard.className = 'card-result absent';
-                    resultatCard.innerHTML = `
-                        <h3 style="margin-top:0;">🔴 Non pointé(e)</h3>
-                        <p><strong>Nom :</strong> ${data.nom}</p>
-                        <p><strong>Fonction :</strong> ${data.fonction}</p>
-                        <p>Aucun pointage enregistré pour aujourd'hui.</p>
-                    `;
-                }
-            } else {
-                resultatCard.className = 'card-result absent';
-                resultatCard.innerHTML = `<h3 style="margin-top:0;">❌ Erreur</h3><p>${data.message}</p>`;
+                    tbody.appendChild(tr);
+                });
             }
-        } catch (error) {
-            console.error("Erreur réseau :", error);
-            alert("Erreur de connexion au serveur.");
+        } catch (err) {
+            console.error("Erreur de chargement", err);
         }
     }
+
+    // Charger au démarrage de la page
+    chargerPresencesPersonnel();
 </script>
 
 </body>

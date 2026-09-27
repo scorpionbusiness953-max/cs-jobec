@@ -738,74 +738,19 @@ app.get('/api/parent/statut/:matricule', async (req, res) => {
     }
 });
 
-app.post('/api/pointer/personnel', async (req, res) => {
-    const { telephone, photo } = req.body;
+app.get('/api/admin/presences-personnel', async (req, res) => {
     try {
-        // 1. Trouver le personnel par son numéro de téléphone
-        const persQuery = 'SELECT * FROM personnels WHERE telephone = $1';
-        const persResult = await pool.query(persQuery, [telephone]);
-
-        if (persResult.rows.length === 0) {
-            return res.json({ success: false, message: "Numéro de téléphone introuvable." });
-        }
-
-        const personnel = persResult.rows[0];
-
-        // 2. Vérifier s'il existe déjà un pointage pour aujourd'hui
-        const checkQuery = `
-            SELECT id, heure_arrivee, heure_depart 
-            FROM presences_personnel 
-            WHERE personnel_id = $1 AND date_jour::date = CURRENT_DATE
+        const query = `
+            SELECT p.nom, p.prenom, p.fonction, p.telephone, 
+                   pr.date_jour, pr.heure_arrivee, pr.heure_depart
+            FROM presences_personnel pr
+            JOIN personnels p ON pr.personnel_id = p.id
+            ORDER BY pr.date_jour DESC, pr.heure_arrivee DESC;
         `;
-        const checkResult = await pool.query(checkQuery, [personnel.id]);
-
-        if (checkResult.rows.length === 0) {
-            // --- ENREGISTRER L'ARRIVÉE ---
-            const insertQuery = `
-                INSERT INTO presences_personnel (personnel_id, date_jour, heure_arrivee)
-                VALUES ($1, CURRENT_DATE, CURRENT_TIME)
-                RETURNING heure_arrivee;
-            `;
-            const insertResult = await pool.query(insertQuery, [personnel.id]);
-
-            return res.json({
-                success: true,
-                action: "Arrivée",
-                nom: `${personnel.nom} ${personnel.prenom}`,
-                fonction: personnel.fonction,
-                heure: insertResult.rows[0].heure_arrivee
-            });
-
-        } else {
-            const record = checkResult.rows[0];
-
-            if (!record.heure_depart) {
-                // --- ENREGISTRER LE DÉPART ---
-                const updateQuery = `
-                    UPDATE presences_personnel 
-                    SET heure_depart = CURRENT_TIME 
-                    WHERE id = $1 
-                    RETURNING heure_depart;
-                `;
-                const updateResult = await pool.query(updateQuery, [record.id]);
-
-                return res.json({
-                    success: true,
-                    action: "Départ",
-                    nom: `${personnel.nom} ${personnel.prenom}`,
-                    fonction: personnel.fonction,
-                    heure: updateResult.rows[0].heure_depart
-                });
-            } else {
-                return res.json({
-                    success: false,
-                    message: "Vous avez déjà pointé votre arrivée et votre départ aujourd'hui."
-                });
-            }
-        }
-
+        const result = await pool.query(query);
+        res.json({ success: true, data: result.rows });
     } catch (err) {
-        console.error("Erreur pointage personnel :", err);
+        console.error("Erreur récupération présences personnel :", err);
         res.status(500).json({ success: false, message: "Erreur serveur." });
     }
 });
