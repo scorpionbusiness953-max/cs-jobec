@@ -65,11 +65,9 @@ async function sendWhatsAppNotification(to, messageText) {
   }
 }
 
-// Configuration de Multer : 
-// 1. Pour le personnel (stockage en mémoire pour insertion en base de données)
+// Configuration de Multer
 const uploadMemory = multer({ storage: multer.memoryStorage() });
 
-// 2. Pour la bibliothèque (stockage disque avec conservation de l'extension d'origine .pdf)
 const storageDisk = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/uploads/');
@@ -81,7 +79,7 @@ const storageDisk = multer.diskStorage({
 });
 const uploadDisk = multer({ storage: storageDisk });
 
-// Connexion à la base de données Neon (avec options de robustesse et SSL strict)
+// Connexion à la base de données Neon
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
@@ -97,7 +95,7 @@ pool.connect()
   .then(() => console.log('Connecté à la base de données Neon avec succès !'))
   .catch(err => console.error('Erreur de connexion à la base de données', err));
 
-// --- TÂCHE PLANIFIÉE : VÉRIFICATION DES ANNIVERSAIRES (Tous les jours à 08h00) ---
+// --- TÂCHE PLANIFIÉE : VÉRIFICATION DES ANNIVERSAIRES ---
 cron.schedule('0 8 * * *', async () => {
   console.log("Vérification quotidienne des anniversaires du personnel...");
   try {
@@ -123,7 +121,6 @@ cron.schedule('0 8 * * *', async () => {
 
       if (message && process.env.ADMIN_WHATSAPP) {
         await sendWhatsAppNotification(process.env.ADMIN_WHATSAPP, message);
-        console.log(`Notification WhatsApp envoyée pour l'anniversaire de ${emp.prenom} ${emp.nom}`);
       }
     }
   } catch (err) {
@@ -152,10 +149,9 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
-// --- ROUTE FINANCES : TOTAUX (Toutes les dépenses/sorties valides confondues) ---
+// --- ROUTE FINANCES : TOTAUX ---
 app.get('/api/finances/totaux', async (req, res) => {
     try {
-        // 1. Récupérer les totaux des recettes (élèves)
         const queryEntrees = `
             SELECT 
                 SUM(frais_inscription) AS total_inscription, 
@@ -166,7 +162,6 @@ app.get('/api/finances/totaux', async (req, res) => {
         `;
         const resEntrees = await pool.query(queryEntrees);
 
-        // 2. Récupérer le total global de TOUTES les sorties valides (Salaires + Dépenses + Transports, etc.)
         const querySorties = `
             SELECT SUM(montant) AS total_depenses 
             FROM transactions_sorties 
@@ -193,7 +188,6 @@ app.get('/api/finances/totaux', async (req, res) => {
     }
 });
 
-// Enregistrer un nouveau paiement / dépense
 app.post('/api/transactions', async (req, res) => {
     try {
         const { type, destinataire, montant, description } = req.body;
@@ -211,8 +205,6 @@ app.post('/api/transactions', async (req, res) => {
 app.get('/api/paiements/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        
-        // On additionne tous les paiements enregistrés pour cet élève (qu'ils soient sur une ou plusieurs lignes)
         const query = `
             SELECT 
                 COALESCE(SUM(frais_inscription), 0) AS frais_inscription, 
@@ -224,7 +216,6 @@ app.get('/api/paiements/:id', async (req, res) => {
             WHERE eleve_id = $1
         `;
         const result = await pool.query(query, [id]);
-        
         res.json(result.rows[0]);
     } catch (err) {
         console.error("Erreur lors de la récupération des paiements de l'élève :", err);
@@ -232,7 +223,6 @@ app.get('/api/paiements/:id', async (req, res) => {
     }
 });
 
-// Modifier un paiement / dépense existant
 app.put('/api/transactions/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -248,7 +238,7 @@ app.put('/api/transactions/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-// Récupérer toutes les transactions de sortie
+
 app.get('/api/transactions', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM transactions_sorties ORDER BY id DESC');
@@ -260,7 +250,6 @@ app.get('/api/transactions', async (req, res) => {
 
 app.get('/api/eleves', async (req, res) => {
     try {
-        // Ajout de 'matricule' dans la sélection
         const result = await pool.query('SELECT id, matricule, nom, postnom, prenom, classe, cycle FROM eleves ORDER BY id DESC');
         res.json(result.rows);
     } catch (err) {
@@ -269,10 +258,9 @@ app.get('/api/eleves', async (req, res) => {
     }
 });
 
-// Route pour "Annuler" un paiement au lieu de le supprimer
 app.put('/api/transactions/annuler/:id', async (req, res) => {
     try {
-        const result = await pool.query(
+        await pool.query(
             "UPDATE transactions_sorties SET statut = 'ANNULE' WHERE id = $1 RETURNING *",
             [req.params.id]
         );
@@ -281,7 +269,6 @@ app.put('/api/transactions/annuler/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
 
 app.get('/api/personnels', async (req, res) => {
   try {
@@ -569,8 +556,6 @@ app.post('/api/contact', async (req, res) => {
 });
 
 // --- GESTION DE LA BIBLIOTHÈQUE ---
-
-// 1. Récupérer tous les livres de la bibliothèque
 app.get('/api/bibliotheque', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM bibliotheque ORDER BY date_ajout DESC');
@@ -581,11 +566,9 @@ app.get('/api/bibliotheque', async (req, res) => {
     }
 });
 
-// 2. Publier un document (Gère le fichier PDF local)
 app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res) => {
     try {
         const { titre, auteur, categorie } = req.body;
-
         let lienFinal = '';
         if (req.file) {
             lienFinal = `/uploads/${req.file.filename}`;
@@ -593,7 +576,6 @@ app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res)
 
         const query = 'INSERT INTO bibliotheque (titre, auteur, categorie, fichier_url) VALUES ($1, $2, $3, $4) RETURNING *';
         const values = [titre, auteur, categorie, lienFinal];
-        
         const result = await pool.query(query, values);
 
         res.status(200).json({ success: true, message: "Document ajouté avec succès !", livre: result.rows[0] });
@@ -603,62 +585,77 @@ app.post('/api/bibliotheque', uploadDisk.single('fichier_pdf'), async (req, res)
     }
 });
 
+// --- ROUTE POINTAGE (ÉLÈVE ET PERSONNEL) ---
 app.post('/api/pointage', async (req, res) => {
     const { type, identifiant } = req.body;
-    const dateAujourdhui = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
+    const dateAujourdhui = new Date().toISOString().split('T')[0]; 
+    const heureActuelle = new Date().toLocaleTimeString('fr-FR');
 
     try {
         if (type === 'eleve') {
-            // 1. Chercher l'élève correspondant au matricule donné
             const eleveResult = await pool.query(
                 'SELECT id, postnom, prenom FROM eleves WHERE matricule = $1', 
                 [identifiant]
             );
 
             if (eleveResult.rows.length === 0) {
-                return res.status(404).json({ 
-                    success: false,
-                    message: "Matricule introuvable. Veuillez vérifier votre numéro." 
-                });
+                return res.status(404).json({ success: false, message: "Matricule introuvable. Veuillez vérifier votre numéro." });
             }
 
             const eleve = eleveResult.rows[0];
             const nomComplet = `${eleve.postnom || ''} ${eleve.prenom || ''}`.trim();
 
-            // 2. Vérifier s'il a déjà pointé aujourd'hui pour éviter le double pointage
             const checkPresence = await pool.query(
                 'SELECT id FROM presences_eleves WHERE eleve_id = $1 AND date_jour = $2',
                 [eleve.id, dateAujourdhui]
             );
 
             if (checkPresence.rows.length > 0) {
-                return res.status(400).json({ 
-                    success: false,
-                    message: `⚠️ ${nomComplet}, vous avez déjà pointé aujourd'hui !` 
-                });
+                return res.status(400).json({ success: false, message: `⚠️ ${nomComplet}, vous avez déjà pointé aujourd'hui !` });
             }
 
-            // 3. Enregistrer la présence si pas encore pointé
-            // 3. Enregistrer la présence si pas encore pointé (CORRIGÉ)
-            const heureActuelle = new Date().toLocaleTimeString('fr-FR');
             await pool.query(
                 'INSERT INTO presences_eleves (eleve_id, date_jour, heure_arrivee) VALUES ($1, $2, $3)',
                 [eleve.id, dateAujourdhui, heureActuelle]
             );
 
-            return res.json({ 
-                success: true, 
-                nomEleve: nomComplet,
-                heure: heureActuelle
-            });
+            return res.json({ success: true, nomEleve: nomComplet, heure: heureActuelle });
 
         } else if (type === 'personnel') {
-            // Traitement pour le personnel...
+            // Traitement pour le personnel (par téléphone ou ID)
+            const persResult = await pool.query(
+                'SELECT id, nom, prenom FROM personnels WHERE telephone = $1 OR id::text = $1', 
+                [identifiant]
+            );
+
+            if (persResult.rows.length === 0) {
+                return res.status(404).json({ success: false, message: "Personnel introuvable. Vérifiez votre numéro." });
+            }
+
+            const personnel = persResult.rows[0];
+            const nomComplet = `${personnel.prenom || ''} ${personnel.nom || ''}`.trim();
+
+            const checkPresence = await pool.query(
+                'SELECT id FROM presences_personnel WHERE personnel_id = $1 AND date_jour = $2',
+                [personnel.id, dateAujourdhui]
+            );
+
+            if (checkPresence.rows.length > 0) {
+                return res.status(400).json({ success: false, message: `⚠️ ${nomComplet}, vous avez déjà pointé aujourd'hui !` });
+            }
+
+            await pool.query(
+                'INSERT INTO presences_personnel (personnel_id, date_jour, heure_arrivee) VALUES ($1, $2, $3)',
+                [personnel.id, dateAujourdhui, heureActuelle]
+            );
+
+            return res.json({ success: true, nomPersonnel: nomComplet, heure: heureActuelle });
+        } else {
+            return res.status(400).json({ success: false, message: "Type de pointage non valide." });
         }
 
     } catch (error) {
         console.error("ERREUR SQL:", error); 
-        // Renvoie l'erreur exacte directement sur l'écran pour qu'on sache quoi corriger
         res.status(500).json({ success: false, message: "Erreur: " + error.message });
     }
 });
@@ -672,7 +669,7 @@ app.get('/api/presences/eleves', async (req, res) => {
                 e.matricule, 
                 e.postnom, 
                 e.prenom, 
-                e.cycle,  /* <-- Ajouté ici */
+                e.cycle, 
                 e.classe, 
                 p.date_jour, 
                 p.heure_arrivee
@@ -680,7 +677,6 @@ app.get('/api/presences/eleves', async (req, res) => {
             JOIN eleves e ON p.eleve_id = e.id
             ORDER BY p.date_jour DESC, p.heure_arrivee DESC;
         `;
-        
         const result = await pool.query(query);
         res.json({ success: true, presences: result.rows });
     } catch (err) {
@@ -689,11 +685,10 @@ app.get('/api/presences/eleves', async (req, res) => {
     }
 });
 
-// --- ROUTE POUR LE TABLEAU DE BORD PARENT (Vérification du jour) ---
+// --- ROUTE TABLEAU DE BORD PARENT ---
 app.get('/api/parent/statut/:matricule', async (req, res) => {
     const { matricule } = req.params;
     try {
-        // 1. Récupérer d'abord l'élève par son matricule
         const eleveQuery = 'SELECT * FROM eleves WHERE matricule = $1';
         const eleveResult = await pool.query(eleveQuery, [matricule]);
 
@@ -703,7 +698,6 @@ app.get('/api/parent/statut/:matricule', async (req, res) => {
 
         const eleve = eleveResult.rows[0];
 
-        // 2. Vérifier s'il a pointé aujourd'hui (comparaison avec la date du jour)
         const presenceQuery = `
             SELECT heure_arrivee, date_jour 
             FROM presences_eleves 
@@ -712,7 +706,6 @@ app.get('/api/parent/statut/:matricule', async (req, res) => {
         const presenceResult = await pool.query(presenceQuery, [eleve.id]);
 
         if (presenceResult.rows.length > 0) {
-            // L'enfant est présent
             res.json({
                 success: true,
                 present: true,
@@ -722,7 +715,6 @@ app.get('/api/parent/statut/:matricule', async (req, res) => {
                 heure: presenceResult.rows[0].heure_arrivee
             });
         } else {
-            // L'enfant n'a pas encore pointé aujourd'hui
             res.json({
                 success: true,
                 present: false,
@@ -731,7 +723,6 @@ app.get('/api/parent/statut/:matricule', async (req, res) => {
                 cycle: eleve.cycle
             });
         }
-
     } catch (err) {
         console.error("Erreur tableau de bord parent :", err);
         res.status(500).json({ success: false, message: "Erreur serveur." });
@@ -758,5 +749,5 @@ app.get('/api/admin/presences-personnel', async (req, res) => {
 // --- LANCEMENT DU SERVEUR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
+    console.log(`Serveur démarré avec succès sur le port ${PORT} 🚀`);
 });
