@@ -13,25 +13,36 @@
             margin: 0; 
             padding: 20px; 
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 90vh;
+            min-height: 90vh;
         }
-        .container { max-width: 450px; width: 100%; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: center; }
-        h2 { color: var(--primary-blue); margin-bottom: 5px; }
-        p.subtitle { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; }
-        button { background: var(--primary-blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #001530; }
-        .card-result { margin-top: 20px; padding: 20px; border-radius: 8px; text-align: left; display: none; }
-        .present { background: #d1fae5; border: 1px solid #10b981; color: #065f46; }
-        .absent { background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; }
+        .container { max-width: 800px; width: 100%; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h2 { color: var(--primary-blue); margin-bottom: 15px; text-align: center; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="container">
     <h2>👥 Suivi des Présences du Personnel</h2>
     <table>
         <thead>
@@ -43,9 +54,10 @@
                 <th>Arrivée</th>
                 <th>Départ</th>
             </tr>
-        <th id="tableauPersonnel">
+        </thead>
+        <tbody id="tableauPersonnel">
             <!-- Les données s'afficheront ici automatiquement -->
-        </th>
+        </tbody>
     </table>
 </div>
 
@@ -53,27 +65,41 @@
     async function chargerPresencesPersonnel() {
         try {
             const response = await fetch('/api/admin/presences-personnel');
+            
+            // Vérification si le serveur renvoie bien du JSON (et non une page HTML 404)
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Le serveur n'a pas renvoyé du JSON (route introuvable ou erreur serveur).");
+            }
+
             const result = await response.json();
             
             if (result.success) {
                 const tbody = document.getElementById('tableauPersonnel');
                 tbody.innerHTML = '';
                 
+                if (result.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #666;">Aucune présence enregistrée pour le moment.</td></tr>`;
+                    return;
+                }
+
                 result.data.forEach(p => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${p.nom} ${p.prenom}</td>
-                        <td>${p.fonction}</td>
-                        <td>${p.telephone}</td>
-                        <td>${new Date(p.date_jour).toLocaleDateString('fr-FR')}</td>
+                        <td>${p.nom || ''} ${p.prenom || ''}</td>
+                        <td>${p.fonction || ''}</td>
+                        <td>${p.telephone || ''}</td>
+                        <td>${p.date_jour ? new Date(p.date_jour).toLocaleDateString('fr-FR') : ''}</td>
                         <td><span style="color: green; font-weight: bold;">${p.heure_arrivee || '--:--'}</span></td>
                         <td><span style="color: red; font-weight: bold;">${p.heure_depart || 'En service'}</span></td>
                     `;
                     tbody.appendChild(tr);
                 });
+            } else {
+                console.error("Erreur renvoyée par l'API :", result.message);
             }
         } catch (err) {
-            console.error("Erreur de chargement", err);
+            console.error("Erreur de chargement des présences :", err);
         }
     }
 
