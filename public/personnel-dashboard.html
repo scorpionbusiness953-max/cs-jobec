@@ -9,84 +9,88 @@
         :root { --primary-blue: #002147; --gold: #D4AF37; --dark: #1a1a1a; --success: #28a745; }
         body { 
             font-family: 'Poppins', sans-serif; 
-            background: #f4f4f9; 
+            background: #0f172a; 
+            color: #fff;
             margin: 0; 
             padding: 20px; 
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 90vh;
+            min-height: 90vh;
         }
-        .container { max-width: 450px; width: 100%; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: center; }
-        h2 { color: var(--primary-blue); margin-bottom: 5px; }
-        p.subtitle { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
+        .container { max-width: 450px; width: 100%; background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center; }
+        h2 { color: #fff; margin-bottom: 5px; }
+        p.subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 25px; }
         .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; }
-        button { background: var(--primary-blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #001530; }
+        input { flex: 1; padding: 12px; border: 1px solid #475569; background: #0f172a; color: #fff; border-radius: 8px; font-size: 1rem; outline: none; }
+        button { background: var(--gold); color: var(--dark); border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #e6c547; }
         .card-result { margin-top: 20px; padding: 20px; border-radius: 8px; text-align: left; display: none; }
-        .present { background: #d1fae5; border: 1px solid #10b981; color: #065f46; }
-        .absent { background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; }
+        .present { background: #065f46; border: 1px solid #10b981; color: #d1fae5; }
+        .absent { background: #7f1d1d; border: 1px solid #ef4444; color: #fee2e2; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>👨‍🏫 Espace Personnel</h2>
+    <h2>👥 Espace Personnel</h2>
     <p class="subtitle">Entrez votre numéro de téléphone pour vérifier votre présence.</p>
-
+    
     <div class="input-group">
-        <input type="text" id="telephoneInput" placeholder="Ex: 0836088372">
-        <button onclick="verifierPresencePersonnel()">Vérifier</button>
+        <!-- L'ID doit impérativement être numTelephone -->
+        <input type="text" id="numTelephone" placeholder="Ex: 0986117886">
+        <!-- Le bouton appelle la fonction verifierPresence() -->
+        <button onclick="verifierPresence()">Vérifier</button>
     </div>
 
-    <div id="resultatCard" class="card-result">
-        <!-- Les informations s'afficheront ici -->
-    </div>
+    <!-- La boîte où s'affichera le résultat -->
+    <div id="cardResult" class="card-result"></div>
 </div>
 
 <script>
     async function verifierPresence() {
-    const inputTel = document.getElementById('numTelephone').value.trim();
-    const resultDiv = document.getElementById('cardResult'); // L'élément où afficher le résultat
+        const inputTel = document.getElementById('numTelephone').value.trim();
+        const resultDiv = document.getElementById('cardResult');
 
-    if (!inputTel) {
-        alert("Veuillez entrer votre numéro de téléphone.");
-        return;
-    }
+        if (!inputTel) {
+            alert("Veuillez entrer votre numéro de téléphone.");
+            return;
+        }
 
-    try {
-        const response = await fetch(`/api/personnel/statut/${encodeURIComponent(inputTel)}`);
-        const result = await response.json();
+        try {
+            const response = await fetch(`/api/personnel/statut/${encodeURIComponent(inputTel)}`);
+            const result = await response.json();
 
-        if (result.success) {
             resultDiv.style.display = 'block';
-            if (result.present) {
-                resultDiv.className = 'card-result present';
-                resultDiv.innerHTML = `
-                    <h3>✅ Statut : PRÉSENT(E)</h3>
-                    <p><strong>Agent :</strong> ${result.nom}</p>
-                    <p><strong>Fonction :</strong> ${result.fonction}</p>
-                    <p><strong>Arrivée :</strong> ${result.heure_arrivee}</p>
-                    <p><strong>Départ :</strong> ${result.heure_depart}</p>
-                `;
+            if (result.success) {
+                if (result.present) {
+                    resultDiv.className = 'card-result present';
+                    resultDiv.innerHTML = `
+                        <h3 style="margin-top:0;">✅ Statut : PRÉSENT(E)</h3>
+                        <p><strong>Agent :</strong> ${result.nom}</p>
+                        <p><strong>Fonction :</strong> ${result.fonction}</p>
+                        <p><strong>Arrivée :</strong> ${result.heure_arrivee}</p>
+                        <p><strong>Départ :</strong> ${result.heure_depart}</p>
+                    `;
+                } else {
+                    resultDiv.className = 'card-result absent';
+                    resultDiv.innerHTML = `
+                        <h3 style="margin-top:0;">❌ Statut : NON POINTÉ(E)</h3>
+                        <p><strong>Agent :</strong> ${result.nom}</p>
+                        <p><strong>Fonction :</strong> ${result.fonction}</p>
+                        <p><em>Vous n'avez pas encore validé votre présence aujourd'hui.</em></p>
+                    `;
+                }
             } else {
                 resultDiv.className = 'card-result absent';
-                resultDiv.innerHTML = `
-                    <h3>❌ Statut : NON POINTÉ(E)</h3>
-                    <p><strong>Agent :</strong> ${result.nom}</p>
-                    <p><strong>Fonction :</strong> ${result.fonction}</p>
-                    <p><em>Vous n'avez pas encore validé votre présence aujourd'hui.</em></p>
-                `;
+                resultDiv.innerHTML = `<p>${result.message}</p>`;
             }
-        } else {
-            alert(result.message);
+        } catch (err) {
+            console.error("Erreur :", err);
+            alert("Erreur de connexion avec le serveur.");
         }
-    } catch (err) {
-        console.error("Erreur :", err);
-        alert("Erreur lors de la vérification avec le serveur.");
     }
-}
 </script>
 
 </body>
