@@ -772,6 +772,103 @@ app.post('/api/pointer/personnel', async (req, res) => {
     }
 });
 
+// --- ROUTE VÉRIFICATION PRÉSENCE INDIVIDUELLE PERSONEL ---
+app.get('/api/personnel/statut/:telephone', async (req, res) => {
+    const { telephone } = req.params;
+    const dateAujourdhui = new Date().toISOString().split('T')[0];
+
+    try {
+        // 1. Rechercher le membre du personnel par son téléphone ou son ID
+        const persResult = await pool.query(
+            'SELECT id, nom, prenom, fonction, telephone FROM personnels WHERE telephone = $1 OR id::text = $1',
+            [telephone.trim()]
+        );
+
+        if (persResult.rows.length === 0) {
+            return res.json({ success: false, message: "Aucun membre du personnel trouvé avec ce numéro." });
+        }
+
+        const agent = persResult.rows[0];
+
+        // 2. Vérifier s'il a pointé aujourd'hui
+        const presenceResult = await pool.query(
+            'SELECT heure_arrivee, heure_depart FROM presences_personnel WHERE personnel_id = $1 AND date_jour = $2',
+            [agent.id, dateAujourdhui]
+        );
+
+        if (presenceResult.rows.length > 0) {
+            // Présent aujourd'hui
+            res.json({
+                success: true,
+                present: true,
+                nom: `${agent.prenom} ${agent.nom}`,
+                fonction: agent.fonction,
+                heure_arrivee: presenceResult.rows[0].heure_arrivee,
+                heure_depart: presenceResult.rows[0].heure_depart || 'En service'
+            });
+        } else {
+            // Pas encore pointé
+            res.json({
+                success: true,
+                present: false,
+                nom: `${agent.prenom} ${agent.nom}`,
+                fonction: agent.fonction,
+                message: "Aucun pointage enregistré pour aujourd'hui."
+            });
+        }
+    } catch (err) {
+        console.error("Erreur statut personnel :", err);
+        res.status(500).json({ success: false, message: "Erreur serveur." });
+    }
+});
+
+// --- ROUTE ADMIN : DÉTAILS ET STATISTIQUES D'UN MEMBRE DU PERSONNEL ---
+app.get('/api/admin/personnel/details/:id', async (req, res) => {
+    const { id } = req.params;
+    const { mois, annee } = req.query; // Ex: ?mois=09&annee=2026
+
+    try {
+        // 1. Récupérer les infos de l'agent
+        const persResult = await pool.query('SELECT * FROM personnels WHERE id = $1', [id]);
+        if (persResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "Personnel introuvable." });
+        }
+        const personnel = persResult.rows[0];
+
+        // 2. Récupérer l'historique des présences pour ce mois/année (ou global)
+        let queryPresences = `
+            SELECT date_jour, heure_arrivee, heure_depart 
+            FROM presences_personnel 
+            WHERE personnel_id = $1
+        `;
+        let queryParams = [id];
+
+        if (mois && annee) {
+            queryPresences += ` AND EXTRACT(MONTH FROM date_jour) = $2 AND EXTRACT(YEAR FROM date_jour) = $3`;
+            queryParams.push(mois, annee);
+        }
+        queryPresences += ` ORDER BY date_jour DESC`;
+
+        const presencesResult = await pool.query(queryPresences, queryParams);
+
+        res.json({
+            success: true,
+            personnel: {
+                nom: personnel.nom,
+                prenom: personnel.prenom,
+                fonction: personnel.fonction,
+                telephone: personnel.telephone,
+                email: personnel.email
+            },
+            presences: presencesResult.rows,
+            total_jours_presents: presencesResult.rows.length
+        });
+    } catch (err) {
+        console.error("Erreur détails personnel :", err);
+        res.status(500).json({ success: false, message: "Erreur serveur." });
+    }
+});
+
 // --- LANCEMENT DU SERVEUR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
