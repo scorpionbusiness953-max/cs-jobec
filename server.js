@@ -802,6 +802,35 @@ app.post('/api/pointage', async (req, res) => {
     }
 });
 
+// --- ROUTE : RÉCUPÉRER LE RAPPORT DES PRÉSENCES ÉLÈVES ---
+app.get('/api/presences/eleves', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                p.id, 
+                e.matricule, 
+                e.nom, 
+                e.prenom AS postnom, 
+                e.cycle, 
+                e.classe, 
+                p.date_jour, 
+                p.heure_arrivee 
+            FROM presences_eleves p
+            JOIN eleves e ON p.eleve_id = e.id
+            ORDER BY p.date_jour DESC, p.heure_arrivee DESC
+        `;
+        const result = await pool.query(query);
+        
+        res.json({
+            success: true,
+            presences: result.rows
+        });
+    } catch (err) {
+        console.error("Erreur lors de la récupération des présences élèves :", err);
+        res.status(500).json({ success: false, message: "Erreur serveur." });
+    }
+});
+
 // Lancement du serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
