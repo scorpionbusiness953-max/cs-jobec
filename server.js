@@ -668,14 +668,14 @@ app.post('/api/pointage', async (req, res) => {
             const personnel = persResult.rows[0];
             const nomComplet = `${personnel.prenom || ''} ${personnel.nom || ''}`.trim();
 
-            // Vérifier s'il existe déjà un pointage pour aujourd'hui
+            // CORRECTION : On utilise date_jour::date pour ignorer l'heure et cibler toute la journée
             const checkPresence = await pool.query(
-                'SELECT id, heure_arrivee, heure_depart FROM presences_personnel WHERE personnel_id = $1 AND date_jour = $2',
+                'SELECT id, heure_arrivee, heure_depart FROM presences_personnel WHERE personnel_id = $1 AND date_jour::date = $2::date',
                 [personnel.id, dateAujourdhui]
             );
 
             if (checkPresence.rows.length === 0) {
-                // 1er passage : Enregistrement de l'ARRIVÉE
+                // 1er passage : Aucun pointage aujourd'hui -> Enregistrement de l'ARRIVÉE
                 await pool.query(
                     'INSERT INTO presences_personnel (personnel_id, date_jour, heure_arrivee) VALUES ($1, $2, $3)',
                     [personnel.id, dateAujourdhui, heureActuelle]
@@ -688,8 +688,8 @@ app.post('/api/pointage', async (req, res) => {
             } else {
                 const presence = checkPresence.rows[0];
 
+                // Si l'arrivée est là mais pas encore le départ -> Enregistrement du DÉPART
                 if (!presence.heure_depart) {
-                    // 2e passage : Enregistrement du DÉPART
                     await pool.query(
                         'UPDATE presences_personnel SET heure_depart = $1 WHERE id = $2',
                         [heureActuelle, presence.id]
@@ -699,14 +699,14 @@ app.post('/api/pointage', async (req, res) => {
                         message: `✅ ${nomComplet}, votre DÉPART a été enregistré à ${heureActuelle}. Bon retour !` 
                     });
                 } else {
+                    // Si l'arrivée ET le départ sont déjà remplis pour aujourd'hui -> Bloquer le pointage
                     return res.status(400).json({ 
                         success: false, 
-                        message: `⚠️ ${nomComplet}, vous avez déjà pointé votre arrivée et votre départ pour aujourd'hui.` 
+                        message: `⚠️ ${nomComplet}, vous avez déjà pointé votre arrivée et votre départ pour aujourd'hui. Revenez demain !` 
                     });
                 }
             }
         }
-
     } catch (error) {
         console.error("ERREUR SQL:", error); 
         res.status(500).json({ success: false, message: "Erreur: " + error.message });
