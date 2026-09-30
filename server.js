@@ -701,6 +701,61 @@ app.get('/api/parent/statut/:matricule', async (req, res) => {
         res.status(500).json({ success: false, message: "Erreur serveur." });
     }
 });
+// --- ROUTE : RÉCUPÉRER L'HISTORIQUE DE POINTAGE D'UN PERSONNEL (Avec stats du mois et filtre date) ---
+app.get('/api/presences/personnel/:id', async (req, res) => {
+    const { id } = req.params;
+    const { date } = req.query; // Filtre par date optionnel (format YYYY-MM-DD)
+
+    try {
+        let query = `
+            SELECT id, date_jour, heure_arrivee, heure_depart 
+            FROM presences_personnel 
+            WHERE personnel_id = $1
+        `;
+        let params = [id];
+
+        // Si l'utilisateur a cherché une date précise dans la modale
+        if (date) {
+            query += ` AND date_jour::date = $2`;
+            params.push(date);
+        }
+
+        query += ` ORDER BY date_jour DESC, id DESC`;
+
+        const result = await pool.query(query, params);
+
+        // Calculer le nombre de présences pour le mois en cours (basé sur la date du jour système)
+        const statsQuery = `
+            SELECT COUNT(*) AS presences_mois
+            FROM presences_personnel
+            WHERE personnel_id = $1 
+              AND EXTRACT(MONTH FROM date_jour) = EXTRACT(MONTH FROM CURRENT_DATE)
+              AND EXTRACT(YEAR FROM date_jour) = EXTRACT(YEAR FROM CURRENT_DATE)
+        `;
+        const statsResult = await pool.query(statsQuery, [id]);
+        const presencesMois = parseInt(statsResult.rows[0].presences_mois || 0);
+
+        // Estimation simple des jours ouvrés du mois en cours jusqu'à aujourd'hui (hors dimanches par exemple, ou total jours passés)
+        // Pour simplifier l'absence : on peut calculer par rapport au nombre de jours déjà écoulés dans le mois en cours.
+        const todayObj = new Date();
+        const currentDayOfMonth = todayObj.getDate();
+        // Supposons un calcul d'absences basé sur les jours écoulés du mois (ex: jours ouvrables estimés ou total jours - présences)
+        // On va faire : Jours écoulés - présences du mois (minimum 0)
+        const absencesMois = Math.max(0, currentDayOfMonth - presencesMois);
+
+        res.json({ 
+            success: true, 
+            data: result.rows,
+            stats: {
+                presencesMois: presencesMois,
+                absencesMois: absencesMois
+            }
+        });
+    } catch (err) {
+        console.error("Erreur lors de la récupération des détails de présence :", err);
+        res.status(500).json({ success: false, message: "Erreur serveur." });
+    }
+});
 
 // Lancement du serveur
 const PORT = process.env.PORT || 3000;

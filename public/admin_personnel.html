@@ -55,12 +55,25 @@
 </div>
 
 <!-- Fenêtre Modale pour voir les détails et statistiques -->
+<!-- Fenêtre Modale pour voir les détails et statistiques -->
 <div id="modalDetails" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="fermerModal()">&times;</span>
         <h3 id="modalNomAgent">Détails de l'agent</h3>
         <p><strong>Fonction :</strong> <span id="modalFonction"></span></p>
-        <p><strong>Jours de présence enregistrés :</strong> <span id="modalTotalPresences" style="color: green; font-weight: bold;">0</span></p>
+        
+        <!-- Statistiques du mois -->
+        <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-around;">
+            <div>✅ Présences (ce mois) : <span id="modalPresencesMois" style="color: green; font-weight: bold;">0</span></div>
+            <div>❌ Absences estimées : <span id="modalAbsencesMois" style="color: red; font-weight: bold;">0</span></div>
+        </div>
+
+        <!-- Champ de recherche par date -->
+        <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+            <label for="filtreDatePrecis" style="font-size: 0.9rem; font-weight: bold;">Rechercher une date :</label>
+            <input type="date" id="filtreDatePrecis" onchange="chargerHistoriqueAgent()" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+            <button onclick="effacerFiltreDate()" style="padding: 6px 10px; background: #ddd; border: none; border-radius: 4px; cursor: pointer;">Tout voir</button>
+        </div>
         
         <h4>Historique des pointages :</h4>
         <table>
@@ -79,7 +92,13 @@
 </div>
 
 <script>
+    // Charger le personnel au démarrage de la page
+    window.onload = function() {
+        chargerPersonnel();
+    };
+
     let listePersonnelsGlobale = [];
+    let agentIdActuel = null; // Mémorise l'agent ouvert dans la modale
 
     async function chargerPersonnel() {
         try {
@@ -121,46 +140,99 @@
         afficherTableau(resultatFiltre);
     }
 
-    async function ouvrirDetails(id) {
+    // Ouvrir la modale et charger les données de l'agent
+    async function ouvrirDetails(personnelId) {
+        agentIdActuel = personnelId;
+        
+        // Réinitialiser le champ de date de la modale s'il existe
+        const inputDate = document.getElementById('filtreDatePrecis');
+        if (inputDate) inputDate.value = '';
+
+        // Trouver l'agent dans la liste globale pour récupérer son nom et sa fonction
+        const agent = listePersonnelsGlobale.find(p => p.id === personnelId);
+        if (agent) {
+            document.getElementById('modalNomAgent').innerText = `Détails de : ${agent.nom || ''} ${agent.prenom || ''}`;
+            document.getElementById('modalFonction').innerText = agent.fonction || 'Non définie';
+        }
+
+        // Charger l'historique et les statistiques
+        await chargerHistoriqueAgent();
+
+        // Afficher la modale
+        document.getElementById('modalDetails').style.display = 'flex';
+    }
+
+    // Fonction pour charger l'historique avec prise en compte du filtre par date optionnel
+    async function chargerHistoriqueAgent() {
+        if (!agentIdActuel) return;
+
+        let url = `/api/presences/personnel/${agentIdActuel}`;
+        const inputDate = document.getElementById('filtreDatePrecis');
+        if (inputDate && inputDate.value) {
+            url += `?date=${inputDate.value}`;
+        }
+
         try {
-            const response = await fetch(`/api/admin/personnel/details/${id}`);
+            const response = await fetch(url);
             const result = await response.json();
+            
+            const tbodyHistorique = document.getElementById('modalTableauHistorique');
+            tbodyHistorique.innerHTML = '';
 
             if (result.success) {
-                document.getElementById('modalNomAgent').innerText = `${result.personnel.nom} ${result.personnel.prenom}`;
-                document.getElementById('modalFonction').innerText = result.personnel.fonction;
-                document.getElementById('modalTotalPresences').innerText = result.total_jours_presents;
-
-                const tbodyHist = document.getElementById('modalTableauHistorique');
-                tbodyHist.innerHTML = '';
-
-                if (result.presences.length === 0) {
-                    tbodyHist.innerHTML = `<tr><td colspan="3" style="text-align: center;">Aucun pointage trouvé.</td></tr>`;
-                } else {
-                    result.presences.forEach(pr => {
-                        tbodyHist.innerHTML += `
-                            <tr>
-                                <td>${new Date(pr.date_jour).toLocaleDateString('fr-FR')}</td>
-                                <td><span style="color: green; font-weight: bold;">${pr.heure_arrivee || '--:--'}</span></td>
-                                <td><span style="color: red; font-weight: bold;">${pr.heure_depart || 'En service'}</span></td>
-                            </tr>
-                        `;
-                    });
+                // Mettre à jour les compteurs du mois si les éléments existent dans le HTML
+                if (document.getElementById('modalPresencesMois')) {
+                    document.getElementById('modalPresencesMois').innerText = result.stats ? result.stats.presencesMois : 0;
+                }
+                if (document.getElementById('modalAbsencesMois')) {
+                    document.getElementById('modalAbsencesMois').innerText = result.stats ? result.stats.absencesMois : 0;
+                }
+                // Rétrocompatibilité avec l'ancien compteur total si présent
+                if (document.getElementById('modalTotalPresences')) {
+                    document.getElementById('modalTotalPresences').innerText = result.data.length;
                 }
 
-                document.getElementById('modalDetails').style.display = 'flex';
+                if (result.data.length > 0) {
+                    result.data.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${item.date_jour || ''}</td>
+                            <td style="color: green; font-weight: bold;">${item.heure_arrivee || '-'}</td>
+                            <td style="color: red; font-weight: bold;">${item.heure_depart || '-'}</td>
+                        `;
+                        tbodyHistorique.appendChild(tr);
+                    });
+                } else {
+                    tbodyHistorique.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #666;">Aucun pointage trouvé.</td></tr>`;
+                }
+            } else {
+                tbodyHistorique.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #666;">Erreur de chargement.</td></tr>`;
             }
-        } catch (err) {
-            console.error("Erreur lors de la récupération des détails :", err);
+        } catch (error) {
+            console.error("Erreur réseau :", error);
         }
     }
 
-    function fermerModal() {
-        document.getElementById('modalDetails').style.display = 'none';
+    function effacerFiltreDate() {
+        const inputDate = document.getElementById('filtreDatePrecis');
+        if (inputDate) inputDate.value = '';
+        chargerHistoriqueAgent();
     }
 
-    // Charger la liste au démarrage
-    chargerPersonnel();
+    // Fermer la modale
+    function fermerModal() {
+        document.getElementById('modalDetails').style.display = 'none';
+        agentIdActuel = null;
+    }
+
+    // Fermer aussi si on clique en dehors de la boîte blanche
+    window.onclick = function(event) {
+        const modal = document.getElementById('modalDetails');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+            agentIdActuel = null;
+        }
+    }
 </script>
 
 </body>
