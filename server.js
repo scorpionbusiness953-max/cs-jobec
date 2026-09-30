@@ -757,6 +757,51 @@ app.get('/api/presences/personnel/:id', async (req, res) => {
     }
 });
 
+// --- ROUTE : POINTAGE ÉLÈVE ---
+app.post('/api/pointage', async (req, res) => {
+    const { type, identifiant } = req.body;
+
+    if (type !== 'eleve') {
+        return res.status(400).json({ success: false, message: "Type de pointage non valide." });
+    }
+
+    try {
+        // 1. Vérifier si l'élève existe (en cherchant par matricule)
+        const eleveQuery = `SELECT * FROM eleves WHERE matricule = $1`;
+        const eleveResult = await pool.query(eleveQuery, [identifiant]);
+
+        if (eleveResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "Matricule introuvable dans le système." });
+        }
+
+        const eleve = eleveResult.rows[0];
+        const nomEleve = `${eleve.nom || ''} ${eleve.prenom || ''}`;
+        
+        // Obtenir l'heure et la date actuelles
+        const maintenant = new Date();
+        const heureActuelle = maintenant.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const dateActuelle = maintenant.toISOString().split('T')[0]; // Format YYYY-MM-DD
+
+        // 2. Enregistrer la présence de l'élève
+        const insertQuery = `
+            INSERT INTO presences_eleves (eleve_id, date_jour, heure_arrivee) 
+            VALUES ($1, $2, $3)
+        `;
+        await pool.query(insertQuery, [eleve.id, dateActuelle, heureActuelle]);
+
+        // 3. Renvoyer une réponse JSON de succès
+        res.json({
+            success: true,
+            nomEleve: nomEleve,
+            heure: heureActuelle
+        });
+
+    } catch (err) {
+        console.error("Erreur lors du pointage élève :", err);
+        res.status(500).json({ success: false, message: "Erreur interne du serveur." });
+    }
+});
+
 // Lancement du serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
